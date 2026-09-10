@@ -1,4 +1,3 @@
-// api/index.js
 const express = require('express');
 const axios = require('axios');
 
@@ -6,15 +5,32 @@ const app = express();
 app.use(express.json());
 
 // ============================================
-// 🔑 pawaPay Config
+// 🔑 Config
 // ============================================
-const PAWAPAY_TOKEN = process.env.PAWAPAY_API_TOKEN || 'eyJraWQiOiIxIiwiYWxnIjoiRVMyNTYifQ.eyJ0dCI6IkFBVCIsInN1YiI6IjI4NzU2IiwibWF2IjoiMSIsImV4cCI6MjEwNDY5NDE1OSwiaWF0IjoxNzg5MDc0OTU5LCJwbSI6IkRBRixQQUYiLCJqdGkiOiI5YjdmOTZmYS1lZjhiLTQ3MTYtOWE5ZS0zZjdhOGRlYjkwNTAifQ.8sfOu1IN0qNI8eXYMYZMui0oum2BZ82BbaSoIyu11MSVmMSbb6So56hNuX1zeC-vuhxUUSbCKsuHOp3UbL3WYA';
+const PAWAPAY_TOKEN = process.env.PAWAPAY_API_TOKEN;
 const PAWAPAY_URL = 'https://api.sandbox.pawapay.io';
 
 // ============================================
-// 🧪 TEST ENDPOINT - Visit this to test
+// 🏠 Health Check
+// ============================================
+app.get('/api', (req, res) => {
+    res.json({
+        name: 'PayKwacha API',
+        status: 'running',
+        timestamp: new Date().toISOString()
+    });
+});
+
+// ============================================
+// 🧪 pawaPay Test
 // ============================================
 app.get('/api/pawapay-test', async (req, res) => {
+    if (!PAWAPAY_TOKEN) {
+        return res.status(500).json({
+            error: 'PAWAPAY_API_TOKEN is not set in Vercel environment variables'
+        });
+    }
+
     const results = { timestamp: new Date().toISOString(), tests: {} };
 
     // Test 1: Token validity
@@ -64,11 +80,26 @@ app.get('/api/pawapay-test', async (req, res) => {
 });
 
 // ============================================
-// 💸 Real payment endpoint (called by your HTML)
+// 💸 Payment Endpoint
 // ============================================
 app.post('/api/payment', async (req, res) => {
+    if (!PAWAPAY_TOKEN) {
+        return res.status(500).json({
+            success: false,
+            error: 'Payment not configured. Contact support.'
+        });
+    }
+
     const { phoneNumber, amount, provider } = req.body;
 
+    if (!phoneNumber || !amount) {
+        return res.status(400).json({
+            success: false,
+            error: 'Phone number and amount are required'
+        });
+    }
+
+    // Normalize phone
     let cleanPhone = phoneNumber.replace(/\s/g, '').replace('+', '');
     if (cleanPhone.startsWith('0')) cleanPhone = '265' + cleanPhone.substring(1);
     else if (!cleanPhone.startsWith('265')) cleanPhone = '265' + cleanPhone;
@@ -93,6 +124,7 @@ app.post('/api/payment', async (req, res) => {
             },
             { headers: { 'Authorization': `Bearer ${PAWAPAY_TOKEN}` } }
         );
+
         res.json({ success: true, depositId, data: response.data });
     } catch (error) {
         res.status(500).json({
@@ -103,10 +135,18 @@ app.post('/api/payment', async (req, res) => {
 });
 
 // ============================================
-// 🏠 Home route
+// 📝 Business Registration (placeholder)
 // ============================================
-app.get('/api', (req, res) => {
-    res.json({ name: 'PayKwacha API', status: 'running' });
+app.post('/api/businesses/register', (req, res) => {
+    const apiKey = `PK_${Date.now()}_${Math.random().toString(36).substring(2, 10).toUpperCase()}`;
+    res.json({
+        success: true,
+        apiKey: apiKey,
+        message: 'Business registered (demo mode — not saved yet)'
+    });
 });
 
+// ============================================
+// 🚀 Export
+// ============================================
 module.exports = app;
