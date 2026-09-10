@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FAQ — PayKwacha</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #6366f1; --primary-light: #818cf8; --accent: #f43f5e;
+            --dark: #0f172a; --darker: #020617; --gray-50: #f8fafc;
+            --gray-100: #f1f5f9; --gray-400: #94a3b8; --gray-500: #64748b;
+            --gray-600: #475569; --gray-700: #334155; --radius-lg: 24px;
+        }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: white; color: var(--dark); line-height: 1.65; -webkit-font-smoothing: antialiased; }
+        a { text-decoration: none; color: inherit; }
+        .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+
+        .navbar { position: sticky; top: 0; z-index: 1000; background: rgba(255,255,255,0.85); backdrop-filter: blur(20px); border-bottom: 1px solid var(--gray-100); }
+        .nav-inner { display: flex; justify-content: space-between; align-items: center; height: 72px; }
+        .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 22px; }
+        .brand-mark { width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary), var(--accent)); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; font-weight: 900; }
+        .brand span { color: var(--primary); }
+        .nav-links { display: flex; gap: 32px; align-items: center; list-style: none; }
+        .nav-links a { font-size: 15px; color: var(--gray-600); font-weight: 500; }
+        .nav-cta { background: var(--dark); color: white !important; padding: 11px 22px; border-radius: 100px; font-weight: 600; font-size: 14px; }
+        .mobile-menu { display: none; font-size: 26px; }
+
+        .page-header { background: linear-gradient(135deg, var(--dark), #1e1b4b); color: white; padding: 80px 0 60px; text-align: center; position: relative; overflow: hidden; }
+        .page-header::before { content: ''; position: absolute; top: -50%; right: -10%; width: 500px; height: 500px; background: radial-gradient(circle, rgba(99,102,241,0.4), transparent 70%); border-radius: 50%; }
+        .page-header-content { position: relative; z-index: 2; }
+        .page-header h1 { font-size: 48px; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 16px; }
+        .page-header p { font-size: 18px; color: rgba(255,255,255,0.75); max-width: 600px; margin: 0 auto; }
+
+        section { padding: 60px 0; }
+
+        .faq-category { margin-bottom: 48px; }
+        .faq-category h2 { font-size: 24px; font-weight: 800; margin-bottom: 20px; letter-spacing: -0.02em; color: var(--dark); display: flex; align-items: center; gap: 12px; }
+        .faq-category h2::before { content: ''; width: 4px; height: 24px; background: var(--primary); border-radius: 2px; }
+
+        .faq-item { border-bottom: 1px solid var(--gray-100); padding: 20px 0; cursor: pointer; }
+        .faq-q { display: flex; justify-content: space-between; align-items: center; gap: 20px; font-size: 16px; font-weight: 600; color: var(--dark); }
+        .faq-icon { width: 28px; height: 28px; border-radius: 50%; background: var(--gray-100); color: var(--gray-600); display: flex; align-items: center; justify-content: center; font-size: 16px; transition: all 0.3s; flex-shrink: 0; }
+        .faq-item.open .faq-icon { background: var(--dark); color: white; transform: rotate(45deg); }
+        .faq-a { max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.3s; color: var(--gray-500); font-size: 15px; line-height: 1.75; }
+        .faq-item.open .faq-a { max-height: 500px; padding-top: 14px; }
+
+        .contact-cta { background: var(--gray-50); border-radius: var(--radius-lg); padding: 40px; text-align: center; margin-top: 40px; }
+        .contact-cta h3 { font-size: 22px; font-weight: 700; margin-bottom: 10px; }
+        .contact-cta p { color: var(--gray-500); margin-bottom: 20px; }
+        .btn { display: inline-flex; padding: 14px 28px; border-radius: 100px; background: var(--dark); color: white; font-weight: 600; font-size: 15px; transition: all 0.25s; }
+        .btn:hover { background: var(--darker); transform: translateY(-2px); }
+
+        footer { background: var(--darker); color: var(--gray-400); padding: 48px 0 24px; text-align: center; font-size: 14px; }
+        footer a { color: var(--primary-light); }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .mobile-menu { display: block; }
+            .page-header h1 { font-size: 32px; }
+            .page-header { padding: 60px 0 40px; }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="container nav-inner">
+        <a href="/" class="brand"><div class="brand-mark">P</div>Pay<span>Kwacha</span></a>
+        <ul class="nav-links">
+            <li><a href="/#features">Features</a></li>
+            <li><a href="/#pricing">Pricing</a></li>
+            <li><a href="/api-docs">API Docs</a></li>
+            <li><a href="/dashboard" class="nav-cta">Dashboard →</a></li>
+        </ul>
+    </div>
+</nav>
+
+<header class="page-header">
+    <div class="container page-header-content">
+        <h1>Frequently Asked Questions</h1>
+        <p>Everything you need to know about PayKwacha.</p>
+    </div>
+</header>
+
+<section>
+    <div class="container">
+
+        <div class="faq-category">
+            <h2>Getting Started</h2>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q">How do I create a PayKwacha account?<span class="faq-icon">+</span></div>
+                <div class="faq-a">Simply click "Dashboard" in the top menu, enter your email and password, and you'll have a business account in seconds. No credit card required, no lengthy approval process.</div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q">Do I need a registered business to sign up?<span class="faq-icon">+</span></div>
+                <div class="faq-a">You can create an account and test with our sandbox right away. To go live and receive real payments, you'll need to provide business registration and KYC documents.</div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q">How long does verification take?<span class="faq-icon">+</span></div>
+                <div class="faq-a">Standard verification is completed within 1-2 business days once we receive all required documents. In many cases it's faster.</div>
+            </div>
+        </div>
+
+        <div class="faq-category">
+            <h2>Payments & Money</h2>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q">Which mobile money networks do you support?<span class="faq-icon">+</span></div>
+                <div class="faq-a">We support both Airtel Money and TNM Mpamba through a single unified API, powered by pawaPay's licensed aggregator infrastructure.</div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q">What are your transaction fees?<span class="faq-icon">+</span></div>
+                <div class="faq-a">We charge a flat 2.5% fee on each successful transaction. There are no setup fees, no monthly fees, and no hidden charges.</div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q">When do I receive my money?<span class="faq-icon">+</span></div>
+                <div class="faq-a">Standard settlement is T+1 (next business day) to your registered mobile money or bank account. Instant settlement is available on request for high-volume merchants.</div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q">Is there a minimum or maximum amount?<span class="faq-icon">+</span></div>
+                <div class="faq-a">There is no minimum for accepting payments. Maximum limits are set by the mobile money networks themselves (typically K500,000 per transaction).</div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q">What happens if a customer doesn't pay?<span class="faq-icon">+</span></div>
+                <div class="faq-a">If a customer doesn't complete the payment, the transaction automatically fails after a timeout period. You can choose to retry or cancel the order.</div>
+            </div>
+        </div>
+
+        <div class="faq-category">
+            <h2>Developers & API</h2>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q">How do I integrate PayKwacha into my app?<span class="faq-icon">+</span></div>
+                <div class="faq-a">Use our single REST endpoint to initiate payments. We have SDKs for Node.js, Python, and PHP, plus a full sandbox environment to test against. See the <a href="/api-docs" style="color: var(--primary); font-weight: 600;">API docs</a> for details.</div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q">Do you offer webhooks?<span class="faq-icon">+</span></div>
+                <div class="faq-a">Yes. We send real-time webhooks whenever a payment succeeds, fails, or is pending. This lets your system react instantly without polling.</div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q">Is there a sandbox for testing?<span class="faq-icon">+</span></div>
+                <div class="faq-a">Absolutely. Every account comes with free sandbox access. Test your integration with simulated payments before going live.</div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q">What happens if my API key is exposed?<span class="faq-icon">+</span></div>
+                <div class="faq-a">Contact us immediately at mezaneyo2@gmail.com and we'll rotate your key. Never commit API keys to public repositories.</div>
+            </div>
+        </div>
+
+        <div class="faq-category">
+            <h2>Security & Compliance</h2>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q">Is PayKwacha secure?<span class="faq-icon">+</span></div>
+                <div class="faq-a">Yes. All transactions are encrypted in transit and at rest. We operate under pawaPay's Reserve Bank of Malawi licensed infrastructure and follow strict PCI-DSS guidelines.</div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q">Do you store customer card or PIN data?<span class="faq-icon">+</span></div>
+                <div class="faq-a">No. We never see, store, or process card details or PINs. All sensitive authentication is handled directly by the mobile money networks.</div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q">Are you compliant with Malawian regulations?<span class="faq-icon">+</span></div>
+                <div class="faq-a">Yes. PayKwacha operates under pawaPay's Reserve Bank of Malawi licensed infrastructure, which handles all regulatory compliance on our behalf.</div>
+            </div>
+        </div>
+
+        <div class="contact-cta">
+            <h3>Still have questions?</h3>
+            <p>Our team is happy to help. Reach out any time.</p>
+            <a href="mailto:mezaneyo2@gmail.com" class="btn">Contact Support →</a>
+        </div>
+
+    </div>
+</section>
+
+<footer>
+    <div class="container">
+        <p>© 2026 PayKwacha. Made in Malawi 🇲🇼</p>
+        <p style="margin-top: 8px; font-size: 13px;">
+            <a href="/about">About</a> · <a href="/faq">FAQ</a> · <a href="/privacy">Privacy</a> · <a href="/policies">Policies</a> · <a href="/contact">Contact</a>
+        </p>
+    </div>
+</footer>
+
+<script>
+    function toggleFaq(el) {
+        const wasOpen = el.classList.contains('open');
+        document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+        if (!wasOpen) el.classList.add('open');
+    }
+</script>
+
+</body>
+</html>
