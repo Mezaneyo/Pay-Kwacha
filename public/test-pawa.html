@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test pawaPay API Directly</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #0f172a; color: #e2e8f0; padding: 20px; line-height: 1.6; }
+        .container { max-width: 700px; margin: 0 auto; }
+        h1 { color: #6366f1; margin-bottom: 8px; font-size: 22px; }
+        .subtitle { color: #94a3b8; font-size: 14px; margin-bottom: 24px; }
+        textarea { width: 100%; height: 80px; padding: 12px; border-radius: 8px; background: #1e293b; border: 1px solid #334155; color: #e2e8f0; font-family: monospace; font-size: 12px; resize: vertical; }
+        textarea:focus { outline: none; border-color: #6366f1; }
+        label { display: block; font-size: 13px; font-weight: 600; color: #94a3b8; margin-bottom: 6px; margin-top: 16px; }
+        button { width: 100%; padding: 14px; background: #6366f1; color: white; border: none; border-radius: 10px; font-weight: 700; font-size: 15px; cursor: pointer; margin-top: 16px; }
+        button:hover { background: #4f46e5; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .result { margin-top: 24px; padding: 20px; border-radius: 12px; font-size: 13px; font-family: monospace; line-height: 1.6; white-space: pre-wrap; word-break: break-all; display: none; }
+        .result.show { display: block; }
+        .result.success { background: #052e16; color: #86efac; border: 1px solid #166534; }
+        .result.error { background: #450a0a; color: #fca5a5; border: 1px solid #991b1b; }
+        .result.info { background: #0c1a2e; color: #93c5fd; border: 1px solid #1e40af; }
+        .badge { display: inline-block; padding: 3px 10px; border-radius: 100px; font-size: 11px; font-weight: 700; margin-bottom: 12px; }
+        .badge.ok { background: #166534; color: #86efac; }
+        .badge.fail { background: #991b1b; color: #fca5a5; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>pawaPay Direct API Test</h1>
+        <p class="subtitle">This tests your pawaPay token directly, bypassing your server.</p>
+
+        <label>🔑 pawaPay API Token</label>
+        <textarea id="token" placeholder="Paste your pawaPay JWT token here..."></textarea>
+
+        <button id="testBtn" onclick="runTest()">Run Direct pawaPay Test</button>
+
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        const PAWAPAY_URL = 'https://api.sandbox.pawapay.io';
+
+        async function runTest() {
+            const token = document.getElementById('token').value.trim();
+            const btn = document.getElementById('testBtn');
+            const result = document.getElementById('result');
+
+            if (!token) {
+                showResult('error', '❌ Please paste your pawaPay token first.');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Testing...';
+            result.className = 'result show info';
+            result.textContent = 'Sending request to pawaPay...';
+
+            try {
+                const res = await fetch(`${PAWAPAY_URL}/active-conf`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    showResult('success',
+                        `✅ <span class="badge ok">TOKEN IS VALID</span><br><br>` +
+                        `Your pawaPay token works correctly.<br><br>` +
+                        `**Response:**<br>${JSON.stringify(data, null, 2)}`
+                    );
+                } else {
+                    showResult('error',
+                        `❌ <span class="badge fail">TOKEN INVALID</span><br><br>` +
+                        `HTTP Status: ${res.status}<br><br>` +
+                        `**pawaPay says:**<br>${JSON.stringify(data, null, 2)}`
+                    );
+                }
+            } catch (err) {
+                // CORS is very likely to happen here, which is itself an important clue.
+                showResult('error',
+                    `❌ <span class="badge fail">NETWORK ERROR</span><br><br>` +
+                    `Error: ${err.message}<br><br>` +
+                    `**This is likely a CORS error.** This confirms you cannot call pawaPay directly from a browser. ` +
+                    `It must go through your server.`
+                );
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Run Direct pawaPay Test';
+            }
+        }
+
+        function showResult(type, message) {
+            const el = document.getElementById('result');
+            el.className = 'result show ' + type;
+            el.textContent = message;
+        }
+    </script>
+</body>
+</html>
