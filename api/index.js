@@ -73,7 +73,7 @@ app.post('/api/payment', async (req, res) => {
         });
     }
 
-    // Normalize phone to 265XXXXXXXXX format (remove +, leading 0)
+    // Normalize phone to 265XXXXXXXXX format
     let cleanPhone = String(phoneNumber).replace(/\s/g, '').replace('+', '');
     if (cleanPhone.startsWith('0')) {
         cleanPhone = '265' + cleanPhone.substring(1);
@@ -85,7 +85,7 @@ app.post('/api/payment', async (req, res) => {
     const depositId = crypto.randomUUID();
 
     // ============================================
-    // 🔧 FIXED PAYLOAD FOR MALAWI
+    // 🔧 CORRECTED PAYLOAD FOR MALAWI
     // ============================================
     const payload = {
         depositId: depositId,
