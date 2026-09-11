@@ -54,7 +54,7 @@ app.get('/api/pawapay-test', async (req, res) => {
 });
 
 // ============================================
-// 💸 Initiate Payment
+// 💸 Initiate Payment (FIXED for Malawi)
 // ============================================
 app.post('/api/payment', async (req, res) => {
     if (!PAWAPAY_TOKEN) {
@@ -73,7 +73,7 @@ app.post('/api/payment', async (req, res) => {
         });
     }
 
-    // Normalize phone to 265XXXXXXXXX
+    // Normalize phone to 265XXXXXXXXX format (remove +, leading 0)
     let cleanPhone = String(phoneNumber).replace(/\s/g, '').replace('+', '');
     if (cleanPhone.startsWith('0')) {
         cleanPhone = '265' + cleanPhone.substring(1);
@@ -84,6 +84,9 @@ app.post('/api/payment', async (req, res) => {
     // Generate UUID for depositId
     const depositId = crypto.randomUUID();
 
+    // ============================================
+    // 🔧 FIXED PAYLOAD FOR MALAWI
+    // ============================================
     const payload = {
         depositId: depositId,
         amount: String(amount),
