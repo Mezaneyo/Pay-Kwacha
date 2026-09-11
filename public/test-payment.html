@@ -7,17 +7,14 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Inter', -apple-system, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: #f8fafc;
             color: #0f172a;
             min-height: 100vh;
             padding: 20px;
             line-height: 1.5;
         }
-        .container {
-            max-width: 560px;
-            margin: 0 auto;
-        }
+        .container { max-width: 560px; margin: 0 auto; }
         .card {
             background: white;
             border-radius: 20px;
@@ -78,11 +75,7 @@
         }
         .btn-secondary:hover { background: #e2e8f0; }
 
-        .loader {
-            display: none;
-            text-align: center;
-            padding: 20px;
-        }
+        .loader { display: none; text-align: center; padding: 20px; }
         .loader.active { display: block; }
         .spinner {
             border: 4px solid #f1f5f9;
@@ -102,7 +95,6 @@
             font-size: 14px;
             line-height: 1.6;
             margin-top: 16px;
-            white-space: pre-wrap;
             word-break: break-word;
         }
         .result.show { display: block; }
@@ -116,6 +108,20 @@
             border-radius: 4px;
             font-family: monospace;
             font-size: 12px;
+            display: inline-block;
+            margin: 2px 0;
+        }
+
+        .result pre {
+            background: rgba(0,0,0,0.06);
+            padding: 10px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 11px;
+            overflow-x: auto;
+            margin-top: 8px;
+            white-space: pre-wrap;
+            word-break: break-all;
         }
 
         .badge {
@@ -165,16 +171,14 @@
             padding: 16px;
             border-radius: 10px;
             overflow-x: auto;
-            font-size: 12px;
+            font-size: 11px;
             font-family: monospace;
             line-height: 1.6;
             margin-top: 10px;
             white-space: pre-wrap;
             word-break: break-all;
+            max-height: 400px;
         }
-        .debug pre .key { color: #c084fc; }
-        .debug pre .str { color: #86efac; }
-        .debug pre .num { color: #fbbf24; }
 
         footer {
             text-align: center;
@@ -183,6 +187,7 @@
             margin-top: 20px;
             padding: 20px;
         }
+        footer a { color: #6366f1; }
     </style>
 </head>
 <body>
@@ -195,22 +200,22 @@
 
         <!-- Quick Tests -->
         <div class="quick-tests">
-            <button class="quick-btn" onclick="fillTest('endpoint')">Endpoint Test</button>
             <button class="quick-btn" onclick="fillTest('airtel')">Airtel Test</button>
             <button class="quick-btn" onclick="fillTest('tnm')">TNM Test</button>
+            <button class="quick-btn" onclick="fillTest('small')">K50 (Min)</button>
         </div>
 
         <!-- API Key -->
         <div class="field">
             <label>🔑 PayKwacha API Key</label>
-            <input type="text" id="apiKey" placeholder="PK_..." />
+            <input type="text" id="apiKey" placeholder="PK_..." value="PK_1789081978253_2NOU6YUK" />
             <div class="hint">Your API key from the dashboard</div>
         </div>
 
         <!-- Phone -->
         <div class="field">
             <label>📱 Phone Number</label>
-            <input type="tel" id="phone" placeholder="0995514049" />
+            <input type="tel" id="phone" placeholder="0995514049" value="0995514049" />
             <div class="hint">Customer's Airtel or TNM number</div>
         </div>
 
@@ -218,6 +223,7 @@
         <div class="field">
             <label>💰 Amount (MWK)</label>
             <input type="number" id="amount" placeholder="100" value="100" />
+            <div class="hint">Minimum K50 · Maximum K750,000</div>
         </div>
 
         <!-- Provider -->
@@ -250,7 +256,7 @@
     </div>
 
     <footer>
-        🇲🇼 PayKwacha Test Tool · <a href="/dashboard" style="color:#6366f1;">Back to Dashboard</a>
+        🇲🇼 PayKwacha Test Tool · <a href="/dashboard">Back to Dashboard</a>
     </footer>
 </div>
 
@@ -259,32 +265,27 @@
     // 🎯 Quick Test Fillers
     // ============================================
     function fillTest(type) {
-        const apiKeyEl = document.getElementById('apiKey');
         const phoneEl = document.getElementById('phone');
         const providerEl = document.getElementById('provider');
         const amountEl = document.getElementById('amount');
-
-        if (type === 'endpoint') {
-            phoneEl.value = '';
-            amountEl.value = '';
-            document.getElementById('result').className = 'result';
-            showResult('info', '⚡ Click "Check API Health" below to test if the server is running.');
-            return;
-        }
 
         if (type === 'airtel') {
             phoneEl.value = '0995514049';
             providerEl.value = 'AIRTEL_MWI';
             amountEl.value = '100';
-            showResult('info', '📱 Airtel test loaded. Enter your API key and click "Send Test Payment".');
+            showResult('info', '📱 Airtel test loaded. Tap "Send Test Payment".');
             return;
         }
-
         if (type === 'tnm') {
             phoneEl.value = '0888123456';
             providerEl.value = 'TNM_MWI';
             amountEl.value = '100';
-            showResult('info', '📱 TNM test loaded. Enter your API key and click "Send Test Payment".');
+            showResult('info', '📱 TNM test loaded. Tap "Send Test Payment".');
+            return;
+        }
+        if (type === 'small') {
+            amountEl.value = '50';
+            showResult('info', '💰 K50 minimum loaded.');
             return;
         }
     }
@@ -325,14 +326,14 @@
         try {
             const res = await fetch('/api');
             const data = await res.json();
-            
+
             showDebug({ status: res.status, data });
-            
+
             if (data.status === 'running') {
-                showResult('success', 
+                showResult('success',
                     `✅ <span class="badge success">Online</span><br><br>` +
                     `<strong>API is running!</strong><br>` +
-                    `Firebase: <code>${data.firebase}</code><br>` +
+                    `pawaPay configured: <code>${data.pawapayConfigured}</code><br>` +
                     `Time: <code>${data.timestamp}</code>`
                 );
             } else {
@@ -340,10 +341,9 @@
             }
         } catch (err) {
             showDebug(err.message);
-            showResult('error', 
+            showResult('error',
                 `❌ <strong>Could not reach API</strong><br><br>` +
-                `Error: ${err.message}<br><br>` +
-                `Check that your server is deployed.`
+                `Error: ${escapeHtml(err.message)}`
             );
         } finally {
             setLoading(false);
@@ -374,8 +374,8 @@
             showResult('error', '❌ Please enter a phone number');
             return;
         }
-        if (!amount || Number(amount) <= 0) {
-            showResult('error', '❌ Please enter a valid amount');
+        if (!amount || Number(amount) < 50) {
+            showResult('error', '❌ Amount must be at least K50');
             return;
         }
 
@@ -404,25 +404,25 @@
             if (data.success) {
                 showResult('success',
                     `✅ <span class="badge success">Payment Sent</span><br><br>` +
-                    `<strong>Deposit ID:</strong> <code>${data.depositId}</code><br>` +
-                    `<strong>Phone:</strong> ${phone}<br>` +
-                    `<strong>Amount:</strong> MWK ${amount}<br>` +
+                    `<strong>Deposit ID:</strong> <code>${escapeHtml(String(data.depositId || 'N/A'))}</code><br>` +
+                    `<strong>Phone:</strong> ${escapeHtml(phone)}<br>` +
+                    `<strong>Amount:</strong> MWK ${escapeHtml(String(amount))}<br>` +
                     `<strong>Provider:</strong> ${provider === 'AIRTEL_MWI' ? 'Airtel Money' : 'TNM Mpamba'}<br><br>` +
                     `<strong>🎯 Next step:</strong> Check your phone — you should receive a payment prompt within 30 seconds.`
                 );
             } else {
                 showResult('error',
                     `❌ <span class="badge error">Failed</span><br><br>` +
-                    `<strong>Error:</strong> ${data.error || 'Unknown error'}<br><br>` +
-                    `<strong>Likely cause:</strong><br>` +
-                    `${getSuggestion(data.error)}`
+                    `<strong>Error:</strong><br>` +
+                    `<pre>${escapeHtml(stringifySafe(data.error))}</pre>` +
+                    `<strong>💡 Suggestion:</strong><br>${getSuggestion(data.error)}`
                 );
             }
         } catch (err) {
             showDebug(err.message);
             showResult('error',
                 `❌ <strong>Network Error</strong><br><br>` +
-                `Error: ${err.message}<br><br>` +
+                `Error: ${escapeHtml(err.message)}<br><br>` +
                 `Check your internet connection and try again.`
             );
         } finally {
@@ -431,30 +431,75 @@
     }
 
     // ============================================
+    // 🛠️ Safe Helpers
+    // ============================================
+    function stringifySafe(value) {
+        if (value === null || value === undefined) return 'No details provided';
+        if (typeof value === 'string') return value;
+        try {
+            return JSON.stringify(value, null, 2);
+        } catch {
+            return String(value);
+        }
+    }
+
+    function escapeHtml(str) {
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    // ============================================
     // 💡 Error Suggestions
     // ============================================
     function getSuggestion(error) {
         if (!error) return 'Try again in a moment.';
-        const err = error.toLowerCase();
-        if (err.includes('not configured')) 
+
+        // Safely convert to lowercase string
+        let errStr = '';
+        if (typeof error === 'string') {
+            errStr = error.toLowerCase();
+        } else if (typeof error === 'object') {
+            try {
+                errStr = JSON.stringify(error).toLowerCase();
+            } catch {
+                errStr = String(error).toLowerCase();
+            }
+        } else {
+            errStr = String(error).toLowerCase();
+        }
+
+        if (errStr.includes('not configured'))
             return 'PAWAPAY_API_TOKEN is missing in Vercel environment variables.';
-        if (err.includes('unauthorized') || err.includes('401')) 
+        if (errStr.includes('unauthorized') || errStr.includes('401'))
             return 'Your pawaPay token may be expired or invalid.';
-        if (err.includes('invalid phone')) 
-            return 'Check the phone number format (e.g., 0995514049 or 265995514049).';
-        if (err.includes('network')) 
+        if (errStr.includes('invalid phone') || errStr.includes('phone number'))
+            return 'Check the phone number format (e.g., 0995514049).';
+        if (errStr.includes('network'))
             return 'pawaPay sandbox may be down. Try again.';
-        if (err.includes('api key') || err.includes('apiKey')) 
-            return 'Your PayKwacha API key is invalid. Get a new one from the dashboard.';
-        return 'Check the debug output below for details.';
+        if (errStr.includes('api key') || errStr.includes('apikey'))
+            return 'Your PayKwacha API key is invalid.';
+        if (errStr.includes('minimum'))
+            return 'Amount is below the minimum for this provider (K50).';
+        if (errStr.includes('maximum'))
+            return 'Amount exceeds the maximum allowed (K750,000).';
+        if (errStr.includes('not registered') || errStr.includes('not found'))
+            return 'This phone number is not registered for mobile money.';
+        if (errStr.includes('insufficient'))
+            return 'Insufficient balance in the customer wallet.';
+        if (errStr.includes('timeout'))
+            return 'Request timed out. Try again.';
+        return 'See the raw response above for the exact error.';
     }
 
     // ============================================
-    // 🚀 Auto-fill API key if user is signed in
+    // 📌 Update UI to show current API status
     // ============================================
     window.addEventListener('load', () => {
-        // Pre-fill with the key you shared (optional)
-        document.getElementById('apiKey').value = 'PK_1789081978253_2NOU6YUK';
+        checkHealth();
     });
 </script>
 
