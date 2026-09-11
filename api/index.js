@@ -1,57 +1,3 @@
-// api/index.js
-const express = require('express');
-const axios = require('axios');
-
-const app = express();
-app.use(express.json());
-
-// ============================================
-// 🔑 Config
-// ============================================
-const PAWAPAY_TOKEN = process.env.PAWAPAY_API_TOKEN;
-const PAWAPAY_URL = 'https://api.sandbox.pawapay.io';
-
-// ============================================
-// 🏠 Health Check
-// ============================================
-app.get('/api', (req, res) => {
-    res.json({
-        name: 'PayKwacha API',
-        status: 'running',
-        pawapayConfigured: !!PAWAPAY_TOKEN,
-        timestamp: new Date().toISOString()
-    });
-});
-
-// ============================================
-// 🧪 pawaPay Test
-// ============================================
-app.get('/api/pawapay-test', async (req, res) => {
-    if (!PAWAPAY_TOKEN) {
-        return res.status(500).json({
-            success: false,
-            error: 'PAWAPAY_API_TOKEN not configured'
-        });
-    }
-
-    const results = { timestamp: new Date().toISOString(), tests: {} };
-
-    try {
-        const check = await axios.get(`${PAWAPAY_URL}/active-conf`, {
-            headers: { 'Authorization': `Bearer ${PAWAPAY_TOKEN}` }
-        });
-        results.tests.tokenValid = { success: true, data: check.data };
-    } catch (error) {
-        results.tests.tokenValid = {
-            success: false,
-            status: error.response?.status,
-            error: error.response?.data || error.message
-        };
-    }
-
-    res.json(results);
-});
-
 // ============================================
 // 💸 Initiate Payment
 // ============================================
@@ -82,10 +28,10 @@ app.post('/api/payment', async (req, res) => {
         cleanPhone = '265' + cleanPhone;
     }
 
-    // --- Generate deposit ID ---
-    const depositId = `PAY-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+    // --- Generate proper UUID for depositId ---
+    const depositId = require('crypto').randomUUID();
 
-    // --- Build payload ---
+    // --- Build payload with EXACT pawaPay format ---
     const payload = {
         depositId: depositId,
         amount: String(amount),
@@ -102,7 +48,8 @@ app.post('/api/payment', async (req, res) => {
 
     // --- Log request for debugging ---
     console.log('=== Sending to pawaPay ===');
-    console.log(JSON.stringify(payload, null, 2));
+    console.log('URL:', `${PAWAPAY_URL}/deposits`);
+    console.log('Payload:', JSON.stringify(payload, null, 2));
 
     try {
         const response = await axios.post(
@@ -111,7 +58,8 @@ app.post('/api/payment', async (req, res) => {
             {
                 headers: {
                     'Authorization': `Bearer ${PAWAPAY_TOKEN}`,
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
                 },
                 timeout: 30000
             }
@@ -134,56 +82,53 @@ app.post('/api/payment', async (req, res) => {
         console.error('=== pawaPay Error ===');
         console.error('HTTP Status:', error.response?.status);
         console.error('Response Data:', JSON.stringify(error.response?.data, null, 2));
-        console.error('Error Message:', error.message);
+        console.error('Request Payload:', JSON.stringify(payload, null, 2));
 
-        // ============================================
-        // 🧠 Extract Meaningful Error Message
-        // ============================================
         const pawaResponse = error.response?.data;
         let errorMessage = 'Payment failed. Please try again.';
+        let validationErrors = [];
 
         if (pawaResponse) {
-            if (typeof pawaResponse === 'string') {
-                errorMessage = pawaResponse;
-            } else if (pawaResponse.errorMessage) {
+            // pawaPay's standard error format
+            if (pawaResponse.errorMessage) {
                 errorMessage = pawaResponse.errorMessage;
             } else if (pawaResponse.message) {
                 errorMessage = pawaResponse.message;
             } else if (pawaResponse.errorCode) {
-                errorMessage = `${pawaResponse.errorCode}: ${pawaResponse.errorMessage || 'Unknown error'}`;
+                errorMessage = `${pawaResponse.errorCode}: ${pawaResponse.errorMessage || ''}`;
             } else if (pawaResponse.failureReason) {
                 errorMessage = pawaResponse.failureReason;
-            } else if (Array.isArray(pawaResponse.failures)) {
-                errorMessage = pawaResponse.failures
-                    .map(f => f.failureMessage || f.failureCode || JSON.stringify(f))
-                    .join('; ');
-            } else if (pawaResponse.error !== undefined && pawaResponse.error !== null) {
-                // Handle numeric codes like error: 1
-                const errorCodes = {
-                    1: 'Invalid request or account not configured in sandbox',
-                    2: 'Insufficient funds or limit exceeded',
-                    3: 'Invalid phone number or provider',
-                    4: 'Transaction not permitted',
-                    5: 'Duplicate transaction',
-                    6: 'Transaction timed out',
-                    7: 'Customer cancelled or declined'
-                };
-                errorMessage = `pawaPay error ${pawaResponse.error}: ${errorCodes[pawaResponse.error] || 'Unknown error'}`;
-            } else {
-                errorMessage = JSON.stringify(pawaResponse);
+            } else if (pawaResponse.error) {
+                if (typeof pawaResponse.error === 'string') {
+                    errorMessage = pawaResponse.error;
+                } else {
+                    errorMessage = `pawaPay error: ${JSON.stringify(pawaResponse.error)}`;
+                }
+            }
+
+            // pawaPay sometimes returns a "failures" array with details
+            if (pawaResponse.failures && Array.isArray(pawaResponse.failures)) {
+                validationErrors = pawaResponse.failures.map(f => ({
+                    code: f.failureCode,
+                    message: f.failureMessage,
+                    field: f.field
+                }));
+                if (validationErrors.length > 0 && !pawaResponse.errorMessage) {
+                    errorMessage = validationErrors
+                        .map(f => `${f.field || 'field'}: ${f.message || f.code}`)
+                        .join('; ');
+                }
             }
         } else if (error.code === 'ECONNABORTED') {
-            errorMessage = 'Request timed out. pawaPay did not respond in time.';
+            errorMessage = 'Request timed out';
         } else if (error.message) {
             errorMessage = error.message;
         }
 
-        // ============================================
-        // 📤 Return Rich Error Info
-        // ============================================
         res.status(500).json({
             success: false,
             error: errorMessage,
+            validationErrors: validationErrors,
             pawaPayStatus: error.response?.status || null,
             pawaPayRaw: pawaResponse || null,
             requestSent: {
@@ -196,73 +141,3 @@ app.post('/api/payment', async (req, res) => {
         });
     }
 });
-
-// ============================================
-// 🔍 Check Deposit Status
-// ============================================
-app.get('/api/payment-status/:depositId', async (req, res) => {
-    if (!PAWAPAY_TOKEN) {
-        return res.status(500).json({ success: false, error: 'Not configured' });
-    }
-
-    const { depositId } = req.params;
-
-    try {
-        const response = await axios.get(
-            `${PAWAPAY_URL}/deposits/${depositId}`,
-            {
-                headers: {
-                    'Authorization': `Bearer ${PAWAPAY_TOKEN}`,
-                    'Content-Type': 'application/json'
-                }
-            }
-        );
-
-        res.json({
-            success: true,
-            depositId: depositId,
-            status: response.data.status,
-            data: response.data
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            depositId: depositId,
-            error: error.response?.data || error.message
-        });
-    }
-});
-
-// ============================================
-// 📝 Business Registration (placeholder)
-// ============================================
-app.post('/api/businesses/register', (req, res) => {
-    const apiKey = `PK_${Date.now()}_${Math.random().toString(36).substring(2, 10).toUpperCase()}`;
-    res.json({
-        success: true,
-        apiKey: apiKey,
-        message: 'Business registered (demo mode)'
-    });
-});
-
-// ============================================
-// 📧 Subscribe (placeholder — frontend handles Firebase)
-// ============================================
-app.post('/api/subscribe', (req, res) => {
-    res.json({ success: true, message: 'Handled client-side' });
-});
-
-// ============================================
-// 🌐 Fallback
-// ============================================
-app.use('/api/*', (req, res) => {
-    res.status(404).json({
-        success: false,
-        error: `Route ${req.method} ${req.originalUrl} not found`
-    });
-});
-
-// ============================================
-// 🚀 Export
-// ============================================
-module.exports = app;
