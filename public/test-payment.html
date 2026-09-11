@@ -198,35 +198,30 @@
         <h1>Test Payment</h1>
         <p class="subtitle">Send a test payment to verify your integration works</p>
 
-        <!-- Quick Tests -->
         <div class="quick-tests">
             <button class="quick-btn" onclick="fillTest('airtel')">Airtel Test</button>
             <button class="quick-btn" onclick="fillTest('tnm')">TNM Test</button>
-            <button class="quick-btn" onclick="fillTest('small')">K50 (Min)</button>
+            <button class="quick-btn" onclick="fillTest('sandbox')">Sandbox Number</button>
         </div>
 
-        <!-- API Key -->
         <div class="field">
             <label>🔑 PayKwacha API Key</label>
             <input type="text" id="apiKey" placeholder="PK_..." value="PK_1789081978253_2NOU6YUK" />
             <div class="hint">Your API key from the dashboard</div>
         </div>
 
-        <!-- Phone -->
         <div class="field">
             <label>📱 Phone Number</label>
             <input type="tel" id="phone" placeholder="0995514049" value="0995514049" />
             <div class="hint">Customer's Airtel or TNM number</div>
         </div>
 
-        <!-- Amount -->
         <div class="field">
             <label>💰 Amount (MWK)</label>
             <input type="number" id="amount" placeholder="100" value="100" />
             <div class="hint">Minimum K50 · Maximum K750,000</div>
         </div>
 
-        <!-- Provider -->
         <div class="field">
             <label>📡 Provider</label>
             <select id="provider">
@@ -235,20 +230,17 @@
             </select>
         </div>
 
-        <!-- Buttons -->
         <button class="btn" id="payBtn" onclick="testPayment()">Send Test Payment →</button>
         <button class="btn btn-secondary" onclick="checkHealth()">Check API Health</button>
+        <button class="btn btn-secondary" onclick="checkWebhook()">Check Webhook Endpoint</button>
 
-        <!-- Loader -->
         <div class="loader" id="loader">
             <div class="spinner"></div>
             <div style="color: #64748b; font-size: 14px;">Sending request...</div>
         </div>
 
-        <!-- Result -->
         <div class="result" id="result"></div>
 
-        <!-- Debug -->
         <details class="debug">
             <summary>🔍 Show raw response (debug)</summary>
             <pre id="debugOutput">No request sent yet.</pre>
@@ -283,9 +275,11 @@
             showResult('info', '📱 TNM test loaded. Tap "Send Test Payment".');
             return;
         }
-        if (type === 'small') {
-            amountEl.value = '50';
-            showResult('info', '💰 K50 minimum loaded.');
+        if (type === 'sandbox') {
+            phoneEl.value = '0993456789';
+            providerEl.value = 'AIRTEL_MWI';
+            amountEl.value = '100';
+            showResult('info', '🧪 Sandbox number loaded: 0993456789 (guaranteed to succeed).');
             return;
         }
     }
@@ -316,7 +310,7 @@
     }
 
     // ============================================
-    // 🧪 Test 1: Check API Health
+    // 🧪 Check API Health
     // ============================================
     async function checkHealth() {
         clearResult();
@@ -326,7 +320,6 @@
         try {
             const res = await fetch('/api');
             const data = await res.json();
-
             showDebug({ status: res.status, data });
 
             if (data.status === 'running') {
@@ -341,17 +334,39 @@
             }
         } catch (err) {
             showDebug(err.message);
-            showResult('error',
-                `❌ <strong>Could not reach API</strong><br><br>` +
-                `Error: ${escapeHtml(err.message)}`
-            );
+            showResult('error', `❌ <strong>Could not reach API</strong><br><br>${escapeHtml(err.message)}`);
         } finally {
             setLoading(false);
         }
     }
 
     // ============================================
-    // 🧪 Test 2: Send Test Payment
+    // 🧪 Check Webhook
+    // ============================================
+    async function checkWebhook() {
+        clearResult();
+        setLoading(true);
+
+        try {
+            const res = await fetch('/api/webhook/pawapay');
+            const data = await res.json();
+            showDebug({ status: res.status, data });
+
+            showResult('success',
+                `✅ <span class="badge success">Webhook Ready</span><br><br>` +
+                `<strong>URL:</strong> <code>${data.url}</code><br>` +
+                `Time: <code>${data.timestamp}</code>`
+            );
+        } catch (err) {
+            showDebug(err.message);
+            showResult('error', `❌ Webhook check failed: ${escapeHtml(err.message)}`);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    // ============================================
+    // 🧪 Send Test Payment
     // ============================================
     async function testPayment() {
         clearResult();
@@ -361,30 +376,17 @@
         const amount = document.getElementById('amount').value.trim();
         const provider = document.getElementById('provider').value;
 
-        // Validations
-        if (!apiKey) {
-            showResult('error', '❌ Please enter your PayKwacha API key');
-            return;
-        }
-        if (!apiKey.startsWith('PK_')) {
-            showResult('error', '❌ API key should start with <code>PK_</code>');
-            return;
-        }
-        if (!phone) {
-            showResult('error', '❌ Please enter a phone number');
-            return;
-        }
-        if (!amount || Number(amount) < 50) {
-            showResult('error', '❌ Amount must be at least K50');
-            return;
-        }
+        if (!apiKey) { showResult('error', '❌ Please enter your PayKwacha API key'); return; }
+        if (!apiKey.startsWith('PK_')) { showResult('error', '❌ API key should start with <code>PK_</code>'); return; }
+        if (!phone) { showResult('error', '❌ Please enter a phone number'); return; }
+        if (!amount || Number(amount) < 50) { showResult('error', '❌ Amount must be at least K50'); return; }
 
         setLoading(true);
 
         const payload = {
             apiKey: apiKey,
             phoneNumber: phone,
-            amount: Number(amount),
+            amount: String(amount),
             provider: provider
         };
 
@@ -408,7 +410,7 @@
                     `<strong>Phone:</strong> ${escapeHtml(phone)}<br>` +
                     `<strong>Amount:</strong> MWK ${escapeHtml(String(amount))}<br>` +
                     `<strong>Provider:</strong> ${provider === 'AIRTEL_MWI' ? 'Airtel Money' : 'TNM Mpamba'}<br><br>` +
-                    `<strong>🎯 Next step:</strong> Check your phone — you should receive a payment prompt within 30 seconds.`
+                    `<strong>🎯 Next:</strong> Check your phone — payment prompt should arrive within 30 seconds.`
                 );
             } else {
                 showResult('error',
@@ -431,7 +433,7 @@
     }
 
     // ============================================
-    // 🛠️ Safe Helpers
+    // 🛠️ Helpers
     // ============================================
     function stringifySafe(value) {
         if (value === null || value === undefined) return 'No details provided';
@@ -452,54 +454,34 @@
             .replace(/'/g, '&#39;');
     }
 
-    // ============================================
-    // 💡 Error Suggestions
-    // ============================================
     function getSuggestion(error) {
         if (!error) return 'Try again in a moment.';
-
-        // Safely convert to lowercase string
         let errStr = '';
-        if (typeof error === 'string') {
-            errStr = error.toLowerCase();
-        } else if (typeof error === 'object') {
-            try {
-                errStr = JSON.stringify(error).toLowerCase();
-            } catch {
-                errStr = String(error).toLowerCase();
-            }
-        } else {
-            errStr = String(error).toLowerCase();
-        }
+        if (typeof error === 'string') errStr = error.toLowerCase();
+        else if (typeof error === 'object') {
+            try { errStr = JSON.stringify(error).toLowerCase(); }
+            catch { errStr = String(error).toLowerCase(); }
+        } else errStr = String(error).toLowerCase();
 
-        if (errStr.includes('not configured'))
-            return 'PAWAPAY_API_TOKEN is missing in Vercel environment variables.';
-        if (errStr.includes('unauthorized') || errStr.includes('401'))
-            return 'Your pawaPay token may be expired or invalid.';
-        if (errStr.includes('invalid phone') || errStr.includes('phone number'))
-            return 'Check the phone number format (e.g., 0995514049).';
-        if (errStr.includes('network'))
-            return 'pawaPay sandbox may be down. Try again.';
-        if (errStr.includes('api key') || errStr.includes('apikey'))
-            return 'Your PayKwacha API key is invalid.';
-        if (errStr.includes('minimum'))
-            return 'Amount is below the minimum for this provider (K50).';
-        if (errStr.includes('maximum'))
-            return 'Amount exceeds the maximum allowed (K750,000).';
-        if (errStr.includes('not registered') || errStr.includes('not found'))
-            return 'This phone number is not registered for mobile money.';
-        if (errStr.includes('insufficient'))
-            return 'Insufficient balance in the customer wallet.';
-        if (errStr.includes('timeout'))
-            return 'Request timed out. Try again.';
-        return 'See the raw response above for the exact error.';
+        if (errStr.includes('not configured')) return 'PAWAPAY_API_TOKEN missing in Vercel.';
+        if (errStr.includes('unauthorized') || errStr.includes('401')) return 'Your pawaPay token may be expired.';
+        if (errStr.includes('invalid phone')) return 'Check phone format (0995514049).';
+        if (errStr.includes('network')) return 'pawaPay sandbox may be down. Try again.';
+        if (errStr.includes('api key') || errStr.includes('apikey')) return 'Your PayKwacha API key is invalid.';
+        if (errStr.includes('minimum')) return 'Amount is below K50 minimum.';
+        if (errStr.includes('maximum')) return 'Amount exceeds K750,000 maximum.';
+        if (errStr.includes('not registered') || errStr.includes('not found')) return 'This number is not registered for mobile money.';
+        if (errStr.includes('insufficient')) return 'Insufficient balance in the customer wallet.';
+        if (errStr.includes('invalid input')) return 'pawaPay rejected the request. Try the sandbox number 0993456789.';
+        if (errStr.includes('callback')) return 'Webhook callback URL not configured on pawaPay.';
+        return 'See raw response for details.';
     }
 
     // ============================================
-    // 📌 Update UI to show current API status
+    // 📌 Auto health check
     // ============================================
     window.addEventListener('load', () => {
-        checkHealth();
+        setTimeout(checkHealth, 300);
     });
 </script>
 
