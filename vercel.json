@@ -2,8 +2,10 @@
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api" },
     { "source": "/dashboard", "destination": "/public/dashboard.html" },
+    { "source": "/login", "destination": "/public/login.html" },
+    { "source": "/signup", "destination": "/public/signup.html" },
     { "source": "/pay/:linkId", "destination": "/public/pay.html" },
-    { "source": "/test", "destination": "/public/test.html" },
+    { "source": "/test", "destination": "/public/test-payment.html" },
     { "source": "/about", "destination": "/public/about.html" },
     { "source": "/faq", "destination": "/public/faq.html" },
     { "source": "/privacy", "destination": "/public/privacy.html" },
