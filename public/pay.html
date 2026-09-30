@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pay — PayKwacha</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #0f172a; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .container { max-width: 480px; width: 100%; background: white; border-radius: 24px; padding: 32px 28px; box-shadow: 0 20px 60px rgba(15,23,42,0.15); }
+        .logo { text-align: center; font-size: 40px; margin-bottom: 8px; }
+        h1 { font-size: 22px; font-weight: 800; text-align: center; margin-bottom: 6px; }
+        .merchant { text-align: center; color: #64748b; font-size: 13px; margin-bottom: 20px; }
+        .amount-box { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; padding: 28px; border-radius: 16px; text-align: center; margin-bottom: 24px; }
+        .amount-label { font-size: 12px; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.08em; }
+        .amount-value { font-size: 40px; font-weight: 800; margin-top: 6px; letter-spacing: -0.03em; }
+        .field { margin-bottom: 16px; }
+        .field label { display: block; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 6px; }
+        .field input, .field select { width: 100%; padding: 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 15px; font-family: inherit; background: #f8fafc; }
+        .field input:focus, .field select:focus { outline: none; border-color: #6366f1; background: white; }
+        .btn { width: 100%; padding: 15px; background: #0f172a; color: white; border: none; border-radius: 12px; font-weight: 700; font-size: 16px; cursor: pointer; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .result { margin-top: 16px; padding: 14px; border-radius: 10px; display: none; font-size: 14px; }
+        .result.success { background: #ecfdf5; color: #065f46; display: block; }
+        .result.error { background: #fef2f2; color: #991b1b; display: block; }
+        .secured { text-align: center; color: #94a3b8; font-size: 12px; margin-top: 20px; padding-top: 20px; border-top: 1px solid #f1f5f9; }
+        .loading { text-align: center; padding: 40px; color: #94a3b8; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="content">
+        <div class="loading">⏳ Loading payment details...</div>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyBY_Ea_o2x6QJupbc4M2K_ES7G0D8XuvEc",
+        authDomain: "primebet-a6742.firebaseapp.com",
+        projectId: "primebet-a6742",
+        storageBucket: "primebet-a6742.firebasestorage.app",
+        messagingSenderId: "507670378832",
+        appId: "1:507670378832:web:c3106d37e2027aaf1d9455"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const pathParts = window.location.pathname.split('/');
+    const linkId = pathParts[pathParts.length - 1];
+
+    let linkData = null;
+
+    (async () => {
+        try {
+            const doc = await db.collection('paymentLinks').doc(linkId).get();
+            if (!doc.exists) {
+                document.getElementById('content').innerHTML = `
+                    <div class="logo">⚠️</div>
+                    <h1>Link Not Found</h1>
+                    <p class="merchant">This payment link is invalid or has expired.</p>
+                `;
+                return;
+            }
+
+            linkData = doc.data();
+
+            document.getElementById('content').innerHTML = `
+                <div class="logo">💳</div>
+                <h1>Pay Now</h1>
+                <p class="merchant">to <strong>${escapeHtml(linkData.merchantName)}</strong></p>
+
+                <div class="amount-box">
+                    <div class="amount-label">Amount to pay</div>
+                    <div class="amount-value">MWK ${linkData.amount.toLocaleString()}</div>
+                </div>
+
+                ${linkData.description ? `<p style="text-align:center; color:#64748b; font-size:13px; margin-bottom:20px;">${escapeHtml(linkData.description)}</p>` : ''}
+
+                <div class="field">
+                    <label>📱 Your Phone Number</label>
+                    <input type="tel" id="phone" placeholder="0995514049" />
+                </div>
+
+                <div class="field">
+                    <label>📡 Provider</label>
+                    <select id="provider">
+                        <option value="AIRTEL_MWI">Airtel Money</option>
+                        <option value="TNM_MWI">TNM Mpamba</option>
+                    </select>
+                </div>
+
+                <button class="btn" id="payBtn" onclick="payNow()">Pay MWK ${linkData.amount.toLocaleString()}</button>
+                <div class="result" id="result"></div>
+
+                <div class="secured">🔒 Secured by PayChangu</div>
+            `;
+        } catch (err) {
+            document.getElementById('content').innerHTML = `
+                <div class="logo">⚠️</div>
+                <h1>Error</h1>
+                <p class="merchant">${escapeHtml(err.message)}</p>
+            `;
+        }
+    })();
+
+    async function payNow() {
+        const phone = document.getElementById('phone').value.trim();
+        const provider = document.getElementById('provider').value;
+        const btn = document.getElementById('payBtn');
+        const result = document.getElementById('result');
+
+        if (!phone) {
+            result.className = 'result error';
+            result.textContent = 'Please enter your phone number';
+            return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = '⏳ Processing...';
+        result.className = 'result';
+        result.textContent = '';
+
+        try {
+            const res = await fetch('/api/payment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    phoneNumber: phone,
+                    amount: linkData.amount,
+                    provider,
+                    merchantUserId: linkData.userId,
+                    email: 'customer@paykwacha.com'
+                })
+            });
+
+            const data = await res.json();
+
+            if (data.success && data.checkoutUrl) {
+                result.className = 'result success';
+                result.innerHTML = `✅ Redirecting to payment page...`;
+                setTimeout(() => {
+                    window.location.href = data.checkoutUrl;
+                }, 800);
+            } else {
+                result.className = 'result error';
+                result.textContent = data.error || 'Payment failed. Please try again.';
+                btn.disabled = false;
+                btn.textContent = `Pay MWK ${linkData.amount.toLocaleString()}`;
+            }
+        } catch (err) {
+            result.className = 'result error';
+            result.textContent = 'Network error. Please try again.';
+            btn.disabled = false;
+            btn.textContent = `Pay MWK ${linkData.amount.toLocaleString()}`;
+        }
+    }
+
+    function escapeHtml(str) {
+        return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    }
+</script>
+
+</body>
+</html>
