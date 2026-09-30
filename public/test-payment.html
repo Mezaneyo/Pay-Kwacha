@@ -27,7 +27,6 @@
         .subtitle { text-align: center; color: #94a3b8; font-size: 13px; margin-bottom: 22px; }
 
         .provider-badge {
-            display: inline-block;
             background: linear-gradient(135deg, #6366f1, #8b5cf6);
             color: white;
             padding: 4px 12px;
@@ -36,9 +35,7 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            margin-bottom: 14px;
-            margin-left: auto;
-            margin-right: auto;
+            margin: 0 auto 14px;
             display: block;
             width: fit-content;
         }
@@ -64,10 +61,7 @@
             font-family: inherit;
             transition: all 0.2s;
         }
-        .tab-btn.active {
-            background: #6366f1;
-            color: white;
-        }
+        .tab-btn.active { background: #6366f1; color: white; }
 
         .field { margin-bottom: 14px; }
         .field label {
@@ -79,7 +73,7 @@
             text-transform: uppercase;
             letter-spacing: 0.03em;
         }
-        .field input, .field select, .field textarea {
+        .field input, .field select {
             width: 100%;
             padding: 12px 14px;
             border: 1.5px solid #334155;
@@ -89,20 +83,14 @@
             background: #0f172a;
             color: #e2e8f0;
         }
-        .field input:focus, .field select:focus, .field textarea:focus {
+        .field input:focus, .field select:focus {
             outline: none;
             border-color: #6366f1;
             box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
         }
-        .field textarea { resize: vertical; min-height: 90px; font-family: monospace; font-size: 12px; }
         .field .hint { font-size: 11px; color: #64748b; margin-top: 4px; }
 
-        .quick-btns {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-bottom: 14px;
-        }
+        .quick-btns { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
         .quick-btn {
             padding: 7px 12px;
             background: #0f172a;
@@ -115,11 +103,7 @@
             color: #94a3b8;
             transition: all 0.2s;
         }
-        .quick-btn:hover {
-            background: #6366f1;
-            color: white;
-            border-color: #6366f1;
-        }
+        .quick-btn:hover { background: #6366f1; color: white; border-color: #6366f1; }
 
         .btn {
             width: 100%;
@@ -138,10 +122,7 @@
         .btn:hover { opacity: 0.9; }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        .btn-secondary {
-            background: #0f172a;
-            border: 1.5px solid #334155;
-        }
+        .btn-secondary { background: #0f172a; border: 1.5px solid #334155; }
         .btn-secondary:hover { border-color: #6366f1; }
 
         .loader { display: none; text-align: center; padding: 16px; }
@@ -178,7 +159,6 @@
             font-family: monospace;
             font-size: 11px;
         }
-
         .result pre {
             background: rgba(0,0,0,0.3);
             padding: 10px;
@@ -190,6 +170,19 @@
             white-space: pre-wrap;
             word-break: break-all;
         }
+
+        .checkout-btn {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 14px 24px;
+            background: #10b981;
+            color: white;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 15px;
+        }
+        .checkout-btn:hover { background: #059669; }
 
         .badge {
             display: inline-block;
@@ -249,9 +242,9 @@
         <span class="provider-badge">Powered by PayChangu</span>
 
         <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('health')">Health</button>
-            <button class="tab-btn" onclick="switchTab('payment')">Payment</button>
-            <button class="tab-btn" onclick="switchTab('status')">Status</button>
+            <button class="tab-btn active" onclick="switchTab(event, 'health')">Health</button>
+            <button class="tab-btn" onclick="switchTab(event, 'payment')">Payment</button>
+            <button class="tab-btn" onclick="switchTab(event, 'status')">Status</button>
         </div>
 
         <!-- HEALTH TAB -->
@@ -333,9 +326,9 @@
     // ============================================
     // Tabs
     // ============================================
-    function switchTab(tab) {
+    function switchTab(evt, tab) {
         document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
-        event.target.classList.add('active');
+        evt.target.classList.add('active');
         document.querySelectorAll('[id^="tab-"]').forEach(t => t.style.display = 'none');
         document.getElementById('tab-' + tab).style.display = 'block';
     }
@@ -352,15 +345,15 @@
             phone.value = '0995514049';
             provider.value = 'AIRTEL_MWI';
             amount.value = '100';
-            showResult('info', '📱 Airtel test loaded — tap "Send Payment"');
+            showResult('info', '📱 Airtel test loaded');
         } else if (type === 'tnm') {
             phone.value = '0888123456';
             provider.value = 'TNM_MWI';
             amount.value = '100';
-            showResult('info', '📱 TNM test loaded — tap "Send Payment"');
+            showResult('info', '📱 TNM test loaded');
         } else if (type === 'k50') {
             amount.value = '50';
-            showResult('info', '💰 K50 minimum loaded');
+            showResult('info', '💰 K50 loaded');
         } else if (type === 'k500') {
             amount.value = '500';
             showResult('info', '💰 K500 loaded');
@@ -415,17 +408,17 @@
 
             if (data.status === 'running') {
                 showResult('success',
-                    `✅ <span class="badge success">API Online</span><br><br>` +
+                    `✅ <span class="badge success">API ONLINE</span><br><br>` +
                     `<strong>Provider:</strong> <code>${escapeHtml(data.provider || 'unknown')}</code><br>` +
                     `<strong>Configured:</strong> <code>${data.configured}</code><br>` +
                     `<strong>Time:</strong> <code>${escapeHtml(data.timestamp)}</code>`
                 );
             } else {
-                showResult('error', `⚠️ Unexpected response: ${escapeHtml(stringifySafe(data))}`);
+                showResult('error', `⚠️ ${escapeHtml(stringifySafe(data))}`);
             }
         } catch (err) {
             showDebug(err.message);
-            showResult('error', `❌ <strong>API unreachable</strong><br><br>${escapeHtml(err.message)}`);
+            showResult('error', `❌ API unreachable<br><br>${escapeHtml(err.message)}`);
         } finally {
             setLoading(false);
         }
@@ -437,27 +430,25 @@
     async function checkWebhook() {
         setLoading(true);
         document.getElementById('result').className = 'result';
-        showDebug('GET /api/webhook/paychangu ...');
 
         try {
             const res = await fetch('/api/webhook/paychangu');
             const data = await res.json();
             showDebug({ status: res.status, data });
-
             showResult('success',
-                `✅ <span class="badge success">Webhook Ready</span><br><br>` +
+                `✅ <span class="badge success">WEBHOOK READY</span><br><br>` +
                 `<strong>URL:</strong><br><code>${escapeHtml(data.url || 'N/A')}</code>`
             );
         } catch (err) {
             showDebug(err.message);
-            showResult('error', `❌ Webhook check failed<br><br>${escapeHtml(err.message)}`);
+            showResult('error', `❌ ${escapeHtml(err.message)}`);
         } finally {
             setLoading(false);
         }
     }
 
     // ============================================
-    // Payment
+    // Payment Test
     // ============================================
     async function testPayment() {
         const apiKey = document.getElementById('apiKey').value.trim();
@@ -467,20 +458,15 @@
 
         document.getElementById('result').className = 'result';
 
-        if (!apiKey) return showResult('error', '❌ Enter your API key');
-        if (!apiKey.startsWith('PK_')) return showResult('error', '❌ API key must start with <code>PK_</code>');
+        if (!apiKey) return showResult('error', '❌ Enter API key');
+        if (!apiKey.startsWith('PK_')) return showResult('error', '❌ API key must start with PK_');
         if (!phone) return showResult('error', '❌ Enter a phone number');
         if (!amount || Number(amount) < 50) return showResult('error', '❌ Amount must be at least K50');
 
         setLoading(true);
         document.getElementById('payBtn').textContent = '⏳ Sending...';
 
-        const payload = {
-            apiKey: apiKey,
-            phoneNumber: phone,
-            amount: String(amount),
-            provider: provider
-        };
+        const payload = { apiKey, phoneNumber: phone, amount: String(amount), provider };
         showDebug({ request: payload });
 
         try {
@@ -494,25 +480,41 @@
             showDebug({ status: res.status, response: data });
 
             if (data.success) {
-                showResult('success',
-                    `✅ <span class="badge success">Payment Sent</span><br><br>` +
+                const checkoutUrl = data.checkoutUrl || data.data?.data?.checkout_url;
+
+                let html = `✅ <span class="badge success">PAYMENT CREATED</span><br><br>` +
                     `<strong>Reference:</strong><br><code>${escapeHtml(data.txRef || 'N/A')}</code><br><br>` +
                     `<strong>📱 Phone:</strong> ${escapeHtml(phone)}<br>` +
                     `<strong>💰 Amount:</strong> MWK ${escapeHtml(amount)}<br>` +
-                    `<strong>📡 Provider:</strong> ${provider === 'AIRTEL_MWI' ? 'Airtel Money' : 'TNM Mpamba'}<br><br>` +
-                    `<strong>🎯 Next:</strong> Check your phone for the payment prompt.`
-                );
+                    `<strong>📡 Provider:</strong> ${provider === 'AIRTEL_MWI' ? 'Airtel Money' : 'TNM Mpamba'}<br><br>`;
+
+                if (checkoutUrl) {
+                    html += `<strong>🔗 Open the checkout page to complete payment:</strong><br><br>` +
+                        `<a href="${escapeHtml(checkoutUrl)}" target="_blank" class="checkout-btn">Open Checkout →</a>` +
+                        `<br><br><small style="opacity:0.7;">Opening automatically in 2 seconds...</small>`;
+
+                    showResult('success', html);
+
+                    // Auto-open checkout
+                    setTimeout(() => {
+                        window.open(checkoutUrl, '_blank');
+                    }, 2000);
+                } else {
+                    html += `<strong>🎯 Check your phone for the payment prompt.</strong>`;
+                    showResult('success', html);
+                }
+
                 document.getElementById('txRef').value = data.txRef || '';
             } else {
                 showResult('error',
-                    `❌ <span class="badge error">Failed</span><br><br>` +
+                    `❌ <span class="badge error">FAILED</span><br><br>` +
                     `<strong>Error:</strong><br>` +
                     `<pre>${escapeHtml(stringifySafe(data.error))}</pre>`
                 );
             }
         } catch (err) {
             showDebug(err.message);
-            showResult('error', `❌ <strong>Network Error</strong><br><br>${escapeHtml(err.message)}`);
+            showResult('error', `❌ Network Error<br><br>${escapeHtml(err.message)}`);
         } finally {
             setLoading(false);
             document.getElementById('payBtn').textContent = 'Send Payment →';
@@ -536,8 +538,7 @@
 
             if (data.success) {
                 showResult('success',
-                    `✅ <span class="badge success">Status Retrieved</span><br><br>` +
-                    `<strong>Reference:</strong> <code>${escapeHtml(txRef)}</code><br>` +
+                    `✅ <span class="badge success">STATUS</span><br><br>` +
                     `<pre>${escapeHtml(stringifySafe(data.data))}</pre>`
                 );
             } else {
@@ -554,9 +555,7 @@
         }
     }
 
-    // ============================================
-    // Auto health check on load
-    // ============================================
+    // Auto health check
     window.addEventListener('load', () => {
         setTimeout(checkHealth, 400);
     });
