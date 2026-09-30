@@ -20,12 +20,9 @@
         .nav-right { display: flex; gap: 12px; align-items: center; font-size: 14px; }
         .user-email { color: #64748b; }
         .btn-logout { padding: 8px 16px; background: #f1f5f9; border-radius: 100px; font-weight: 600; font-size: 13px; }
-        .btn-logout:hover { background: #e2e8f0; }
 
         /* CONTAINER */
         .container { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
-
-        /* WELCOME */
         .welcome { margin-bottom: 28px; }
         .welcome h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 6px; }
         .welcome p { color: #64748b; font-size: 15px; }
@@ -37,12 +34,16 @@
         .stat-value { font-size: 26px; font-weight: 800; color: #0f172a; letter-spacing: -0.02em; }
         .stat-sub { font-size: 12px; color: #64748b; margin-top: 4px; }
 
-        /* SETTLEMENT CARD */
-        .settlement-card { background: linear-gradient(135deg, #0f172a, #1e1b4b); color: white; padding: 28px; border-radius: 20px; margin-bottom: 28px; }
-        .settlement-card h3 { font-size: 15px; font-weight: 600; color: rgba(255,255,255,0.7); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
-        .settlement-phone { font-size: 28px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 12px; font-family: monospace; }
-        .settlement-note { font-size: 13px; color: rgba(255,255,255,0.6); line-height: 1.6; }
-        .settlement-note strong { color: white; }
+        /* BALANCE CARD */
+        .balance-card { background: linear-gradient(135deg, #0f172a, #1e1b4b); color: white; padding: 32px; border-radius: 20px; margin-bottom: 28px; position: relative; overflow: hidden; }
+        .balance-card::before { content: ''; position: absolute; top: -100px; right: -100px; width: 300px; height: 300px; background: radial-gradient(circle, rgba(99,102,241,0.4), transparent 70%); border-radius: 50%; }
+        .balance-content { position: relative; z-index: 2; }
+        .balance-label { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+        .balance-amount { font-size: 42px; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 6px; }
+        .balance-sub { font-size: 13px; color: rgba(255,255,255,0.6); }
+        .balance-actions { margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
+        .balance-btn { padding: 12px 24px; background: white; color: #0f172a; border-radius: 100px; font-weight: 700; font-size: 14px; }
+        .balance-btn.secondary { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); }
 
         /* TABS */
         .tabs { display: flex; gap: 4px; border-bottom: 1px solid #f1f5f9; margin-bottom: 24px; overflow-x: auto; }
@@ -54,30 +55,12 @@
         .card h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
         .card p.desc { color: #64748b; font-size: 14px; margin-bottom: 16px; }
 
-        /* API KEY BOX */
-        .key-box { background: #f8fafc; padding: 16px; border-radius: 12px; font-family: monospace; font-size: 13px; word-break: break-all; position: relative; border: 1px dashed #cbd5e1; min-height: 56px; display: flex; align-items: center; }
-        .key-text { flex: 1; padding-right: 90px; }
-        .key-actions { position: absolute; top: 12px; right: 12px; display: flex; gap: 6px; }
-        .key-btn { padding: 6px 12px; background: #0f172a; color: white; border-radius: 8px; font-size: 11px; font-weight: 600; }
-        .key-btn:hover { background: #020617; }
-        .key-btn.danger { background: #dc2626; }
-        .key-btn.danger:hover { background: #b91c1c; }
-        .key-btn.revoke { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
-        .key-btn.revoke:hover { background: #fee2e2; }
-
-        .key-empty { text-align: center; padding: 24px; color: #94a3b8; }
-        .key-empty button { margin-top: 12px; padding: 12px 24px; background: #0f172a; color: white; border-radius: 10px; font-weight: 700; font-size: 14px; }
-        .key-empty button:hover { background: #020617; }
-
-        .key-meta { font-size: 12px; color: #94a3b8; margin-top: 12px; }
-        .key-warning { background: #fef3c7; border: 1px solid #fde68a; color: #92400e; padding: 12px 16px; border-radius: 10px; font-size: 13px; margin-top: 16px; }
-
         /* TABLE */
         table { width: 100%; border-collapse: collapse; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
         th { color: #64748b; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
         tr:last-child td { border-bottom: none; }
-        .badge { padding: 4px 10px; border-radius: 100px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; }
+        .badge { padding: 4px 10px; border-radius: 100px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
         .badge.success { background: #ecfdf5; color: #065f46; }
         .badge.pending { background: #fef3c7; color: #92400e; }
         .badge.failed { background: #fef2f2; color: #991b1b; }
@@ -86,11 +69,22 @@
         /* FORM */
         .field { margin-bottom: 16px; }
         .field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #334155; }
-        .field input { width: 100%; padding: 12px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 15px; background: #f8fafc; font-family: inherit; }
-        .field input:focus { outline: none; border-color: #6366f1; background: white; box-shadow: 0 0 0 4px rgba(99,102,241,0.1); }
-        .field small { color: #94a3b8; font-size: 12px; margin-top: 4px; display: block; }
+        .field input, .field select, .field textarea { width: 100%; padding: 12px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 15px; background: #f8fafc; font-family: inherit; }
+        .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: #6366f1; background: white; box-shadow: 0 0 0 4px rgba(99,102,241,0.1); }
+        .field textarea { resize: vertical; min-height: 80px; }
         .btn-primary { padding: 12px 24px; background: #0f172a; color: white; border-radius: 10px; font-weight: 700; font-size: 14px; }
         .btn-primary:hover { background: #020617; }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* KEY BOX */
+        .key-box { background: #f8fafc; padding: 16px; border-radius: 12px; font-family: monospace; font-size: 13px; word-break: break-all; position: relative; border: 1px dashed #cbd5e1; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+        .key-actions { display: flex; gap: 6px; }
+        .key-btn { padding: 6px 12px; background: #0f172a; color: white; border-radius: 8px; font-size: 11px; font-weight: 600; }
+        .key-btn.danger { background: #dc2626; }
+        .key-warning { background: #fef3c7; border: 1px solid #fde68a; color: #92400e; padding: 12px 16px; border-radius: 10px; font-size: 13px; margin-top: 16px; }
+
+        /* PAYMENT LINK */
+        .link-preview { background: #f8fafc; padding: 14px; border-radius: 10px; font-family: monospace; font-size: 13px; word-break: break-all; margin-top: 12px; border: 1px dashed #cbd5e1; }
 
         /* AUTH MODAL */
         .auth-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.85); backdrop-filter: blur(8px); z-index: 9999; display: none; align-items: center; justify-content: center; padding: 20px; }
@@ -100,7 +94,6 @@
         .auth-card h2 { font-size: 24px; font-weight: 800; text-align: center; margin-bottom: 6px; }
         .auth-card .sub { text-align: center; color: #64748b; font-size: 14px; margin-bottom: 28px; }
         .auth-btn { width: 100%; padding: 15px; background: #0f172a; color: white; border-radius: 12px; font-weight: 700; font-size: 15px; margin-top: 8px; }
-        .auth-btn:hover { background: #020617; }
         .auth-btn:disabled { opacity: 0.6; cursor: not-allowed; }
         .auth-switch { text-align: center; margin-top: 20px; font-size: 14px; color: #64748b; }
         .auth-switch a { color: #6366f1; font-weight: 600; cursor: pointer; }
@@ -115,9 +108,7 @@
         @media (max-width: 640px) {
             .stats { grid-template-columns: 1fr 1fr; }
             .user-email { display: none; }
-            .settlement-phone { font-size: 22px; }
-            .key-actions { position: static; margin-top: 12px; justify-content: flex-end; }
-            .key-text { padding-right: 0; }
+            .balance-amount { font-size: 32px; }
             .key-box { flex-direction: column; align-items: stretch; }
         }
     </style>
@@ -137,9 +128,23 @@
 <div class="container">
     <div class="welcome">
         <h1 id="welcomeTitle">Welcome back 👋</h1>
-        <p>Here's what's happening with your account.</p>
+        <p>Manage your payments, links, and balance.</p>
     </div>
 
+    <!-- BALANCE CARD -->
+    <div class="balance-card">
+        <div class="balance-content">
+            <div class="balance-label">Available Balance</div>
+            <div class="balance-amount" id="balanceAmount">MWK 0.00</div>
+            <div class="balance-sub">After 2% platform fee · Updated in real-time</div>
+            <div class="balance-actions">
+                <button class="balance-btn" onclick="openWithdraw()">💸 Withdraw</button>
+                <button class="balance-btn secondary" onclick="switchTabById('links')">🔗 Create Link</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- STATS -->
     <div class="stats">
         <div class="stat">
             <div class="stat-label">Total Received</div>
@@ -149,76 +154,108 @@
         <div class="stat">
             <div class="stat-label">This Month</div>
             <div class="stat-value" id="monthAmount">MWK 0</div>
-            <div class="stat-sub">Settled to your phone</div>
+            <div class="stat-sub">Last 30 days</div>
         </div>
         <div class="stat">
-            <div class="stat-label">Success Rate</div>
-            <div class="stat-value" id="successRate">—</div>
-            <div class="stat-sub">All time</div>
+            <div class="stat-label">Fees Paid</div>
+            <div class="stat-value" id="feesPaid">MWK 0</div>
+            <div class="stat-sub">2% per transaction</div>
         </div>
     </div>
 
-    <div class="settlement-card">
-        <h3>💸 Money settles to</h3>
-        <div class="settlement-phone" id="settlementPhone">⚠️ Not configured</div>
-        <div class="settlement-note">
-            All payments are automatically settled to this mobile money number.<br/>
-            <strong>No manual withdrawal needed</strong> — money arrives on T+1 (next business day).
-        </div>
-    </div>
-
+    <!-- TABS -->
     <div class="tabs">
-        <button class="tab active" onclick="switchTab(this, 'api')">API Keys</button>
-        <button class="tab" onclick="switchTab(this, 'transactions')">Transactions</button>
+        <button class="tab active" onclick="switchTab(this, 'transactions')">Transactions</button>
+        <button class="tab" onclick="switchTab(this, 'links')">Payment Links</button>
+        <button class="tab" onclick="switchTab(this, 'api')">API Keys</button>
         <button class="tab" onclick="switchTab(this, 'settings')">Settings</button>
     </div>
 
-    <!-- API KEYS TAB -->
-    <div id="tab-api" class="card">
-        <h3>API Key</h3>
-        <p class="desc">Use this key to authenticate requests to <code>/api/payment</code>. Keep it secret.</p>
-
-        <div id="apiKeyBox"></div>
-
-        <div class="key-warning" id="keyWarning" style="display:none;">
-            ⚠️ <strong>Revoking will immediately break your integration.</strong> Any app using this key will stop working. You'll need to generate a new one and update your code.
-        </div>
-    </div>
-
-    <!-- TRANSACTIONS TAB -->
-    <div id="tab-transactions" class="card" style="display:none;">
+    <!-- TRANSACTIONS -->
+    <div id="tab-transactions" class="card">
         <h3>Recent Transactions</h3>
-        <p class="desc">Live updates as payments arrive.</p>
+        <p class="desc">Stored for 3 months, then automatically deleted.</p>
         <table>
             <thead>
                 <tr>
                     <th>Date</th>
                     <th>Phone</th>
                     <th>Amount</th>
-                    <th>Provider</th>
+                    <th>Fee</th>
+                    <th>You Receive</th>
                     <th>Status</th>
                 </tr>
             </thead>
             <tbody id="txnTable">
-                <tr><td colspan="5" class="empty">Loading...</td></tr>
+                <tr><td colspan="6" class="empty">Loading...</td></tr>
             </tbody>
         </table>
     </div>
 
-    <!-- SETTINGS TAB -->
+    <!-- PAYMENT LINKS -->
+    <div id="tab-links" class="card" style="display:none;">
+        <h3>Create Payment Link</h3>
+        <p class="desc">Share this link with customers to collect payments — no code required.</p>
+
+        <div class="field">
+            <label>Amount (MWK)</label>
+            <input type="number" id="linkAmount" placeholder="1000" min="50" />
+        </div>
+        <div class="field">
+            <label>Description</label>
+            <input type="text" id="linkDesc" placeholder="e.g., School fees, Order #123" />
+        </div>
+        <button class="btn-primary" id="createLinkBtn" onclick="createPaymentLink()">Generate Link</button>
+
+        <div id="linkResult"></div>
+    </div>
+
+    <!-- API KEYS -->
+    <div id="tab-api" class="card" style="display:none;">
+        <h3>Your API Key</h3>
+        <p class="desc">Use this key to integrate PayKwacha into your app.</p>
+        <div id="apiKeyBox"></div>
+        <div class="key-warning" id="keyWarning" style="display:none;">
+            ⚠️ Revoking will break any app using this key.
+        </div>
+    </div>
+
+    <!-- SETTINGS -->
     <div id="tab-settings" class="card" style="display:none;">
         <h3>Account Settings</h3>
-        <p class="desc">Configure where your money is settled.</p>
+        <p class="desc">Configure where your money is withdrawn to.</p>
         <div class="field">
             <label>Business Name</label>
             <input type="text" id="settingsBusiness" placeholder="e.g., Mlimi Store" />
         </div>
         <div class="field">
-            <label>Settlement Phone Number</label>
-            <input type="tel" id="settingsPhone" placeholder="e.g., 0995514049" />
-            <small>Payments will be settled to this Airtel/TNM number</small>
+            <label>Withdrawal Phone (Airtel/TNM)</label>
+            <input type="tel" id="settingsPhone" placeholder="0995514049" />
         </div>
         <button class="btn-primary" onclick="saveSettings()">Save Settings</button>
+    </div>
+</div>
+
+<!-- WITHDRAWAL MODAL -->
+<div class="auth-overlay" id="withdrawOverlay">
+    <div class="auth-card">
+        <h2>Withdraw Funds</h2>
+        <p class="sub">Money will be sent to your PayChangu account and settled to your mobile wallet.</p>
+        <div class="field">
+            <label>Amount (MWK)</label>
+            <input type="number" id="withdrawAmount" placeholder="0.00" />
+        </div>
+        <div class="field">
+            <label>Withdrawal Method</label>
+            <select id="withdrawMethod">
+                <option value="AIRTEL_MWI">Airtel Money</option>
+                <option value="TNM_MWI">TNM Mpamba</option>
+            </select>
+        </div>
+        <button class="auth-btn" onclick="confirmWithdraw()">Confirm Withdrawal</button>
+        <div class="auth-switch">
+            <a onclick="closeWithdraw()">Cancel</a>
+        </div>
     </div>
 </div>
 
@@ -231,11 +268,11 @@
 
         <div class="field">
             <label>Email</label>
-            <input type="email" id="authEmail" placeholder="you@business.com" autocomplete="email" />
+            <input type="email" id="authEmail" placeholder="you@business.com" />
         </div>
         <div class="field">
             <label>Password</label>
-            <input type="password" id="authPassword" placeholder="••••••••" autocomplete="current-password" />
+            <input type="password" id="authPassword" placeholder="••••••••" />
         </div>
 
         <button class="auth-btn" id="authBtn" onclick="handleAuth()">Sign In</button>
@@ -257,7 +294,7 @@
 
 <script>
     // ============================================
-    // 🔥 Firebase Init
+    // 🔥 Firebase
     // ============================================
     const firebaseConfig = {
         apiKey: "AIzaSyBY_Ea_o2x6QJupbc4M2K_ES7G0D8XuvEc",
@@ -277,7 +314,7 @@
     let unsubscribeTxns = null;
 
     // ============================================
-    // 🔐 Auth State
+    // 🔐 Auth
     // ============================================
     auth.onAuthStateChanged(async (user) => {
         if (user) {
@@ -290,14 +327,10 @@
         } else {
             currentUser = null;
             document.getElementById('authOverlay').classList.add('active');
-            document.getElementById('txnTable').innerHTML = '<tr><td colspan="5" class="empty">Sign in to view transactions</td></tr>';
             if (unsubscribeTxns) unsubscribeTxns();
         }
     });
 
-    // ============================================
-    // 🔐 Sign In / Sign Up
-    // ============================================
     async function handleAuth() {
         const email = document.getElementById('authEmail').value.trim();
         const password = document.getElementById('authPassword').value;
@@ -305,8 +338,6 @@
         const err = document.getElementById('authError');
 
         err.classList.remove('show');
-        err.textContent = '';
-
         if (!email || !password) {
             err.textContent = 'Please fill in all fields';
             err.classList.add('show');
@@ -319,7 +350,7 @@
         }
 
         btn.disabled = true;
-        btn.textContent = authMode === 'signin' ? 'Signing in...' : 'Creating account...';
+        btn.textContent = authMode === 'signin' ? 'Signing in...' : 'Creating...';
 
         try {
             if (authMode === 'signin') {
@@ -330,19 +361,20 @@
                     email: email,
                     apiKey: generateApiKey(),
                     apiKeyCreatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    settlementPhone: '',
+                    balance: 0,
+                    totalReceived: 0,
+                    totalFees: 0,
                     businessName: '',
+                    settlementPhone: '',
                     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                     status: 'active'
                 });
             }
         } catch (error) {
             let msg = error.message;
-            if (error.code === 'auth/user-not-found') msg = 'No account found with this email.';
+            if (error.code === 'auth/user-not-found') msg = 'No account found.';
             if (error.code === 'auth/wrong-password') msg = 'Incorrect password.';
-            if (error.code === 'auth/email-already-in-use') msg = 'This email is already registered. Sign in instead.';
-            if (error.code === 'auth/weak-password') msg = 'Password is too weak.';
-            if (error.code === 'auth/invalid-email') msg = 'Invalid email address.';
+            if (error.code === 'auth/email-already-in-use') msg = 'Email already registered.';
             err.textContent = msg;
             err.classList.add('show');
         } finally {
@@ -355,7 +387,7 @@
         e.preventDefault();
         authMode = authMode === 'signin' ? 'signup' : 'signin';
         document.getElementById('authTitle').textContent = authMode === 'signin' ? 'Welcome back' : 'Create your account';
-        document.getElementById('authSub').textContent = authMode === 'signin' ? 'Sign in to your PayKwacha account' : 'Get started in under 2 minutes';
+        document.getElementById('authSub').textContent = authMode === 'signin' ? 'Sign in to your account' : 'Get started in 2 minutes';
         document.getElementById('authBtn').textContent = authMode === 'signin' ? 'Sign In' : 'Create Account';
         document.getElementById('switchText').textContent = authMode === 'signin' ? 'New to PayKwacha?' : 'Already have an account?';
         document.getElementById('switchLink').textContent = authMode === 'signin' ? 'Create an account' : 'Sign in';
@@ -365,91 +397,6 @@
     function logout() { auth.signOut(); }
 
     // ============================================
-    // 🔑 API Key Management
-    // ============================================
-    function generateApiKey() {
-        // Format: PK_<timestamp>_<random 8 chars>
-        const timestamp = Date.now();
-        const random = Math.random().toString(36).substring(2, 10).toUpperCase();
-        return `PK_${timestamp}_${random}`;
-    }
-
-    function renderApiKeyBox() {
-        const box = document.getElementById('apiKeyBox');
-        const warning = document.getElementById('keyWarning');
-
-        if (userData.apiKey) {
-            box.innerHTML = `
-                <div class="key-box">
-                    <div class="key-text">${escapeHtml(userData.apiKey)}</div>
-                    <div class="key-actions">
-                        <button class="key-btn" onclick="copyApiKey()">Copy</button>
-                        <button class="key-btn revoke" onclick="showRevokeConfirm()">Revoke</button>
-                    </div>
-                </div>
-                <div class="key-meta">
-                    Created: ${formatDate(userData.apiKeyCreatedAt)}
-                </div>
-            `;
-            warning.style.display = 'none';
-        } else {
-            box.innerHTML = `
-                <div class="key-box">
-                    <div class="key-empty">
-                        <div style="font-size: 40px; margin-bottom: 12px;">🔑</div>
-                        <div style="font-weight: 600; color: #334155;">No API key yet</div>
-                        <div style="font-size: 13px; margin-top: 4px;">Generate one to start accepting payments</div>
-                        <button onclick="generateNewKey()">Generate API Key</button>
-                    </div>
-                </div>
-            `;
-            warning.style.display = 'none';
-        }
-    }
-
-    async function generateNewKey() {
-        const newKey = generateApiKey();
-        try {
-            await db.collection('businesses').doc(currentUser.uid).update({
-                apiKey: newKey,
-                apiKeyCreatedAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            userData.apiKey = newKey;
-            userData.apiKeyCreatedAt = new Date();
-            renderApiKeyBox();
-            showToast('✅ New API key generated');
-        } catch (err) {
-            showToast('Failed to generate key', true);
-        }
-    }
-
-    function copyApiKey() {
-        navigator.clipboard.writeText(userData.apiKey);
-        showToast('📋 API key copied');
-    }
-
-    function showRevokeConfirm() {
-        if (!confirm('⚠️ Are you sure you want to revoke this API key?\n\nAny application using this key will immediately stop working. This cannot be undone.')) {
-            return;
-        }
-        revokeKey();
-    }
-
-    async function revokeKey() {
-        try {
-            await db.collection('businesses').doc(currentUser.uid).update({
-                apiKey: null,
-                apiKeyRevokedAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            userData.apiKey = null;
-            renderApiKeyBox();
-            showToast('🔒 API key revoked');
-        } catch (err) {
-            showToast('Failed to revoke key', true);
-        }
-    }
-
-    // ============================================
     // 📊 Load User Data
     // ============================================
     async function loadUserData() {
@@ -457,13 +404,15 @@
         if (doc.exists) {
             userData = doc.data();
         } else {
-            // Auto-create if missing
             const newData = {
                 email: currentUser.email,
                 apiKey: generateApiKey(),
                 apiKeyCreatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-                settlementPhone: '',
+                balance: 0,
+                totalReceived: 0,
+                totalFees: 0,
                 businessName: '',
+                settlementPhone: '',
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                 status: 'active'
             };
@@ -471,22 +420,21 @@
             userData = newData;
         }
 
-        renderApiKeyBox();
+        document.getElementById('balanceAmount').textContent = `MWK ${(userData.balance || 0).toLocaleString()}`;
         document.getElementById('settingsBusiness').value = userData.businessName || '';
         document.getElementById('settingsPhone').value = userData.settlementPhone || '';
-        document.getElementById('settlementPhone').textContent =
-            userData.settlementPhone || '⚠️ Set in Settings';
+        renderApiKeyBox();
     }
 
     // ============================================
-    // 📡 Transactions (real-time)
+    // 📡 Transactions
     // ============================================
     function listenToTransactions() {
         if (unsubscribeTxns) unsubscribeTxns();
 
         unsubscribeTxns = db.collection('transactions')
             .where('userId', '==', currentUser.uid)
-            .limit(50)
+            .limit(100)
             .onSnapshot((snapshot) => {
                 const txns = [];
                 snapshot.forEach(doc => txns.push({ id: doc.id, ...doc.data() }));
@@ -503,23 +451,26 @@
         const tbody = document.getElementById('txnTable');
 
         if (txns.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" class="empty">No transactions yet. Share your API key to start receiving payments.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="6" class="empty">No transactions yet.</td></tr>';
             document.getElementById('totalAmount').textContent = 'MWK 0';
             document.getElementById('totalCount').textContent = '0 transactions';
             document.getElementById('monthAmount').textContent = 'MWK 0';
-            document.getElementById('successRate').textContent = '—';
+            document.getElementById('feesPaid').textContent = 'MWK 0';
             return;
         }
 
-        let total = 0, success = 0, monthTotal = 0;
+        let total = 0, success = 0, monthTotal = 0, totalFees = 0;
         const now = new Date();
         const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
 
         tbody.innerHTML = txns.map(t => {
             const amt = t.amount || 0;
+            const fee = t.platformFee || (amt * 0.02);
+            const net = t.merchantReceives || (amt - fee);
             const created = t.createdAt?.toDate?.() || null;
             if (t.status === 'SUCCESS') {
                 total += amt;
+                totalFees += fee;
                 success++;
                 if (created && created >= monthStart) monthTotal += amt;
             }
@@ -530,7 +481,8 @@
                     <td>${date}</td>
                     <td>${escapeHtml(t.phoneNumber || '—')}</td>
                     <td><strong>MWK ${amt.toLocaleString()}</strong></td>
-                    <td>${t.provider === 'AIRTEL_MWI' ? 'Airtel' : t.provider === 'TNM_MWI' ? 'TNM' : '—'}</td>
+                    <td style="color:#dc2626;">−MWK ${Math.round(fee).toLocaleString()}</td>
+                    <td style="color:#059669;"><strong>MWK ${Math.round(net).toLocaleString()}</strong></td>
                     <td><span class="badge ${badgeClass}">${t.status}</span></td>
                 </tr>
             `;
@@ -539,28 +491,179 @@
         document.getElementById('totalAmount').textContent = `MWK ${total.toLocaleString()}`;
         document.getElementById('totalCount').textContent = `${txns.length} transactions`;
         document.getElementById('monthAmount').textContent = `MWK ${monthTotal.toLocaleString()}`;
-        document.getElementById('successRate').textContent = `${Math.round((success / txns.length) * 100)}%`;
+        document.getElementById('feesPaid').textContent = `MWK ${Math.round(totalFees).toLocaleString()}`;
+    }
+
+    // ============================================
+    // 🔑 API Key Management
+    // ============================================
+    function generateApiKey() {
+        const ts = Date.now();
+        const rand = Math.random().toString(36).substring(2, 10).toUpperCase();
+        return `PK_${ts}_${rand}`;
+    }
+
+    function renderApiKeyBox() {
+        const box = document.getElementById('apiKeyBox');
+        if (userData.apiKey) {
+            box.innerHTML = `
+                <div class="key-box">
+                    <span>${escapeHtml(userData.apiKey)}</span>
+                    <div class="key-actions">
+                        <button class="key-btn" onclick="copyApiKey()">Copy</button>
+                        <button class="key-btn danger" onclick="revokeKey()">Revoke</button>
+                    </div>
+                </div>
+            `;
+        } else {
+            box.innerHTML = `
+                <div class="key-box" style="justify-content:center; padding: 32px;">
+                    <button class="btn-primary" onclick="generateNewKey()">Generate API Key</button>
+                </div>
+            `;
+        }
+    }
+
+    async function generateNewKey() {
+        const newKey = generateApiKey();
+        await db.collection('businesses').doc(currentUser.uid).update({
+            apiKey: newKey,
+            apiKeyCreatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        userData.apiKey = newKey;
+        renderApiKeyBox();
+        showToast('✅ New API key generated');
+    }
+
+    function copyApiKey() {
+        navigator.clipboard.writeText(userData.apiKey);
+        showToast('📋 API key copied');
+    }
+
+    async function revokeKey() {
+        if (!confirm('⚠️ Revoke this API key? Apps using it will stop working.')) return;
+        await db.collection('businesses').doc(currentUser.uid).update({
+            apiKey: null,
+            apiKeyRevokedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        userData.apiKey = null;
+        renderApiKeyBox();
+        showToast('🔒 API key revoked');
+    }
+
+    // ============================================
+    // 🔗 Payment Links
+    // ============================================
+    async function createPaymentLink() {
+        const amount = document.getElementById('linkAmount').value.trim();
+        const desc = document.getElementById('linkDesc').value.trim();
+
+        if (!amount || Number(amount) < 50) {
+            showToast('Amount must be at least K50', true);
+            return;
+        }
+
+        const btn = document.getElementById('createLinkBtn');
+        btn.disabled = true;
+        btn.textContent = 'Creating...';
+
+        try {
+            const linkId = Math.random().toString(36).substring(2, 10);
+            const link = `https://pay-kwacha.vercel.app/pay/${linkId}`;
+
+            await db.collection('paymentLinks').doc(linkId).set({
+                linkId,
+                userId: currentUser.uid,
+                merchantName: userData.businessName || currentUser.email,
+                amount: Number(amount),
+                description: desc,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                active: true
+            });
+
+            document.getElementById('linkResult').innerHTML = `
+                <div class="link-preview">
+                    <strong>Share this link:</strong><br>
+                    <a href="${link}" target="_blank">${link}</a>
+                </div>
+                <button class="btn-primary" style="margin-top:12px;" onclick="copyLink('${link}')">Copy Link</button>
+                <button class="btn-primary" style="margin-top:12px; background:#25D366;" onclick="shareWhatsApp('${link}','${amount}')">Share on WhatsApp</button>
+            `;
+
+            document.getElementById('linkAmount').value = '';
+            document.getElementById('linkDesc').value = '';
+            showToast('✅ Payment link created');
+        } catch (err) {
+            showToast('Failed to create link', true);
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Generate Link';
+        }
+    }
+
+    function copyLink(link) {
+        navigator.clipboard.writeText(link);
+        showToast('📋 Link copied');
+    }
+
+    function shareWhatsApp(link, amount) {
+        const text = encodeURIComponent(`Pay MWK ${amount} via PayKwacha: ${link}`);
+        window.open(`https://wa.me/?text=${text}`, '_blank');
+    }
+
+    // ============================================
+    // 💸 Withdrawals
+    // ============================================
+    function openWithdraw() {
+        document.getElementById('withdrawOverlay').classList.add('active');
+    }
+
+    function closeWithdraw() {
+        document.getElementById('withdrawOverlay').classList.remove('active');
+    }
+
+    async function confirmWithdraw() {
+        const amount = Number(document.getElementById('withdrawAmount').value);
+        const method = document.getElementById('withdrawMethod').value;
+
+        if (!amount || amount < 100) {
+            showToast('Minimum withdrawal is K100', true);
+            return;
+        }
+
+        if (amount > (userData.balance || 0)) {
+            showToast('Amount exceeds your balance', true);
+            return;
+        }
+
+        if (!userData.settlementPhone) {
+            showToast('Set your withdrawal phone in Settings first', true);
+            return;
+        }
+
+        // Save withdrawal request
+        await db.collection('withdrawals').add({
+            userId: currentUser.uid,
+            amount,
+            method,
+            phone: userData.settlementPhone,
+            status: 'pending',
+            requestedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        showToast('✅ Withdrawal requested — processing...');
+        closeWithdraw();
     }
 
     // ============================================
     // ⚙️ Settings
     // ============================================
     async function saveSettings() {
-        const businessName = document.getElementById('settingsBusiness').value.trim();
-        const settlementPhone = document.getElementById('settingsPhone').value.trim();
-
-        try {
-            await db.collection('businesses').doc(currentUser.uid).update({
-                businessName,
-                settlementPhone
-            });
-            userData.businessName = businessName;
-            userData.settlementPhone = settlementPhone;
-            document.getElementById('settlementPhone').textContent = settlementPhone || '⚠️ Set in Settings';
-            showToast('✅ Settings saved');
-        } catch (err) {
-            showToast('Failed to save', true);
-        }
+        await db.collection('businesses').doc(currentUser.uid).update({
+            businessName: document.getElementById('settingsBusiness').value.trim(),
+            settlementPhone: document.getElementById('settingsPhone').value.trim()
+        });
+        showToast('✅ Settings saved');
     }
 
     // ============================================
@@ -573,19 +676,17 @@
         document.getElementById('tab-' + tab).style.display = 'block';
     }
 
+    function switchTabById(tab) {
+        const idx = ['transactions', 'links', 'api', 'settings'].indexOf(tab);
+        const btn = document.querySelectorAll('.tab')[idx];
+        if (btn) btn.click();
+    }
+
     // ============================================
     // 🎨 Helpers
     // ============================================
     function escapeHtml(str) {
         return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-    }
-
-    function formatDate(ts) {
-        if (!ts) return 'Just now';
-        if (ts.toDate) ts = ts.toDate();
-        else if (typeof ts === 'string') ts = new Date(ts);
-        if (!(ts instanceof Date) || isNaN(ts)) return 'Just now';
-        return ts.toLocaleDateString() + ' ' + ts.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
     }
 
     function showToast(msg, isError) {
@@ -595,7 +696,6 @@
         setTimeout(() => toast.className = 'toast', 2500);
     }
 
-    // Enter key support
     document.getElementById('authPassword').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') handleAuth();
     });
