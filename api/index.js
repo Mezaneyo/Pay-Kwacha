@@ -2,18 +2,42 @@
 const express = require('express');
 const axios = require('axios');
 const crypto = require('crypto');
+const admin = require('firebase-admin');
 
 const app = express();
 app.use(express.json());
 
 // ============================================
-// 🔑 PayChangu Config
+// 🔑 Config
 // ============================================
 const PAYCHANGU_SECRET = process.env.PAYCHANGU_SECRET_KEY;
 const PAYCHANGU_URL = 'https://api.paychangu.com';
+const PLATFORM_FEE_PERCENT = 2;
+const TRANSACTION_RETENTION_DAYS = 90; // 3 months
 
 // ============================================
-// 🏠 Health Check
+// 🔥 Firebase Admin Init (safe)
+// ============================================
+let db = null;
+try {
+    if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+        const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+        if (!admin.apps.length) {
+            admin.initializeApp({
+                credential: admin.credential.cert(serviceAccount)
+            });
+        }
+        db = admin.firestore();
+        console.log('✅ Firebase Admin initialized');
+    } else {
+        console.log('⚠️ FIREBASE_SERVICE_ACCOUNT not set — webhook writes disabled');
+    }
+} catch (err) {
+    console.error('❌ Firebase Admin init failed:', err.message);
+}
+
+// ============================================
+// 🏠 Health
 // ============================================
 app.get('/api', (req, res) => {
     res.json({
@@ -21,43 +45,37 @@ app.get('/api', (req, res) => {
         status: 'running',
         provider: 'PayChangu',
         configured: !!PAYCHANGU_SECRET,
+        firebase: db ? 'connected' : 'not configured',
+        feePercent: PLATFORM_FEE_PERCENT,
+        retentionDays: TRANSACTION_RETENTION_DAYS,
         timestamp: new Date().toISOString()
     });
 });
 
 // ============================================
-// 💸 Initiate Payment (Standard Checkout)
+// 💸 Initiate Payment
 // ============================================
 app.post('/api/payment', async (req, res) => {
     if (!PAYCHANGU_SECRET) {
-        return res.status(500).json({
-            success: false,
-            error: 'Payment not configured. PAYCHANGU_SECRET_KEY missing.'
-        });
+        return res.status(500).json({ success: false, error: 'Not configured' });
     }
 
-    const { phoneNumber, amount, provider, email } = req.body;
+    const { phoneNumber, amount, provider, email, merchantUserId } = req.body;
 
     if (!phoneNumber || !amount) {
-        return res.status(400).json({
-            success: false,
-            error: 'Phone number and amount are required'
-        });
+        return res.status(400).json({ success: false, error: 'Phone and amount required' });
     }
 
-    // Normalize phone to 0XXXXXXXXX
     let cleanPhone = String(phoneNumber).replace(/\s/g, '').replace('+', '');
-    if (cleanPhone.startsWith('265')) {
-        cleanPhone = '0' + cleanPhone.substring(3);
-    } else if (!cleanPhone.startsWith('0')) {
-        cleanPhone = '0' + cleanPhone;
-    }
+    if (cleanPhone.startsWith('265')) cleanPhone = '0' + cleanPhone.substring(3);
+    else if (!cleanPhone.startsWith('0')) cleanPhone = '0' + cleanPhone;
+
+    const amountNum = Number(amount);
+    const platformFee = Math.round(amountNum * (PLATFORM_FEE_PERCENT / 100) * 100) / 100;
+    const merchantReceives = amountNum - platformFee;
 
     const txRef = `PAY-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`;
 
-    // ============================================
-    // Standard Checkout payload
-    // ============================================
     const payload = {
         amount: String(amount),
         currency: 'MWK',
@@ -73,12 +91,12 @@ app.post('/api/payment', async (req, res) => {
         },
         meta: {
             phone: cleanPhone,
-            provider: provider || 'AIRTEL_MWI'
+            provider: provider || 'AIRTEL_MWI',
+            merchantUserId: merchantUserId || 'unknown',
+            platformFee: String(platformFee),
+            merchantReceives: String(merchantReceives)
         }
     };
-
-    console.log('=== Sending to PayChangu ===');
-    console.log('Payload:', JSON.stringify(payload, null, 2));
 
     try {
         const response = await axios.post(
@@ -87,65 +105,133 @@ app.post('/api/payment', async (req, res) => {
             {
                 headers: {
                     'Authorization': `Bearer ${PAYCHANGU_SECRET}`,
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
+                    'Content-Type': 'application/json'
                 },
                 timeout: 30000
             }
         );
 
-        console.log('=== PayChangu Success ===');
-        console.log(JSON.stringify(response.data, null, 2));
-
-        // Extract checkout URL from multiple possible response paths
         const checkoutUrl =
             response.data?.data?.checkout_url ||
             response.data?.checkout_url ||
-            response.data?.data?.data?.checkout_url ||
             null;
+
+        // Save pending transaction to Firestore
+        if (db && merchantUserId && merchantUserId !== 'unknown') {
+            const ttlDate = new Date();
+            ttlDate.setDate(ttlDate.getDate() + TRANSACTION_RETENTION_DAYS);
+
+            await db.collection('transactions').doc(txRef).set({
+                txRef,
+                userId: merchantUserId,
+                phoneNumber: cleanPhone,
+                amount: amountNum,
+                platformFee,
+                merchantReceives,
+                provider: provider || 'AIRTEL_MWI',
+                status: 'PENDING',
+                createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                expireAt: admin.firestore.Timestamp.fromDate(ttlDate)
+            });
+        }
 
         res.json({
             success: true,
-            txRef: txRef,
-            checkoutUrl: checkoutUrl,
-            data: response.data,
-            message: `Payment request created for ${phoneNumber}`
+            txRef,
+            checkoutUrl,
+            platformFee,
+            merchantReceives,
+            amount: amountNum,
+            data: response.data
         });
 
     } catch (error) {
-        console.error('=== PayChangu Error ===');
-        console.error('Status:', error.response?.status);
-        console.error('Data:', JSON.stringify(error.response?.data, null, 2));
-
         const pcResponse = error.response?.data;
-        let errorMessage = 'Payment failed';
-
-        if (pcResponse) {
-            if (typeof pcResponse === 'string') errorMessage = pcResponse;
-            else if (pcResponse.message) errorMessage = pcResponse.message;
-            else if (pcResponse.error) errorMessage = pcResponse.error;
-            else errorMessage = JSON.stringify(pcResponse);
-        } else if (error.message) {
-            errorMessage = error.message;
-        }
-
         res.status(500).json({
             success: false,
-            error: errorMessage,
-            paychanguStatus: error.response?.status || null,
-            paychanguRaw: pcResponse || null,
-            requestSent: {
-                txRef: txRef,
-                phoneNumber: cleanPhone,
-                amount: amount,
-                provider: provider || 'AIRTEL_MWI'
-            }
+            error: pcResponse?.message || pcResponse?.error || error.message,
+            raw: pcResponse
         });
     }
 });
 
 // ============================================
-// 🔍 Verify Payment Status
+// 🔔 PayChangu Webhook (updates Firestore)
+// ============================================
+app.post('/api/webhook/paychangu', async (req, res) => {
+    console.log('=== PayChangu Webhook ===');
+    console.log(JSON.stringify(req.body, null, 2));
+
+    const body = req.body || {};
+    const txRef = body.tx_ref || body.data?.tx_ref;
+    const status = body.status || body.data?.status;
+    const amount = Number(body.amount || body.data?.amount || 0);
+
+    // Respond quickly (PayChangu expects fast 200)
+    res.status(200).json({ received: true });
+
+    // Then process async
+    if (!db || !txRef) {
+        console.log('⚠️ Skipping Firestore update (no DB or txRef)');
+        return;
+    }
+
+    try {
+        const txnRef = db.collection('transactions').doc(txRef);
+        const txnDoc = await txnRef.get();
+
+        if (!txnDoc.exists) {
+            console.log(`⚠️ Transaction ${txRef} not found in Firestore`);
+            return;
+        }
+
+        const txnData = txnDoc.data();
+        const userId = txnData.userId;
+        const platformFee = txnData.platformFee || (amount * 0.02);
+        const merchantReceives = txnData.merchantReceives || (amount - platformFee);
+
+        // Map PayChangu status → our status
+        let finalStatus = 'PENDING';
+        if (status === 'success' || status === 'successful' || status === 'completed') {
+            finalStatus = 'SUCCESS';
+        } else if (status === 'failed' || status === 'cancelled') {
+            finalStatus = 'FAILED';
+        }
+
+        // Update transaction
+        await txnRef.update({
+            status: finalStatus,
+            webhookData: body,
+            updatedAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+
+        console.log(`✅ Transaction ${txRef} → ${finalStatus}`);
+
+        // If successful, credit the merchant's balance
+        if (finalStatus === 'SUCCESS' && userId && userId !== 'unknown') {
+            await db.collection('businesses').doc(userId).update({
+                balance: admin.firestore.FieldValue.increment(merchantReceives),
+                totalReceived: admin.firestore.FieldValue.increment(amount),
+                totalFees: admin.firestore.FieldValue.increment(platformFee)
+            });
+            console.log(`💰 Credited MWK ${merchantReceives} to user ${userId}`);
+        }
+    } catch (err) {
+        console.error('❌ Webhook processing error:', err.message);
+    }
+});
+
+app.get('/api/webhook/paychangu', (req, res) => {
+    res.json({
+        status: 'webhook endpoint is ready',
+        provider: 'PayChangu',
+        firebase: db ? 'connected' : 'not configured',
+        url: 'https://pay-kwacha.vercel.app/api/webhook/paychangu'
+    });
+});
+
+// ============================================
+// 🔍 Verify Payment
 // ============================================
 app.get('/api/payment-status/:txRef', async (req, res) => {
     if (!PAYCHANGU_SECRET) {
@@ -156,18 +242,42 @@ app.get('/api/payment-status/:txRef', async (req, res) => {
         const response = await axios.get(
             `${PAYCHANGU_URL}/verify-payment/${req.params.txRef}`,
             {
-                headers: {
-                    'Authorization': `Bearer ${PAYCHANGU_SECRET}`,
-                    'Accept': 'application/json'
-                }
+                headers: { 'Authorization': `Bearer ${PAYCHANGU_SECRET}` }
             }
         );
 
-        res.json({
-            success: true,
-            txRef: req.params.txRef,
-            data: response.data
-        });
+        // Also update Firestore if status changed
+        if (db) {
+            const status = response.data?.data?.status || response.data?.status;
+            if (status && status !== 'pending') {
+                const txnRef = db.collection('transactions').doc(req.params.txRef);
+                const txnDoc = await txnRef.get();
+                if (txnDoc.exists && txnDoc.data().status === 'PENDING') {
+                    let finalStatus = 'PENDING';
+                    if (status === 'success' || status === 'successful') finalStatus = 'SUCCESS';
+                    else if (status === 'failed') finalStatus = 'FAILED';
+
+                    await txnRef.update({
+                        status: finalStatus,
+                        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+                    });
+
+                    // Credit balance if success
+                    if (finalStatus === 'SUCCESS') {
+                        const txnData = txnDoc.data();
+                        if (txnData.userId && txnData.userId !== 'unknown') {
+                            await db.collection('businesses').doc(txnData.userId).update({
+                                balance: admin.firestore.FieldValue.increment(txnData.merchantReceives || 0),
+                                totalReceived: admin.firestore.FieldValue.increment(txnData.amount || 0),
+                                totalFees: admin.firestore.FieldValue.increment(txnData.platformFee || 0)
+                            });
+                        }
+                    }
+                }
+            }
+        }
+
+        res.json({ success: true, txRef: req.params.txRef, data: response.data });
     } catch (error) {
         res.status(500).json({
             success: false,
@@ -175,36 +285,6 @@ app.get('/api/payment-status/:txRef', async (req, res) => {
             error: error.response?.data || error.message
         });
     }
-});
-
-// ============================================
-// 🔔 PayChangu Webhook
-// ============================================
-app.post('/api/webhook/paychangu', async (req, res) => {
-    console.log('=== PayChangu Webhook ===');
-    console.log('Time:', new Date().toISOString());
-    console.log('Body:', JSON.stringify(req.body, null, 2));
-
-    const { tx_ref, status } = req.body || {};
-    console.log(`Transaction ${tx_ref} → ${status}`);
-
-    res.status(200).json({ received: true });
-});
-
-app.get('/api/webhook/paychangu', (req, res) => {
-    res.json({
-        status: 'webhook endpoint is ready',
-        provider: 'PayChangu',
-        url: 'https://pay-kwacha.vercel.app/api/webhook/paychangu'
-    });
-});
-
-// ============================================
-// 📝 Business Registration
-// ============================================
-app.post('/api/businesses/register', (req, res) => {
-    const apiKey = `PK_${Date.now()}_${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
-    res.json({ success: true, apiKey });
 });
 
 module.exports = app;
