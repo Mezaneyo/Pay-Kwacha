@@ -6,160 +6,188 @@ const crypto = require('crypto');
 const app = express();
 app.use(express.json());
 
-const PAWAPAY_TOKEN = process.env.PAWAPAY_API_TOKEN;
-const PAWAPAY_URL = 'https://api.sandbox.pawapay.io';
+// ============================================
+// 🔑 PayChangu Config
+// ============================================
+const PAYCHANGU_SECRET = process.env.PAYCHANGU_SECRET_KEY;
+const PAYCHANGU_URL = 'https://api.paychangu.com';
 
 // ============================================
-// 🏠 Health
+// 🏠 Health Check
 // ============================================
 app.get('/api', (req, res) => {
     res.json({
         name: 'PayKwacha API',
         status: 'running',
-        pawapayConfigured: !!PAWAPAY_TOKEN,
+        provider: 'PayChangu',
+        configured: !!PAYCHANGU_SECRET,
         timestamp: new Date().toISOString()
     });
 });
 
 // ============================================
-// 🧪 pawaPay Test
-// ============================================
-app.get('/api/pawapay-test', async (req, res) => {
-    if (!PAWAPAY_TOKEN) return res.status(500).json({ success: false, error: 'Token not configured' });
-
-    try {
-        const check = await axios.get(`${PAWAPAY_URL}/active-conf`, {
-            headers: { 'Authorization': `Bearer ${PAWAPAY_TOKEN}` }
-        });
-        res.json({ success: true, data: check.data });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            status: error.response?.status,
-            error: error.response?.data || error.message
-        });
-    }
-});
-
-// ============================================
-// 💸 Payment (accepts API key)
+// 💸 Initiate Payment (Mobile Money)
 // ============================================
 app.post('/api/payment', async (req, res) => {
-    if (!PAWAPAY_TOKEN) {
-        return res.status(500).json({ success: false, error: 'Payment not configured' });
+    if (!PAYCHANGU_SECRET) {
+        return res.status(500).json({
+            success: false,
+            error: 'Payment not configured. PAYCHANGU_SECRET_KEY missing.'
+        });
     }
 
-    const { phoneNumber, amount, provider, apiKey } = req.body;
+    const { phoneNumber, amount, provider } = req.body;
 
     if (!phoneNumber || !amount) {
-        return res.status(400).json({ success: false, error: 'Phone and amount required' });
+        return res.status(400).json({
+            success: false,
+            error: 'Phone number and amount are required'
+        });
     }
 
-    // Optional API key check (frontend sends it, backend can validate against Firestore later)
-    // For now, only require it to start with PK_
-    if (apiKey && !String(apiKey).startsWith('PK_')) {
-        return res.status(401).json({ success: false, error: 'Invalid API key format' });
-    }
-
-    // Normalize phone
+    // Normalize phone to 0XXXXXXXXX (PayChangu expects local format)
     let cleanPhone = String(phoneNumber).replace(/\s/g, '').replace('+', '');
-    if (cleanPhone.startsWith('0')) cleanPhone = '265' + cleanPhone.substring(1);
-    else if (!cleanPhone.startsWith('265')) cleanPhone = '265' + cleanPhone;
+    if (cleanPhone.startsWith('265')) {
+        cleanPhone = '0' + cleanPhone.substring(3);
+    } else if (!cleanPhone.startsWith('0')) {
+        cleanPhone = '0' + cleanPhone;
+    }
 
-    const depositId = crypto.randomUUID();
+    // Map provider to PayChangu format
+    const mobileMoneyOperator = provider === 'TNM_MWI' ? 'tnm' : 'airtel';
+
+    const txRef = `PAY-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`;
 
     const payload = {
-        depositId,
         amount: String(amount),
         currency: 'MWK',
-        payer: {
-            type: 'MMO',
-            accountDetails: {
-                phoneNumber: cleanPhone,
-                provider: provider || 'AIRTEL_MWI'
-            }
+        email: 'customer@paykwacha.com',
+        first_name: 'PayKwacha',
+        last_name: 'Customer',
+        callback_url: 'https://pay-kwacha.vercel.app/api/webhook/paychangu',
+        return_url: 'https://pay-kwacha.vercel.app',
+        tx_ref: txRef,
+        customization: {
+            title: 'PayKwacha Payment',
+            description: 'Mobile money payment'
         },
-        customerMessage: 'PayKwacha Payment'
+        meta: {
+            phone: cleanPhone,
+            mobile_money_operator: mobileMoneyOperator
+        }
     };
+
+    console.log('=== Sending to PayChangu ===');
+    console.log('Payload:', JSON.stringify(payload, null, 2));
 
     try {
         const response = await axios.post(
-            `${PAWAPAY_URL}/deposits`,
+            `${PAYCHANGU_URL}/payment`,
             payload,
             {
                 headers: {
-                    'Authorization': `Bearer ${PAWAPAY_TOKEN}`,
-                    'Content-Type': 'application/json'
+                    'Authorization': `Bearer ${PAYCHANGU_SECRET}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
                 },
                 timeout: 30000
             }
         );
 
+        console.log('=== PayChangu Success ===');
+        console.log(JSON.stringify(response.data, null, 2));
+
         res.json({
             success: true,
-            depositId,
+            txRef: txRef,
             data: response.data,
             message: `Payment request sent to ${phoneNumber}`
         });
 
     } catch (error) {
-        const pawaResponse = error.response?.data;
+        console.error('=== PayChangu Error ===');
+        console.error('Status:', error.response?.status);
+        console.error('Data:', JSON.stringify(error.response?.data, null, 2));
+
+        const pcResponse = error.response?.data;
         let errorMessage = 'Payment failed';
 
-        if (pawaResponse) {
-            if (typeof pawaResponse === 'string') errorMessage = pawaResponse;
-            else if (pawaResponse.errorMessage) errorMessage = pawaResponse.errorMessage;
-            else if (pawaResponse.message) errorMessage = pawaResponse.message;
-            else if (pawaResponse.errorCode) errorMessage = `${pawaResponse.errorCode}: ${pawaResponse.errorMessage || ''}`;
-            else if (pawaResponse.failures && Array.isArray(pawaResponse.failures)) {
-                errorMessage = pawaResponse.failures.map(f => f.failureMessage || f.failureCode).join('; ');
-            }
-            else if (pawaResponse.error) errorMessage = typeof pawaResponse.error === 'string' ? pawaResponse.error : JSON.stringify(pawaResponse.error);
-        } else if (error.message) errorMessage = error.message;
+        if (pcResponse) {
+            if (typeof pcResponse === 'string') errorMessage = pcResponse;
+            else if (pcResponse.message) errorMessage = pcResponse.message;
+            else if (pcResponse.error) errorMessage = pcResponse.error;
+            else errorMessage = JSON.stringify(pcResponse);
+        } else if (error.message) {
+            errorMessage = error.message;
+        }
 
         res.status(500).json({
             success: false,
             error: errorMessage,
-            pawaPayStatus: error.response?.status || null,
-            pawaPayRaw: pawaResponse || null,
-            requestSent: { depositId, phoneNumber: cleanPhone, amount, provider }
+            paychanguStatus: error.response?.status || null,
+            paychanguRaw: pcResponse || null,
+            requestSent: {
+                txRef: txRef,
+                phoneNumber: cleanPhone,
+                amount: amount,
+                provider: mobileMoneyOperator
+            }
         });
     }
 });
 
 // ============================================
-// 🔍 Payment status
+// 🔍 Verify Payment Status
 // ============================================
-app.get('/api/payment-status/:depositId', async (req, res) => {
-    if (!PAWAPAY_TOKEN) return res.status(500).json({ success: false, error: 'Not configured' });
+app.get('/api/payment-status/:txRef', async (req, res) => {
+    if (!PAYCHANGU_SECRET) {
+        return res.status(500).json({ success: false, error: 'Not configured' });
+    }
 
     try {
-        const response = await axios.get(`${PAWAPAY_URL}/deposits/${req.params.depositId}`, {
-            headers: { 'Authorization': `Bearer ${PAWAPAY_TOKEN}` }
+        const response = await axios.get(
+            `${PAYCHANGU_URL}/verify-payment/${req.params.txRef}`,
+            {
+                headers: {
+                    'Authorization': `Bearer ${PAYCHANGU_SECRET}`,
+                    'Accept': 'application/json'
+                }
+            }
+        );
+
+        res.json({
+            success: true,
+            txRef: req.params.txRef,
+            data: response.data
         });
-        res.json({ success: true, depositId: req.params.depositId, data: response.data });
     } catch (error) {
         res.status(500).json({
             success: false,
-            depositId: req.params.depositId,
+            txRef: req.params.txRef,
             error: error.response?.data || error.message
         });
     }
 });
 
 // ============================================
-// 🔔 Webhook
+// 🔔 PayChangu Webhook
 // ============================================
-app.post('/api/webhook/pawapay', async (req, res) => {
-    console.log('=== pawaPay Webhook ===');
-    console.log(JSON.stringify(req.body, null, 2));
+app.post('/api/webhook/paychangu', async (req, res) => {
+    console.log('=== PayChangu Webhook ===');
+    console.log('Time:', new Date().toISOString());
+    console.log('Body:', JSON.stringify(req.body, null, 2));
+
+    const { tx_ref, status } = req.body || {};
+    console.log(`Transaction ${tx_ref} → ${status}`);
+
     res.status(200).json({ received: true });
 });
 
-app.get('/api/webhook/pawapay', (req, res) => {
+app.get('/api/webhook/paychangu', (req, res) => {
     res.json({
         status: 'webhook endpoint is ready',
-        url: 'https://pay-kwacha.vercel.app/api/webhook/pawapay'
+        provider: 'PayChangu',
+        url: 'https://pay-kwacha.vercel.app/api/webhook/paychangu'
     });
 });
 
