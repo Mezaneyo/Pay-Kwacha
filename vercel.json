@@ -1,5 +1,13 @@
 {
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api" }
+    { "source": "/api/(.*)", "destination": "/api" },
+    { "source": "/dashboard", "destination": "/public/dashboard.html" },
+    { "source": "/pay/:linkId", "destination": "/public/pay.html" },
+    { "source": "/test", "destination": "/public/test.html" },
+    { "source": "/about", "destination": "/public/about.html" },
+    { "source": "/faq", "destination": "/public/faq.html" },
+    { "source": "/privacy", "destination": "/public/privacy.html" },
+    { "source": "/policies", "destination": "/public/policies.html" },
+    { "source": "/contact", "destination": "/public/contact.html" }
   ]
 }
