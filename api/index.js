@@ -26,7 +26,7 @@ app.get('/api', (req, res) => {
 });
 
 // ============================================
-// 💸 Initiate Payment (Mobile Money)
+// 💸 Initiate Payment (Standard Checkout)
 // ============================================
 app.post('/api/payment', async (req, res) => {
     if (!PAYCHANGU_SECRET) {
@@ -36,7 +36,7 @@ app.post('/api/payment', async (req, res) => {
         });
     }
 
-    const { phoneNumber, amount, provider } = req.body;
+    const { phoneNumber, amount, provider, email } = req.body;
 
     if (!phoneNumber || !amount) {
         return res.status(400).json({
@@ -45,7 +45,7 @@ app.post('/api/payment', async (req, res) => {
         });
     }
 
-    // Normalize phone to 0XXXXXXXXX (PayChangu expects local format)
+    // Normalize phone to 0XXXXXXXXX
     let cleanPhone = String(phoneNumber).replace(/\s/g, '').replace('+', '');
     if (cleanPhone.startsWith('265')) {
         cleanPhone = '0' + cleanPhone.substring(3);
@@ -53,15 +53,15 @@ app.post('/api/payment', async (req, res) => {
         cleanPhone = '0' + cleanPhone;
     }
 
-    // Map provider to PayChangu format
-    const mobileMoneyOperator = provider === 'TNM_MWI' ? 'tnm' : 'airtel';
-
     const txRef = `PAY-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`;
 
+    // ============================================
+    // Standard Checkout payload
+    // ============================================
     const payload = {
         amount: String(amount),
         currency: 'MWK',
-        email: 'customer@paykwacha.com',
+        email: email || 'customer@paykwacha.com',
         first_name: 'PayKwacha',
         last_name: 'Customer',
         callback_url: 'https://pay-kwacha.vercel.app/api/webhook/paychangu',
@@ -73,7 +73,7 @@ app.post('/api/payment', async (req, res) => {
         },
         meta: {
             phone: cleanPhone,
-            mobile_money_operator: mobileMoneyOperator
+            provider: provider || 'AIRTEL_MWI'
         }
     };
 
@@ -97,11 +97,19 @@ app.post('/api/payment', async (req, res) => {
         console.log('=== PayChangu Success ===');
         console.log(JSON.stringify(response.data, null, 2));
 
+        // Extract checkout URL from multiple possible response paths
+        const checkoutUrl =
+            response.data?.data?.checkout_url ||
+            response.data?.checkout_url ||
+            response.data?.data?.data?.checkout_url ||
+            null;
+
         res.json({
             success: true,
             txRef: txRef,
+            checkoutUrl: checkoutUrl,
             data: response.data,
-            message: `Payment request sent to ${phoneNumber}`
+            message: `Payment request created for ${phoneNumber}`
         });
 
     } catch (error) {
@@ -130,7 +138,7 @@ app.post('/api/payment', async (req, res) => {
                 txRef: txRef,
                 phoneNumber: cleanPhone,
                 amount: amount,
-                provider: mobileMoneyOperator
+                provider: provider || 'AIRTEL_MWI'
             }
         });
     }
