@@ -11,7 +11,7 @@ const PAYCHANGU_URL = 'https://api.paychangu.com';
 
 const OPERATORS = {
     AIRTEL_MWI: '20be6c20-adeb-4b5b-a7ba-0769820df4fb',
-    TNM_MWI: 'b2a5c9e0-3b7c-4a1d-9e2f-8c4d5e6f7a8b'
+    TNM_MWI: '27494cb5-ba9e-437f-a114-4e7a7686bcca'
 };
 
 // Health
