@@ -27,6 +27,8 @@
         .secured { text-align: center; color: #94a3b8; font-size: 12px; margin-top: 20px; padding-top: 20px; border-top: 1px solid #f1f5f9; }
         .loading { text-align: center; padding: 40px; color: #94a3b8; }
     </style>
+    <!-- PayChangu Inline Checkout Library -->
+    <script src="https://in.paychangu.com/js/popup.js"></script>
 </head>
 <body>
 
@@ -95,7 +97,7 @@
                     </select>
                 </div>
 
-                <button class="btn" id="payBtn" onclick="payNow()">Pay MWK ${linkData.amount.toLocaleString()}</button>
+                <button class="btn" id="payBtn" onclick="makePayment()">Pay MWK ${linkData.amount.toLocaleString()}</button>
                 <div class="result" id="result"></div>
 
                 <div class="secured">🔒 Secured by PayChangu</div>
@@ -109,56 +111,58 @@
         }
     })();
 
-    async function payNow() {
+    // ============================================
+    // 💳 POPUP CHECKOUT FUNCTION
+    // ============================================
+    function makePayment() {
         const phone = document.getElementById('phone').value.trim();
         const provider = document.getElementById('provider').value;
-        const btn = document.getElementById('payBtn');
         const result = document.getElementById('result');
+        const btn = document.getElementById('payBtn');
 
+        // Validation
         if (!phone) {
             result.className = 'result error';
             result.textContent = 'Please enter your phone number';
             return;
         }
 
-        btn.disabled = true;
-        btn.textContent = '⏳ Processing...';
         result.className = 'result';
         result.textContent = '';
+        btn.disabled = true;
+        btn.textContent = '⏳ Opening payment...';
 
-        try {
-            const res = await fetch('/api/payment', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    phoneNumber: phone,
-                    amount: linkData.amount,
-                    provider,
-                    merchantUserId: linkData.userId,
-                    email: 'customer@paykwacha.com'
-                })
-            });
+        // Generate unique transaction reference
+        const txRef = `PAY-${Date.now()}-${Math.floor((Math.random() * 1000000000) + 1)}`;
 
-            const data = await res.json();
-
-            if (data.success && data.checkoutUrl) {
-                result.className = 'result success';
-                result.innerHTML = `✅ Redirecting to payment page...`;
-                setTimeout(() => {
-                    window.location.href = data.checkoutUrl;
-                }, 800);
-            } else {
-                result.className = 'result error';
-                result.textContent = data.error || 'Payment failed. Please try again.';
-                btn.disabled = false;
-                btn.textContent = `Pay MWK ${linkData.amount.toLocaleString()}`;
+        // Call PayChangu Popup
+        // Replace the public_key below with your REAL public key from PayChangu dashboard
+        PaychanguCheckout({
+            "public_key": "pub-test-JNSQ1LnMBV1cFGksKNR9VDBGw9bZ2rsv",
+            "tx_ref": txRef,
+            "amount": String(linkData.amount),
+            "currency": "MWK",
+            "email": "customer@paykwacha.com",
+            "first_name": "PayKwacha",
+            "last_name": "Customer",
+            "callback_url": "https://pay-kwacha.vercel.app/api/webhook/paychangu",
+            "return_url": "https://pay-kwacha.vercel.app",
+            "customization": {
+                "title": "PayKwacha Payment",
+                "description": linkData.description || "Payment"
+            },
+            "meta": {
+                "phone": phone,
+                "provider": provider,
+                "merchantUserId": linkData.userId
             }
-        } catch (err) {
-            result.className = 'result error';
-            result.textContent = 'Network error. Please try again.';
+        });
+
+        // Reset button after a delay (popup handles the rest)
+        setTimeout(() => {
             btn.disabled = false;
             btn.textContent = `Pay MWK ${linkData.amount.toLocaleString()}`;
-        }
+        }, 3000);
     }
 
     function escapeHtml(str) {
