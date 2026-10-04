@@ -37,10 +37,22 @@ app.post('/api/payment', async (req, res) => {
         return res.status(400).json({ success: false, error: 'Phone and amount required' });
     }
 
+    // ✅ FIXED: 9-digit format without leading zero or country code
     let cleanPhone = String(phoneNumber).replace(/\s/g, '').replace('+', '');
-    if (cleanPhone.startsWith('0')) cleanPhone = '265' + cleanPhone.substring(1);
-    else if (!cleanPhone.startsWith('265')) cleanPhone = '265' + cleanPhone;
-    cleanPhone = '+' + cleanPhone;
+    if (cleanPhone.startsWith('265')) {
+        cleanPhone = cleanPhone.substring(3);
+    }
+    if (cleanPhone.startsWith('0')) {
+        cleanPhone = cleanPhone.substring(1);
+    }
+
+    // Sanity check
+    if (cleanPhone.length !== 9) {
+        return res.status(400).json({
+            success: false,
+            error: `Invalid phone. Expected 9 digits, got ${cleanPhone.length}: "${cleanPhone}"`
+        });
+    }
 
     const chargeId = `PC-${Date.now()}-${crypto.randomBytes(3).toString('hex')}`;
     const operatorRef = OPERATORS[provider] || OPERATORS.AIRTEL_MWI;
@@ -79,7 +91,8 @@ app.post('/api/payment', async (req, res) => {
             success: true,
             chargeId,
             status: 'PENDING',
-            message: `Payment prompt sent to ${phoneNumber}`,
+            phoneUsed: cleanPhone,
+            message: `Payment prompt sent to ${cleanPhone}`,
             data: response.data
         });
 
@@ -92,7 +105,8 @@ app.post('/api/payment', async (req, res) => {
         res.status(500).json({
             success: false,
             error: pcResponse?.message || pcResponse?.error || error.message,
-            raw: pcResponse
+            raw: pcResponse,
+            phoneUsed: cleanPhone
         });
     }
 });
