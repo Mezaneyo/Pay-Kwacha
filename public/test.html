@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Test Tool — PayKwacha</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <script src="https://in.paychangu.com/js/popup.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -27,195 +26,98 @@
         .logo { text-align: center; font-size: 40px; margin-bottom: 8px; }
         h1 { font-size: 22px; font-weight: 800; text-align: center; margin-bottom: 6px; color: white; }
         .subtitle { text-align: center; color: #94a3b8; font-size: 13px; margin-bottom: 22px; }
-
         .provider-badge {
             background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 100px;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin: 0 auto 14px;
-            display: block;
-            width: fit-content;
+            color: white; padding: 4px 12px; border-radius: 100px;
+            font-size: 11px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.05em; margin: 0 auto 14px; display: block; width: fit-content;
         }
-
-        .tabs {
-            display: flex;
-            gap: 6px;
-            background: #0f172a;
-            padding: 4px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
+        .tabs { display: flex; gap: 6px; background: #0f172a; padding: 4px; border-radius: 10px; margin-bottom: 20px; }
         .tab-btn {
-            flex: 1;
-            padding: 10px 12px;
-            background: none;
-            color: #94a3b8;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-            font-family: inherit;
-            transition: all 0.2s;
+            flex: 1; padding: 10px 12px; background: none; color: #94a3b8;
+            border: none; border-radius: 8px; font-weight: 600; font-size: 13px;
+            cursor: pointer; font-family: inherit; transition: all 0.2s;
         }
         .tab-btn.active { background: #6366f1; color: white; }
-
         .field { margin-bottom: 14px; }
         .field label {
-            display: block;
-            font-size: 12px;
-            font-weight: 600;
-            color: #94a3b8;
-            margin-bottom: 6px;
-            text-transform: uppercase;
-            letter-spacing: 0.03em;
+            display: block; font-size: 12px; font-weight: 600; color: #94a3b8;
+            margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.03em;
         }
         .field input, .field select {
-            width: 100%;
-            padding: 12px 14px;
-            border: 1.5px solid #334155;
-            border-radius: 10px;
-            font-size: 14px;
-            font-family: inherit;
-            background: #0f172a;
-            color: #e2e8f0;
+            width: 100%; padding: 12px 14px; border: 1.5px solid #334155;
+            border-radius: 10px; font-size: 14px; font-family: inherit;
+            background: #0f172a; color: #e2e8f0;
         }
         .field input:focus, .field select:focus {
-            outline: none;
-            border-color: #6366f1;
+            outline: none; border-color: #6366f1;
             box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
         }
         .field .hint { font-size: 11px; color: #64748b; margin-top: 4px; }
-
         .quick-btns { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
         .quick-btn {
-            padding: 7px 12px;
-            background: #0f172a;
-            border: 1px solid #334155;
-            border-radius: 100px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: inherit;
-            color: #94a3b8;
-            transition: all 0.2s;
+            padding: 7px 12px; background: #0f172a; border: 1px solid #334155;
+            border-radius: 100px; font-size: 12px; font-weight: 600; cursor: pointer;
+            font-family: inherit; color: #94a3b8; transition: all 0.2s;
         }
         .quick-btn:hover { background: #6366f1; color: white; border-color: #6366f1; }
-
         .btn {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 15px;
-            cursor: pointer;
-            font-family: inherit;
-            transition: all 0.2s;
-            margin-bottom: 8px;
+            width: 100%; padding: 14px; background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white; border: none; border-radius: 12px; font-weight: 700;
+            font-size: 15px; cursor: pointer; font-family: inherit;
+            transition: all 0.2s; margin-bottom: 8px;
         }
         .btn:hover { opacity: 0.9; }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
         .btn-secondary { background: #0f172a; border: 1.5px solid #334155; }
         .btn-secondary:hover { border-color: #6366f1; }
-
         .loader { display: none; text-align: center; padding: 16px; }
         .loader.active { display: block; }
         .spinner {
-            border: 3px solid #334155;
-            border-top: 3px solid #6366f1;
-            border-radius: 50%;
-            width: 36px;
-            height: 36px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 10px;
+            border: 3px solid #334155; border-top: 3px solid #6366f1;
+            border-radius: 50%; width: 36px; height: 36px;
+            animation: spin 1s linear infinite; margin: 0 auto 10px;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-
         .result {
-            display: none;
-            padding: 14px;
-            border-radius: 12px;
-            font-size: 13px;
-            line-height: 1.6;
-            margin-top: 14px;
-            word-break: break-word;
+            display: none; padding: 14px; border-radius: 12px; font-size: 13px;
+            line-height: 1.6; margin-top: 14px; word-break: break-word;
         }
         .result.show { display: block; }
         .result.success { background: #064e3b; color: #86efac; border: 1px solid #10b981; }
         .result.error { background: #450a0a; color: #fca5a5; border: 1px solid #dc2626; }
         .result.info { background: #1e3a8a; color: #93c5fd; border: 1px solid #3b82f6; }
-
-        .result code {
-            background: rgba(255,255,255,0.1);
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-family: monospace;
-            font-size: 11px;
-        }
         .result pre {
-            background: rgba(0,0,0,0.3);
-            padding: 10px;
-            border-radius: 8px;
-            font-family: monospace;
-            font-size: 11px;
-            overflow-x: auto;
-            margin-top: 8px;
-            white-space: pre-wrap;
-            word-break: break-all;
+            background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px;
+            font-family: monospace; font-size: 11px; overflow-x: auto;
+            margin-top: 8px; white-space: pre-wrap; word-break: break-all;
         }
-
         .badge {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 100px;
-            font-size: 10px;
-            font-weight: 700;
-            text-transform: uppercase;
+            display: inline-block; padding: 3px 10px; border-radius: 100px;
+            font-size: 10px; font-weight: 700; text-transform: uppercase;
             letter-spacing: 0.05em;
         }
         .badge.success { background: #064e3b; color: #86efac; }
         .badge.error { background: #450a0a; color: #fca5a5; }
-
         .debug { margin-top: 16px; }
         .debug summary {
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 13px;
-            color: #64748b;
-            padding: 8px 0;
-            user-select: none;
+            cursor: pointer; font-weight: 600; font-size: 13px;
+            color: #64748b; padding: 8px 0; user-select: none;
         }
         .debug pre {
-            background: #0a0f1e;
-            color: #86efac;
-            padding: 14px;
-            border-radius: 10px;
-            overflow-x: auto;
-            font-size: 11px;
-            font-family: monospace;
-            line-height: 1.6;
-            margin-top: 8px;
-            white-space: pre-wrap;
-            word-break: break-all;
-            max-height: 400px;
+            background: #0a0f1e; color: #86efac; padding: 14px;
+            border-radius: 10px; overflow-x: auto; font-size: 11px;
+            font-family: monospace; line-height: 1.6; margin-top: 8px;
+            white-space: pre-wrap; word-break: break-all; max-height: 400px;
             border: 1px solid #1e293b;
         }
-
+        .pin-box {
+            background: #1e3a8a; border: 1px solid #3b82f6; color: #93c5fd;
+            padding: 14px; border-radius: 10px; margin-top: 12px; font-size: 13px;
+        }
         footer {
-            text-align: center;
-            color: #64748b;
-            font-size: 11px;
-            margin-top: 16px;
-            padding: 16px;
+            text-align: center; color: #64748b; font-size: 11px;
+            margin-top: 16px; padding: 16px;
         }
         footer a { color: #6366f1; }
     </style>
@@ -224,21 +126,22 @@
 
 <div class="container">
     <div class="card">
-        <div class="logo">🧪</div>
-        <h1>PayKwacha Test Tool</h1>
-        <p class="subtitle">Test your payment integration end-to-end</p>
+        <div class="logo">⚡</div>
+        <h1>PayKwacha Direct Charge</h1>
+        <p class="subtitle">Prompt goes directly to the phone — no popup, no redirect</p>
 
-        <span class="provider-badge">Powered by PayChangu</span>
+        <span class="provider-badge">PayChangu Direct Charge</span>
 
         <div class="tabs">
             <button class="tab-btn active" onclick="switchTab(event, 'health')">Health</button>
             <button class="tab-btn" onclick="switchTab(event, 'payment')">Payment</button>
+            <button class="tab-btn" onclick="switchTab(event, 'verify')">Verify</button>
         </div>
 
         <!-- HEALTH TAB -->
         <div id="tab-health">
             <p style="color:#94a3b8; font-size:13px; margin-bottom:14px;">
-                Check that your API server is running and PayChangu is configured correctly.
+                Check that your API is running.
             </p>
             <button class="btn" onclick="checkHealth()">Check API Health</button>
             <button class="btn btn-secondary" onclick="checkWebhook()">Check Webhook</button>
@@ -257,7 +160,7 @@
             <div class="field">
                 <label>📱 Phone Number</label>
                 <input type="tel" id="phone" value="0995514049" placeholder="0995514049" />
-                <div class="hint">Sandbox test number: <strong>990000000</strong></div>
+                <div class="hint">Sandbox test: <strong>990000000</strong></div>
             </div>
 
             <div class="field">
@@ -274,7 +177,19 @@
                 </select>
             </div>
 
-            <button class="btn" id="payBtn" onclick="openPopup()">Pay Now (Popup) →</button>
+            <button class="btn" id="payBtn" onclick="sendPrompt()">Send Prompt to Phone →</button>
+        </div>
+
+        <!-- VERIFY TAB -->
+        <div id="tab-verify" style="display:none;">
+            <p style="color:#94a3b8; font-size:13px; margin-bottom:14px;">
+                Check the status of a direct charge using its charge ID.
+            </p>
+            <div class="field">
+                <label>Charge ID</label>
+                <input type="text" id="chargeIdInput" placeholder="PC-..." />
+            </div>
+            <button class="btn" onclick="checkStatus()">Check Status</button>
         </div>
 
         <div class="loader" id="loader">
@@ -290,18 +205,10 @@
         </details>
     </div>
 
-    <footer>
-        🇲🇼 PayKwacha · <a href="/dashboard">Dashboard</a> · <a href="/">Home</a>
-    </footer>
+    <footer>🇲🇼 PayKwacha · <a href="/dashboard">Dashboard</a> · <a href="/">Home</a></footer>
 </div>
 
 <script>
-    // ============================================
-    // 🔑 PayChangu LIVE Public Key
-    // ============================================
-    const PAYCHANGU_PUBLIC_KEY = 'pub-live-RCo6VrZe6PHyIsePi5JWQ7oDsnpTzpOK';
-
-    // Tabs
     function switchTab(evt, tab) {
         document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
         evt.target.classList.add('active');
@@ -309,37 +216,18 @@
         document.getElementById('tab-' + tab).style.display = 'block';
     }
 
-    // Quick Fill
     function fillTest(type) {
         const phone = document.getElementById('phone');
         const provider = document.getElementById('provider');
         const amount = document.getElementById('amount');
 
-        if (type === 'airtel') {
-            phone.value = '0995514049';
-            provider.value = 'AIRTEL_MWI';
-            amount.value = '100';
-            showResult('info', '📱 Airtel test loaded');
-        } else if (type === 'tnm') {
-            phone.value = '0888123456';
-            provider.value = 'TNM_MWI';
-            amount.value = '100';
-            showResult('info', '📱 TNM test loaded');
-        } else if (type === 'sandbox') {
-            phone.value = '990000000';
-            provider.value = 'AIRTEL_MWI';
-            amount.value = '100';
-            showResult('info', '🧪 Sandbox number loaded (K100 success)');
-        } else if (type === 'k50') {
-            amount.value = '50';
-            showResult('info', '💰 K50 loaded');
-        } else if (type === 'k500') {
-            amount.value = '500';
-            showResult('info', '💰 K500 loaded');
-        }
+        if (type === 'airtel') { phone.value='0995514049'; provider.value='AIRTEL_MWI'; amount.value='100'; showResult('info','📱 Airtel loaded'); }
+        else if (type === 'tnm') { phone.value='0888123456'; provider.value='TNM_MWI'; amount.value='100'; showResult('info','📱 TNM loaded'); }
+        else if (type === 'sandbox') { phone.value='990000000'; provider.value='AIRTEL_MWI'; amount.value='100'; showResult('info','🧪 Sandbox loaded'); }
+        else if (type === 'k50') { amount.value='50'; showResult('info','💰 K50 loaded'); }
+        else if (type === 'k500') { amount.value='500'; showResult('info','💰 K500 loaded'); }
     }
 
-    // UI Helpers
     function showResult(type, html) {
         const el = document.getElementById('result');
         el.className = 'result show ' + type;
@@ -357,37 +245,30 @@
     }
 
     function escapeHtml(str) {
-        return String(str || '')
-            .replace(/&/g, '&amp;').replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;').replace(/"/g, '&quot;')
-            .replace(/'/g, '&#39;');
+        return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;')
+            .replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
     }
 
     function stringifySafe(v) {
         if (v === null || v === undefined) return 'No details';
         if (typeof v === 'string') return v;
-        try { return JSON.stringify(v, null, 2); }
-        catch { return String(v); }
+        try { return JSON.stringify(v, null, 2); } catch { return String(v); }
     }
 
-    // Health Check
     async function checkHealth() {
         setLoading(true);
         document.getElementById('result').className = 'result';
         showDebug('GET /api ...');
-
         try {
             const res = await fetch('/api');
             const data = await res.json();
             showDebug({ status: res.status, data });
-
             if (data.status === 'running') {
                 showResult('success',
                     `✅ <span class="badge success">API ONLINE</span><br><br>` +
-                    `<strong>Provider:</strong> <code>${escapeHtml(data.provider || 'unknown')}</code><br>` +
+                    `<strong>Provider:</strong> <code>${escapeHtml(data.provider)}</code><br>` +
                     `<strong>Configured:</strong> <code>${data.configured}</code><br>` +
-                    `<strong>Firebase:</strong> <code>${data.firebase || 'unknown'}</code><br>` +
-                    `<strong>Time:</strong> <code>${escapeHtml(data.timestamp)}</code>`
+                    `<strong>Firebase:</strong> <code>${data.firebase}</code>`
                 );
             } else {
                 showResult('error', `⚠️ ${escapeHtml(stringifySafe(data))}`);
@@ -395,87 +276,118 @@
         } catch (err) {
             showDebug(err.message);
             showResult('error', `❌ API unreachable<br><br>${escapeHtml(err.message)}`);
-        } finally {
-            setLoading(false);
-        }
+        } finally { setLoading(false); }
     }
 
-    // Webhook Check
     async function checkWebhook() {
         setLoading(true);
         document.getElementById('result').className = 'result';
-
         try {
             const res = await fetch('/api/webhook/paychangu');
             const data = await res.json();
             showDebug({ status: res.status, data });
             showResult('success',
                 `✅ <span class="badge success">WEBHOOK READY</span><br><br>` +
-                `<strong>URL:</strong><br><code>${escapeHtml(data.url || 'N/A')}</code>`
+                `<strong>URL:</strong><br><code>${escapeHtml(data.url)}</code>`
             );
         } catch (err) {
             showDebug(err.message);
             showResult('error', `❌ ${escapeHtml(err.message)}`);
-        } finally {
-            setLoading(false);
-        }
+        } finally { setLoading(false); }
     }
 
     // ============================================
-    // 💳 Popup Payment (LIVE public key)
+    // 💸 Send Direct Charge Prompt
     // ============================================
-    function openPopup() {
+    async function sendPrompt() {
         const phone = document.getElementById('phone').value.trim();
         const amount = document.getElementById('amount').value.trim();
         const provider = document.getElementById('provider').value;
 
+        document.getElementById('result').className = 'result';
         if (!phone) return showResult('error', '❌ Enter a phone number');
         if (!amount || Number(amount) < 50) return showResult('error', '❌ Amount must be at least K50');
 
-        const txRef = `PAY-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
+        setLoading(true);
+        document.getElementById('payBtn').textContent = '⏳ Sending prompt...';
 
-        const payload = {
-            public_key: PAYCHANGU_PUBLIC_KEY,
-            tx_ref: txRef,
-            amount: String(amount),
-            currency: 'MWK',
-            email: 'customer@paykwacha.com',
-            first_name: 'PayKwacha',
-            last_name: 'Customer',
-            callback_url: 'https://pay-kwacha.vercel.app/api/webhook/paychangu',
-            return_url: 'https://pay-kwacha.vercel.app/test.html',
-            customization: {
-                title: 'PayKwacha Test',
-                description: 'Test payment'
-            },
-            meta: {
-                phone: phone,
-                provider: provider
-            }
-        };
-
-        showDebug({ popup_payload: payload });
-        showResult('info', '⏳ Opening PayChangu popup...');
+        const payload = { phoneNumber: phone, amount: String(amount), provider };
+        showDebug({ request: payload });
 
         try {
-            PaychanguCheckout(payload);
-            showResult('success',
-                `✅ <span class="badge success">POPUP OPENED</span><br><br>` +
-                `<strong>Reference:</strong> <code>${escapeHtml(txRef)}</code><br>` +
-                `<strong>Amount:</strong> MWK ${escapeHtml(amount)}<br>` +
-                `<strong>Phone:</strong> ${escapeHtml(phone)}<br><br>` +
-                `<strong>🎯 Complete the payment in the popup window.</strong>`
-            );
+            const res = await fetch('/api/payment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await res.json();
+            showDebug({ status: res.status, response: data });
+
+            if (data.success) {
+                showResult('success',
+                    `✅ <span class="badge success">PROMPT SENT</span><br><br>` +
+                    `<strong>📱 Phone:</strong> ${escapeHtml(phone)}<br>` +
+                    `<strong>💰 Amount:</strong> MWK ${escapeHtml(amount)}<br>` +
+                    `<strong>📡 Provider:</strong> ${provider === 'AIRTEL_MWI' ? 'Airtel Money' : 'TNM Mpamba'}<br>` +
+                    `<strong>🔑 Charge ID:</strong> <code>${escapeHtml(data.chargeId || 'N/A')}</code><br><br>` +
+                    `<div class="pin-box">` +
+                    `<strong>📲 Check your phone!</strong><br>` +
+                    `A payment prompt should appear within 30 seconds. Enter your mobile money PIN to authorize.` +
+                    `</div>`
+                );
+                document.getElementById('chargeIdInput').value = data.chargeId || '';
+            } else {
+                showResult('error',
+                    `❌ <span class="badge error">FAILED</span><br><br>` +
+                    `<strong>Error:</strong><br>` +
+                    `<pre>${escapeHtml(stringifySafe(data.error))}</pre>`
+                );
+            }
         } catch (err) {
-            showResult('error', `❌ Popup failed to open<br><br>${escapeHtml(err.message)}`);
             showDebug(err.message);
+            showResult('error', `❌ Network Error<br><br>${escapeHtml(err.message)}`);
+        } finally {
+            setLoading(false);
+            document.getElementById('payBtn').textContent = 'Send Prompt to Phone →';
         }
     }
 
-    // Auto health check
-    window.addEventListener('load', () => {
-        setTimeout(checkHealth, 400);
-    });
+    // ============================================
+    // 🔍 Verify Charge Status
+    // ============================================
+    async function checkStatus() {
+        const chargeId = document.getElementById('chargeIdInput').value.trim();
+        if (!chargeId) return showResult('error', '❌ Enter a charge ID');
+
+        setLoading(true);
+        document.getElementById('result').className = 'result';
+
+        try {
+            const res = await fetch('/api/payment-status/' + encodeURIComponent(chargeId));
+            const data = await res.json();
+            showDebug({ status: res.status, response: data });
+
+            if (data.success) {
+                showResult('success',
+                    `✅ <span class="badge success">STATUS</span><br><br>` +
+                    `<strong>Charge:</strong> <code>${escapeHtml(chargeId)}</code><br>` +
+                    `<strong>Status:</strong> <code>${escapeHtml(data.status || 'unknown')}</code><br>` +
+                    `<pre>${escapeHtml(stringifySafe(data.data))}</pre>`
+                );
+            } else {
+                showResult('error',
+                    `❌ Failed to fetch status<br>` +
+                    `<pre>${escapeHtml(stringifySafe(data.error))}</pre>`
+                );
+            }
+        } catch (err) {
+            showDebug(err.message);
+            showResult('error', `❌ ${escapeHtml(err.message)}`);
+        } finally { setLoading(false); }
+    }
+
+    window.addEventListener('load', () => setTimeout(checkHealth, 400));
 </script>
 
 </body>
