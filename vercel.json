@@ -1,15 +1,14 @@
 {
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api" },
-    { "source": "/dashboard", "destination": "/public/dashboard.html" },
-    { "source": "/login", "destination": "/public/login.html" },
-    { "source": "/signup", "destination": "/public/signup.html" },
-    { "source": "/pay/:linkId", "destination": "/public/pay.html" },
-    { "source": "/test", "destination": "/public/test-payment.html" },
-    { "source": "/about", "destination": "/public/about.html" },
-    { "source": "/faq", "destination": "/public/faq.html" },
-    { "source": "/privacy", "destination": "/public/privacy.html" },
-    { "source": "/policies", "destination": "/public/policies.html" },
-    { "source": "/contact", "destination": "/public/contact.html" }
+    { "source": "/api/:path*", "destination": "/api" },
+    { "source": "/dashboard", "destination": "/dashboard.html" },
+    { "source": "/pay/:linkId", "destination": "/pay.html" },
+    { "source": "/test", "destination": "/test.html" },
+    { "source": "/about", "destination": "/about.html" },
+    { "source": "/faq", "destination": "/faq.html" },
+    { "source": "/privacy", "destination": "/privacy.html" },
+    { "source": "/policies", "destination": "/policies.html" },
+    { "source": "/contact", "destination": "/contact.html" },
+    { "source": "/betting", "destination": "/betting.html" }
   ]
 }
