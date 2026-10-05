@@ -62,6 +62,26 @@ async function getMerchantByApiKey(apiKey) {
 }
 
 // ============================================
+// 💰 Credit merchant balance helper
+// ============================================
+async function creditMerchant(userId, amount, platformFee) {
+    if (!db || !userId || userId === 'unknown') return;
+
+    const merchantReceives = amount - platformFee;
+
+    try {
+        await db.collection('businesses').doc(userId).update({
+            balance: admin.firestore.FieldValue.increment(merchantReceives),
+            totalReceived: admin.firestore.FieldValue.increment(amount),
+            totalFees: admin.firestore.FieldValue.increment(platformFee)
+        });
+        console.log(`💰 Credited MWK ${merchantReceives} to ${userId}`);
+    } catch (err) {
+        console.error('Credit error:', err.message);
+    }
+}
+
+// ============================================
 // 🏠 Health
 // ============================================
 app.get('/api', (req, res) => {
@@ -86,57 +106,36 @@ app.post('/api/payment', async (req, res) => {
     const { apiKey, phoneNumber, amount, provider, email } = req.body;
 
     if (!apiKey) {
-        return res.status(401).json({
-            success: false,
-            error: 'Missing API key'
-        });
+        return res.status(401).json({ success: false, error: 'Missing API key' });
     }
 
     const merchant = await getMerchantByApiKey(apiKey);
     if (!merchant) {
-        return res.status(401).json({
-            success: false,
-            error: 'Invalid API key'
-        });
+        return res.status(401).json({ success: false, error: 'Invalid API key' });
     }
 
     if (!phoneNumber || !amount) {
-        return res.status(400).json({
-            success: false,
-            error: 'phoneNumber and amount are required'
-        });
+        return res.status(400).json({ success: false, error: 'phoneNumber and amount are required' });
     }
 
     const PLATFORM_KEY = process.env.PAYCHANGU_SECRET_KEY;
     const merchantKey = merchant.paychanguSecretKey || PLATFORM_KEY;
-    const usingMerchantKey = !!merchant.paychanguSecretKey;
 
     if (!merchantKey) {
-        return res.status(500).json({
-            success: false,
-            error: 'No PayChangu key available'
-        });
+        return res.status(500).json({ success: false, error: 'No PayChangu key available' });
     }
-
-    console.log(`Payment for merchant ${merchant.id} using ${usingMerchantKey ? 'MERCHANT' : 'PLATFORM'} key`);
 
     let cleanPhone = String(phoneNumber).replace(/\s/g, '').replace('+', '');
     if (cleanPhone.startsWith('265')) cleanPhone = cleanPhone.substring(3);
     if (cleanPhone.startsWith('0')) cleanPhone = cleanPhone.substring(1);
 
     if (cleanPhone.length !== 9) {
-        return res.status(400).json({
-            success: false,
-            error: `Invalid phone (${cleanPhone.length} digits, expected 9)`
-        });
+        return res.status(400).json({ success: false, error: `Invalid phone (${cleanPhone.length} digits)` });
     }
 
     const amountNum = Number(amount);
     if (isNaN(amountNum) || amountNum < 50) {
-        return res.status(400).json({
-            success: false,
-            error: 'Amount must be at least K50'
-        });
+        return res.status(400).json({ success: false, error: 'Amount must be at least K50' });
     }
 
     const platformFee = Math.round(amountNum * (PLATFORM_FEE_PERCENT / 100) * 100) / 100;
@@ -212,7 +211,7 @@ app.post('/api/payment', async (req, res) => {
 });
 
 // ============================================
-// 🔍 Verify Single Payment
+// 🔍 Verify Single Payment + Credit
 // ============================================
 app.get('/api/payment-status/:chargeId', async (req, res) => {
     if (!db) {
@@ -235,18 +234,26 @@ app.get('/api/payment-status/:chargeId', async (req, res) => {
 
         const response = await axios.get(
             `${PAYCHANGU_URL}/mobile-money/payments/${chargeId}/verify`,
-            {
-                headers: { 'Authorization': `Bearer ${merchantKey}` }
-            }
+            { headers: { 'Authorization': `Bearer ${merchantKey}` } }
         );
 
         const status = (response.data?.data?.status || response.data?.status || '').toLowerCase();
 
         if ((status === 'success' || status === 'successful') && txnData.status !== 'SUCCESS') {
+            const amount = Number(txnData.amount) || 0;
+            const fee = txnData.platformFee !== undefined
+                ? Number(txnData.platformFee)
+                : Math.round(amount * (PLATFORM_FEE_PERCENT / 100) * 100) / 100;
+            const merchantReceives = amount - fee;
+
             await txnDoc.ref.update({
                 status: 'SUCCESS',
+                platformFee: fee,
+                merchantReceives,
                 verifiedAt: admin.firestore.FieldValue.serverTimestamp()
             });
+
+            await creditMerchant(txnData.userId, amount, fee);
 
             const feeSnapshot = await db.collection('fee_ledger')
                 .where('chargeId', '==', chargeId)
@@ -283,7 +290,7 @@ app.get('/api/payment-status/:chargeId', async (req, res) => {
 });
 
 // ============================================
-// 🔄 Auto-Verify Pending Transactions
+// 🔄 Auto-Verify Pending
 // ============================================
 app.get('/api/verify-pending/:userId', async (req, res) => {
     if (!db) {
@@ -320,10 +327,21 @@ app.get('/api/verify-pending/:userId', async (req, res) => {
                 const status = (response.data?.data?.status || response.data?.status || '').toLowerCase();
 
                 if (status === 'success' || status === 'successful') {
+                    const txnData = doc.data();
+                    const amount = Number(txnData.amount) || 0;
+                    const fee = txnData.platformFee !== undefined
+                        ? Number(txnData.platformFee)
+                        : Math.round(amount * (PLATFORM_FEE_PERCENT / 100) * 100) / 100;
+                    const merchantReceives = amount - fee;
+
                     await doc.ref.update({
                         status: 'SUCCESS',
+                        platformFee: fee,
+                        merchantReceives,
                         verifiedAt: admin.firestore.FieldValue.serverTimestamp()
                     });
+
+                    await creditMerchant(txnData.userId, amount, fee);
 
                     const feeSnapshot = await db.collection('fee_ledger')
                         .where('chargeId', '==', chargeId)
@@ -356,7 +374,80 @@ app.get('/api/verify-pending/:userId', async (req, res) => {
 });
 
 // ============================================
-// 💰 Withdraw
+// 🔧 Repair Balance From Transactions
+// ============================================
+app.get('/api/repair-balance/:userId', async (req, res) => {
+    if (!db) {
+        return res.status(500).json({ success: false, error: 'Firebase not configured' });
+    }
+
+    const { userId } = req.params;
+
+    try {
+        const snapshot = await db.collection('transactions')
+            .where('userId', '==', userId)
+            .where('status', '==', 'SUCCESS')
+            .get();
+
+        let totalReceived = 0;
+        let totalFees = 0;
+        let merchantTotal = 0;
+
+        snapshot.forEach(doc => {
+            const t = doc.data();
+            const amount = Number(t.amount) || 0;
+            const fee = t.platformFee !== undefined
+                ? Number(t.platformFee)
+                : Math.round(amount * (PLATFORM_FEE_PERCENT / 100) * 100) / 100;
+            const receives = amount - fee;
+
+            totalReceived += amount;
+            totalFees += fee;
+            merchantTotal += receives;
+        });
+
+        // Subtract any withdrawals already made
+        const withdrawSnapshot = await db.collection('withdrawals')
+            .where('userId', '==', userId)
+            .get();
+
+        let withdrawnTotal = 0;
+        withdrawSnapshot.forEach(doc => {
+            const w = doc.data();
+            if (w.status === 'PROCESSING' || w.status === 'SUCCESS' || w.status === 'COMPLETED') {
+                withdrawnTotal += Number(w.amount) || 0;
+            }
+        });
+
+        const finalBalance = Math.max(0, merchantTotal - withdrawnTotal);
+
+        await db.collection('businesses').doc(userId).update({
+            balance: finalBalance,
+            totalReceived: totalReceived,
+            totalFees: totalFees,
+            totalWithdrawn: withdrawnTotal,
+            repairedAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+
+        res.json({
+            success: true,
+            userId,
+            transactionsCounted: snapshot.size,
+            totalReceived,
+            totalFees,
+            merchantEarnings: merchantTotal,
+            totalWithdrawn: withdrawnTotal,
+            newBalance: finalBalance,
+            message: 'Balance repaired successfully'
+        });
+
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// ============================================
+// 💰 Withdraw (deducts from balance immediately)
 // ============================================
 app.post('/api/withdraw', async (req, res) => {
     if (!db) {
@@ -390,10 +481,7 @@ app.post('/api/withdraw', async (req, res) => {
         const merchantKey = business.paychanguSecretKey || PLATFORM_KEY;
 
         if (!merchantKey) {
-            return res.status(400).json({
-                success: false,
-                error: 'No PayChangu key available'
-            });
+            return res.status(400).json({ success: false, error: 'No PayChangu key available' });
         }
 
         let cleanPhone = String(phoneNumber).replace(/\s/g, '').replace('+', '');
@@ -401,37 +489,13 @@ app.post('/api/withdraw', async (req, res) => {
         if (cleanPhone.startsWith('0')) cleanPhone = cleanPhone.substring(1);
 
         if (cleanPhone.length !== 9) {
-            return res.status(400).json({
-                success: false,
-                error: `Invalid phone (${cleanPhone.length} digits)`
-            });
+            return res.status(400).json({ success: false, error: `Invalid phone (${cleanPhone.length} digits)` });
         }
 
         const chargeId = `WD-${Date.now()}-${crypto.randomBytes(3).toString('hex')}`;
         const operatorRef = provider === 'TNM_MWI' ? OPERATORS.TNM_MWI : OPERATORS.AIRTEL_MWI;
 
-        const payoutResponse = await axios.post(
-            `${PAYCHANGU_URL}/mobile-money/payouts/initialize`,
-            {
-                mobile_money_operator_ref_id: operatorRef,
-                mobile: cleanPhone,
-                amount: String(withdrawAmount),
-                charge_id: chargeId
-            },
-            {
-                headers: {
-                    'Authorization': `Bearer ${merchantKey}`,
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                timeout: 30000
-            }
-        );
-
-        await db.collection('businesses').doc(userId).update({
-            balance: admin.firestore.FieldValue.increment(-withdrawAmount)
-        });
-
+        // Create withdrawal record FIRST
         await db.collection('withdrawals').doc(chargeId).set({
             chargeId,
             userId,
@@ -439,24 +503,96 @@ app.post('/api/withdraw', async (req, res) => {
             amount: withdrawAmount,
             provider: provider || 'AIRTEL_MWI',
             status: 'PROCESSING',
-            paychanguResponse: payoutResponse.data,
             createdAt: admin.firestore.FieldValue.serverTimestamp()
         });
 
-        res.json({
-            success: true,
-            chargeId,
-            message: `Withdrawal of MWK ${withdrawAmount} initiated to ${phoneNumber}`,
-            data: payoutResponse.data
+        // Deduct balance immediately
+        await db.collection('businesses').doc(userId).update({
+            balance: admin.firestore.FieldValue.increment(-withdrawAmount),
+            totalWithdrawn: admin.firestore.FieldValue.increment(withdrawAmount)
         });
 
+        // Call PayChangu Payout
+        try {
+            const payoutResponse = await axios.post(
+                `${PAYCHANGU_URL}/mobile-money/payouts/initialize`,
+                {
+                    mobile_money_operator_ref_id: operatorRef,
+                    mobile: cleanPhone,
+                    amount: String(withdrawAmount),
+                    charge_id: chargeId
+                },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${merchantKey}`,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    timeout: 30000
+                }
+            );
+
+            await db.collection('withdrawals').doc(chargeId).update({
+                paychanguResponse: payoutResponse.data
+            });
+
+            res.json({
+                success: true,
+                chargeId,
+                message: `Withdrawal of MWK ${withdrawAmount} initiated`,
+                data: payoutResponse.data
+            });
+
+        } catch (payoutError) {
+            // Payout failed — refund balance
+            await db.collection('businesses').doc(userId).update({
+                balance: admin.firestore.FieldValue.increment(withdrawAmount),
+                totalWithdrawn: admin.firestore.FieldValue.increment(-withdrawAmount)
+            });
+
+            await db.collection('withdrawals').doc(chargeId).update({
+                status: 'FAILED',
+                error: payoutError.response?.data?.message || payoutError.message
+            });
+
+            const errData = payoutError.response?.data;
+            res.status(500).json({
+                success: false,
+                error: errData?.message || errData?.error || payoutError.message,
+                raw: errData
+            });
+        }
+
     } catch (error) {
-        const errData = error.response?.data;
-        res.status(500).json({
-            success: false,
-            error: errData?.message || errData?.error || error.message,
-            raw: errData
-        });
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// ============================================
+// 📜 List Withdrawals
+// ============================================
+app.get('/api/withdrawals/:userId', async (req, res) => {
+    if (!db) {
+        return res.status(500).json({ success: false, error: 'Firebase not configured' });
+    }
+
+    try {
+        const snapshot = await db.collection('withdrawals')
+            .where('userId', '==', req.params.userId)
+            .limit(50)
+            .get();
+
+        const withdrawals = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+            createdAt: doc.data().createdAt?.toDate?.() || null
+        }));
+
+        withdrawals.sort((a, b) => (b.createdAt?.getTime?.() || 0) - (a.createdAt?.getTime?.() || 0));
+
+        res.json({ success: true, withdrawals });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
     }
 });
 
@@ -471,10 +607,7 @@ app.post('/api/merchant/connect-key', async (req, res) => {
     }
 
     if (!secretKey.startsWith('sec-live-') && !secretKey.startsWith('sec-test-')) {
-        return res.status(400).json({
-            success: false,
-            error: 'Key must start with sec-live- or sec-test-'
-        });
+        return res.status(400).json({ success: false, error: 'Key must start with sec-live- or sec-test-' });
     }
 
     if (!db) {
@@ -528,13 +661,23 @@ app.post('/api/webhook/paychangu', async (req, res) => {
         else if (status === 'failed' || status === 'cancelled') finalStatus = 'FAILED';
 
         if (txnData.status !== 'SUCCESS') {
+            const amount = Number(txnData.amount) || 0;
+            const fee = txnData.platformFee !== undefined
+                ? Number(txnData.platformFee)
+                : Math.round(amount * (PLATFORM_FEE_PERCENT / 100) * 100) / 100;
+            const merchantReceives = amount - fee;
+
             await txnRef.update({
                 status: finalStatus,
+                platformFee: fee,
+                merchantReceives,
                 webhookData: body,
                 updatedAt: admin.firestore.FieldValue.serverTimestamp()
             });
 
             if (finalStatus === 'SUCCESS') {
+                await creditMerchant(txnData.userId, amount, fee);
+
                 const feeSnapshot = await db.collection('fee_ledger')
                     .where('chargeId', '==', chargeId)
                     .limit(1)
