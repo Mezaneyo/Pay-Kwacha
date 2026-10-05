@@ -10,8 +10,6 @@
         body { font-family: 'Inter', -apple-system, sans-serif; background: #f8fafc; color: #0f172a; line-height: 1.5; }
         a { text-decoration: none; color: inherit; }
         button { font-family: inherit; cursor: pointer; border: none; background: none; }
-
-        /* NAV */
         .nav { background: white; border-bottom: 1px solid #f1f5f9; padding: 0 24px; position: sticky; top: 0; z-index: 100; }
         .nav-inner { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; height: 68px; }
         .brand { font-size: 20px; font-weight: 800; display: flex; align-items: center; gap: 10px; }
@@ -20,21 +18,15 @@
         .nav-right { display: flex; gap: 12px; align-items: center; font-size: 14px; }
         .user-email { color: #64748b; }
         .btn-logout { padding: 8px 16px; background: #f1f5f9; border-radius: 100px; font-weight: 600; font-size: 13px; }
-
-        /* CONTAINER */
         .container { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
         .welcome { margin-bottom: 28px; }
         .welcome h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 6px; }
         .welcome p { color: #64748b; font-size: 15px; }
-
-        /* STATS */
         .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 28px; }
         .stat { background: white; padding: 22px; border-radius: 16px; border: 1px solid #f1f5f9; }
         .stat-label { font-size: 12px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
         .stat-value { font-size: 26px; font-weight: 800; color: #0f172a; letter-spacing: -0.02em; }
         .stat-sub { font-size: 12px; color: #64748b; margin-top: 4px; }
-
-        /* BALANCE CARD */
         .balance-card { background: linear-gradient(135deg, #0f172a, #1e1b4b); color: white; padding: 32px; border-radius: 20px; margin-bottom: 28px; position: relative; overflow: hidden; }
         .balance-card::before { content: ''; position: absolute; top: -100px; right: -100px; width: 300px; height: 300px; background: radial-gradient(circle, rgba(99,102,241,0.4), transparent 70%); border-radius: 50%; }
         .balance-content { position: relative; z-index: 2; }
@@ -44,18 +36,12 @@
         .balance-actions { margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
         .balance-btn { padding: 12px 24px; background: white; color: #0f172a; border-radius: 100px; font-weight: 700; font-size: 14px; }
         .balance-btn.secondary { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); }
-
-        /* TABS */
         .tabs { display: flex; gap: 4px; border-bottom: 1px solid #f1f5f9; margin-bottom: 24px; overflow-x: auto; }
         .tab { padding: 12px 20px; background: none; font-weight: 600; color: #64748b; border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; font-size: 14px; }
         .tab.active { color: #6366f1; border-bottom-color: #6366f1; }
-
-        /* CARD */
         .card { background: white; border-radius: 16px; border: 1px solid #f1f5f9; padding: 24px; }
         .card h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
         .card p.desc { color: #64748b; font-size: 14px; margin-bottom: 16px; }
-
-        /* TABLE */
         table { width: 100%; border-collapse: collapse; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
         th { color: #64748b; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
@@ -65,28 +51,16 @@
         .badge.pending { background: #fef3c7; color: #92400e; }
         .badge.failed { background: #fef2f2; color: #991b1b; }
         .empty { text-align: center; padding: 40px 20px; color: #94a3b8; font-size: 14px; }
-
-        /* FORM */
         .field { margin-bottom: 16px; }
         .field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #334155; }
-        .field input, .field select, .field textarea { width: 100%; padding: 12px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 15px; background: #f8fafc; font-family: inherit; }
-        .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: #6366f1; background: white; box-shadow: 0 0 0 4px rgba(99,102,241,0.1); }
-        .field textarea { resize: vertical; min-height: 80px; }
+        .field input, .field select { width: 100%; padding: 12px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 15px; background: #f8fafc; font-family: inherit; }
+        .field input:focus, .field select:focus { outline: none; border-color: #6366f1; background: white; box-shadow: 0 0 0 4px rgba(99,102,241,0.1); }
         .btn-primary { padding: 12px 24px; background: #0f172a; color: white; border-radius: 10px; font-weight: 700; font-size: 14px; }
         .btn-primary:hover { background: #020617; }
-        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        /* KEY BOX */
         .key-box { background: #f8fafc; padding: 16px; border-radius: 12px; font-family: monospace; font-size: 13px; word-break: break-all; position: relative; border: 1px dashed #cbd5e1; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
         .key-actions { display: flex; gap: 6px; }
         .key-btn { padding: 6px 12px; background: #0f172a; color: white; border-radius: 8px; font-size: 11px; font-weight: 600; }
         .key-btn.danger { background: #dc2626; }
-        .key-warning { background: #fef3c7; border: 1px solid #fde68a; color: #92400e; padding: 12px 16px; border-radius: 10px; font-size: 13px; margin-top: 16px; }
-
-        /* PAYMENT LINK */
-        .link-preview { background: #f8fafc; padding: 14px; border-radius: 10px; font-family: monospace; font-size: 13px; word-break: break-all; margin-top: 12px; border: 1px dashed #cbd5e1; }
-
-        /* AUTH MODAL */
         .auth-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.85); backdrop-filter: blur(8px); z-index: 9999; display: none; align-items: center; justify-content: center; padding: 20px; }
         .auth-overlay.active { display: flex; }
         .auth-card { background: white; border-radius: 24px; padding: 40px 36px; max-width: 420px; width: 100%; }
@@ -99,12 +73,9 @@
         .auth-switch a { color: #6366f1; font-weight: 600; cursor: pointer; }
         .auth-error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; padding: 12px; border-radius: 10px; font-size: 13px; margin-top: 14px; display: none; text-align: center; }
         .auth-error.show { display: block; }
-
-        /* TOAST */
         .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #0f172a; color: white; padding: 14px 24px; border-radius: 100px; font-size: 14px; font-weight: 600; box-shadow: 0 10px 40px rgba(0,0,0,0.3); z-index: 10000; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
         .toast.show { opacity: 1; }
         .toast.error { background: #dc2626; }
-
         @media (max-width: 640px) {
             .stats { grid-template-columns: 1fr 1fr; }
             .user-email { display: none; }
@@ -131,7 +102,6 @@
         <p>Manage your payments, links, and balance.</p>
     </div>
 
-    <!-- BALANCE CARD -->
     <div class="balance-card">
         <div class="balance-content">
             <div class="balance-label">Available Balance</div>
@@ -144,118 +114,83 @@
         </div>
     </div>
 
-    <!-- STATS -->
     <div class="stats">
-        <div class="stat">
-            <div class="stat-label">Total Received</div>
-            <div class="stat-value" id="totalAmount">MWK 0</div>
-            <div class="stat-sub" id="totalCount">0 transactions</div>
-        </div>
-        <div class="stat">
-            <div class="stat-label">This Month</div>
-            <div class="stat-value" id="monthAmount">MWK 0</div>
-            <div class="stat-sub">Last 30 days</div>
-        </div>
-        <div class="stat">
-            <div class="stat-label">Fees Paid</div>
-            <div class="stat-value" id="feesPaid">MWK 0</div>
-            <div class="stat-sub">2% per transaction</div>
-        </div>
+        <div class="stat"><div class="stat-label">Total Received</div><div class="stat-value" id="totalAmount">MWK 0</div><div class="stat-sub" id="totalCount">0 transactions</div></div>
+        <div class="stat"><div class="stat-label">This Month</div><div class="stat-value" id="monthAmount">MWK 0</div><div class="stat-sub">Last 30 days</div></div>
+        <div class="stat"><div class="stat-label">Fees Paid</div><div class="stat-value" id="feesPaid">MWK 0</div><div class="stat-sub">2% per transaction</div></div>
     </div>
 
-    <!-- TABS -->
     <div class="tabs">
         <button class="tab active" onclick="switchTab(this, 'transactions')">Transactions</button>
         <button class="tab" onclick="switchTab(this, 'links')">Payment Links</button>
         <button class="tab" onclick="switchTab(this, 'api')">API Keys</button>
+        <button class="tab" onclick="switchTab(this, 'connect')">Connect PayChangu</button>
         <button class="tab" onclick="switchTab(this, 'settings')">Settings</button>
     </div>
 
-    <!-- TRANSACTIONS -->
     <div id="tab-transactions" class="card">
         <h3>Recent Transactions</h3>
         <p class="desc">Stored for 3 months, then automatically deleted.</p>
         <table>
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Phone</th>
-                    <th>Amount</th>
-                    <th>Fee</th>
-                    <th>You Receive</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody id="txnTable">
-                <tr><td colspan="6" class="empty">Loading...</td></tr>
-            </tbody>
+            <thead><tr><th>Date</th><th>Phone</th><th>Amount</th><th>Fee</th><th>Status</th></tr></thead>
+            <tbody id="txnTable"><tr><td colspan="5" class="empty">Loading...</td></tr></tbody>
         </table>
     </div>
 
-    <!-- PAYMENT LINKS -->
     <div id="tab-links" class="card" style="display:none;">
         <h3>Create Payment Link</h3>
-        <p class="desc">Share this link with customers to collect payments — no code required.</p>
-
-        <div class="field">
-            <label>Amount (MWK)</label>
-            <input type="number" id="linkAmount" placeholder="1000" min="50" />
-        </div>
-        <div class="field">
-            <label>Description</label>
-            <input type="text" id="linkDesc" placeholder="e.g., School fees, Order #123" />
-        </div>
+        <p class="desc">Share this link with customers to collect payments.</p>
+        <div class="field"><label>Amount (MWK)</label><input type="number" id="linkAmount" placeholder="1000" min="50" /></div>
+        <div class="field"><label>Description</label><input type="text" id="linkDesc" placeholder="e.g., Order #123" /></div>
         <button class="btn-primary" id="createLinkBtn" onclick="createPaymentLink()">Generate Link</button>
-
-        <div id="linkResult"></div>
+        <div id="linkResult" style="margin-top: 16px;"></div>
     </div>
 
-    <!-- API KEYS -->
     <div id="tab-api" class="card" style="display:none;">
         <h3>Your API Key</h3>
         <p class="desc">Use this key to integrate PayKwacha into your app.</p>
         <div id="apiKeyBox"></div>
-        <div class="key-warning" id="keyWarning" style="display:none;">
-            ⚠️ Revoking will break any app using this key.
-        </div>
     </div>
 
-    <!-- SETTINGS -->
+    <div id="tab-connect" class="card" style="display:none;">
+        <h3>Connect Your PayChangu Account</h3>
+        <p class="desc">To accept payments, connect your own PayChangu account. Money settles directly to you.</p>
+        <div style="background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; padding: 16px; border-radius: 12px; margin-bottom: 20px; font-size: 14px; line-height: 1.6;">
+            <strong>📋 How to connect:</strong><br>
+            1. Sign up at <a href="https://paychangu.com" target="_blank" style="color: #1e40af; font-weight: 700;">paychangu.com</a><br>
+            2. Complete verification<br>
+            3. Go to <strong>Settings → API & Webhook</strong><br>
+            4. Copy your <strong>Secret Key</strong> (starts with <code>sec-live-</code>)<br>
+            5. Paste it below
+        </div>
+        <div class="field"><label>PayChangu Secret Key</label><input type="password" id="paychanguKey" placeholder="sec-live-..." /></div>
+        <button class="btn-primary" id="connectBtn" onclick="connectPayChangu()">Connect Account</button>
+        <div id="connectResult" style="margin-top: 16px;"></div>
+    </div>
+
     <div id="tab-settings" class="card" style="display:none;">
         <h3>Account Settings</h3>
         <p class="desc">Configure where your money is withdrawn to.</p>
-        <div class="field">
-            <label>Business Name</label>
-            <input type="text" id="settingsBusiness" placeholder="e.g., Mlimi Store" />
-        </div>
-        <div class="field">
-            <label>Withdrawal Phone (Airtel/TNM)</label>
-            <input type="tel" id="settingsPhone" placeholder="0995514049" />
-        </div>
+        <div class="field"><label>Business Name</label><input type="text" id="settingsBusiness" placeholder="Mlimi Store" /></div>
+        <div class="field"><label>Withdrawal Phone (Airtel/TNM)</label><input type="tel" id="settingsPhone" placeholder="0995514049" /></div>
         <button class="btn-primary" onclick="saveSettings()">Save Settings</button>
     </div>
 </div>
 
-<!-- WITHDRAWAL MODAL -->
+<!-- WITHDRAW MODAL -->
 <div class="auth-overlay" id="withdrawOverlay">
     <div class="auth-card">
         <h2>Withdraw Funds</h2>
-        <p class="sub">Money will be sent to your PayChangu account and settled to your mobile wallet.</p>
-        <div class="field">
-            <label>Amount (MWK)</label>
-            <input type="number" id="withdrawAmount" placeholder="0.00" />
-        </div>
-        <div class="field">
-            <label>Withdrawal Method</label>
+        <p class="sub">Money will be sent to your mobile money number.</p>
+        <div class="field"><label>Amount (MWK)</label><input type="number" id="withdrawAmount" placeholder="0.00" /></div>
+        <div class="field"><label>Withdrawal Method</label>
             <select id="withdrawMethod">
                 <option value="AIRTEL_MWI">Airtel Money</option>
                 <option value="TNM_MWI">TNM Mpamba</option>
             </select>
         </div>
         <button class="auth-btn" onclick="confirmWithdraw()">Confirm Withdrawal</button>
-        <div class="auth-switch">
-            <a onclick="closeWithdraw()">Cancel</a>
-        </div>
+        <div class="auth-switch"><a onclick="closeWithdraw()">Cancel</a></div>
     </div>
 </div>
 
@@ -265,37 +200,21 @@
         <div class="brand-mark">P</div>
         <h2 id="authTitle">Welcome back</h2>
         <p class="sub" id="authSub">Sign in to your PayKwacha account</p>
-
-        <div class="field">
-            <label>Email</label>
-            <input type="email" id="authEmail" placeholder="you@business.com" />
-        </div>
-        <div class="field">
-            <label>Password</label>
-            <input type="password" id="authPassword" placeholder="••••••••" />
-        </div>
-
+        <div class="field"><label>Email</label><input type="email" id="authEmail" placeholder="you@business.com" /></div>
+        <div class="field"><label>Password</label><input type="password" id="authPassword" placeholder="••••••••" /></div>
         <button class="auth-btn" id="authBtn" onclick="handleAuth()">Sign In</button>
         <div class="auth-error" id="authError"></div>
-
-        <div class="auth-switch">
-            <span id="switchText">New to PayKwacha?</span>
-            <a id="switchLink" onclick="toggleAuthMode(event)">Create an account</a>
-        </div>
+        <div class="auth-switch"><span id="switchText">New to PayKwacha?</span> <a id="switchLink" onclick="toggleAuthMode(event)">Create an account</a></div>
     </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
-<!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
 <script>
-    // ============================================
-    // 🔥 Firebase
-    // ============================================
     const firebaseConfig = {
         apiKey: "AIzaSyBY_Ea_o2x6QJupbc4M2K_ES7G0D8XuvEc",
         authDomain: "primebet-a6742.firebaseapp.com",
@@ -313,9 +232,6 @@
     let userData = {};
     let unsubscribeTxns = null;
 
-    // ============================================
-    // 🔐 Auth
-    // ============================================
     auth.onAuthStateChanged(async (user) => {
         if (user) {
             currentUser = user;
@@ -338,16 +254,8 @@
         const err = document.getElementById('authError');
 
         err.classList.remove('show');
-        if (!email || !password) {
-            err.textContent = 'Please fill in all fields';
-            err.classList.add('show');
-            return;
-        }
-        if (password.length < 6) {
-            err.textContent = 'Password must be at least 6 characters';
-            err.classList.add('show');
-            return;
-        }
+        if (!email || !password) { err.textContent = 'Fill all fields'; err.classList.add('show'); return; }
+        if (password.length < 6) { err.textContent = 'Password must be 6+ chars'; err.classList.add('show'); return; }
 
         btn.disabled = true;
         btn.textContent = authMode === 'signin' ? 'Signing in...' : 'Creating...';
@@ -391,14 +299,10 @@
         document.getElementById('authBtn').textContent = authMode === 'signin' ? 'Sign In' : 'Create Account';
         document.getElementById('switchText').textContent = authMode === 'signin' ? 'New to PayKwacha?' : 'Already have an account?';
         document.getElementById('switchLink').textContent = authMode === 'signin' ? 'Create an account' : 'Sign in';
-        document.getElementById('authError').classList.remove('show');
     }
 
     function logout() { auth.signOut(); }
 
-    // ============================================
-    // 📊 Load User Data
-    // ============================================
     async function loadUserData() {
         const doc = await db.collection('businesses').doc(currentUser.uid).get();
         if (doc.exists) {
@@ -419,46 +323,35 @@
             await db.collection('businesses').doc(currentUser.uid).set(newData);
             userData = newData;
         }
-
         document.getElementById('balanceAmount').textContent = `MWK ${(userData.balance || 0).toLocaleString()}`;
         document.getElementById('settingsBusiness').value = userData.businessName || '';
         document.getElementById('settingsPhone').value = userData.settlementPhone || '';
         renderApiKeyBox();
     }
 
-    // ============================================
-    // 📡 Transactions
-    // ============================================
     function listenToTransactions() {
         if (unsubscribeTxns) unsubscribeTxns();
-
         unsubscribeTxns = db.collection('transactions')
             .where('userId', '==', currentUser.uid)
             .limit(100)
             .onSnapshot((snapshot) => {
                 const txns = [];
                 snapshot.forEach(doc => txns.push({ id: doc.id, ...doc.data() }));
-                txns.sort((a, b) => {
-                    const aTime = a.createdAt?.toMillis?.() || 0;
-                    const bTime = b.createdAt?.toMillis?.() || 0;
-                    return bTime - aTime;
-                });
+                txns.sort((a, b) => (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0));
                 renderTransactions(txns);
             });
     }
 
     function renderTransactions(txns) {
         const tbody = document.getElementById('txnTable');
-
         if (txns.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" class="empty">No transactions yet.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" class="empty">No transactions yet.</td></tr>';
             document.getElementById('totalAmount').textContent = 'MWK 0';
             document.getElementById('totalCount').textContent = '0 transactions';
             document.getElementById('monthAmount').textContent = 'MWK 0';
             document.getElementById('feesPaid').textContent = 'MWK 0';
             return;
         }
-
         let total = 0, success = 0, monthTotal = 0, totalFees = 0;
         const now = new Date();
         const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -466,7 +359,6 @@
         tbody.innerHTML = txns.map(t => {
             const amt = t.amount || 0;
             const fee = t.platformFee || (amt * 0.02);
-            const net = t.merchantReceives || (amt - fee);
             const created = t.createdAt?.toDate?.() || null;
             if (t.status === 'SUCCESS') {
                 total += amt;
@@ -476,16 +368,7 @@
             }
             const badgeClass = t.status === 'SUCCESS' ? 'success' : t.status === 'PENDING' ? 'pending' : 'failed';
             const date = created ? created.toLocaleDateString() + ' ' + created.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '—';
-            return `
-                <tr>
-                    <td>${date}</td>
-                    <td>${escapeHtml(t.phoneNumber || '—')}</td>
-                    <td><strong>MWK ${amt.toLocaleString()}</strong></td>
-                    <td style="color:#dc2626;">−MWK ${Math.round(fee).toLocaleString()}</td>
-                    <td style="color:#059669;"><strong>MWK ${Math.round(net).toLocaleString()}</strong></td>
-                    <td><span class="badge ${badgeClass}">${t.status}</span></td>
-                </tr>
-            `;
+            return `<tr><td>${date}</td><td>${escapeHtml(t.phoneNumber || '—')}</td><td><strong>MWK ${amt.toLocaleString()}</strong></td><td style="color:#dc2626;">−MWK ${Math.round(fee).toLocaleString()}</td><td><span class="badge ${badgeClass}">${t.status}</span></td></tr>`;
         }).join('');
 
         document.getElementById('totalAmount').textContent = `MWK ${total.toLocaleString()}`;
@@ -494,9 +377,6 @@
         document.getElementById('feesPaid').textContent = `MWK ${Math.round(totalFees).toLocaleString()}`;
     }
 
-    // ============================================
-    // 🔑 API Key Management
-    // ============================================
     function generateApiKey() {
         const ts = Date.now();
         const rand = Math.random().toString(36).substring(2, 10).toUpperCase();
@@ -506,21 +386,9 @@
     function renderApiKeyBox() {
         const box = document.getElementById('apiKeyBox');
         if (userData.apiKey) {
-            box.innerHTML = `
-                <div class="key-box">
-                    <span>${escapeHtml(userData.apiKey)}</span>
-                    <div class="key-actions">
-                        <button class="key-btn" onclick="copyApiKey()">Copy</button>
-                        <button class="key-btn danger" onclick="revokeKey()">Revoke</button>
-                    </div>
-                </div>
-            `;
+            box.innerHTML = `<div class="key-box"><span>${escapeHtml(userData.apiKey)}</span><div class="key-actions"><button class="key-btn" onclick="copyApiKey()">Copy</button><button class="key-btn danger" onclick="revokeKey()">Revoke</button></div></div>`;
         } else {
-            box.innerHTML = `
-                <div class="key-box" style="justify-content:center; padding: 32px;">
-                    <button class="btn-primary" onclick="generateNewKey()">Generate API Key</button>
-                </div>
-            `;
+            box.innerHTML = `<div class="key-box" style="justify-content:center; padding: 32px;"><button class="btn-primary" onclick="generateNewKey()">Generate API Key</button></div>`;
         }
     }
 
@@ -541,27 +409,17 @@
     }
 
     async function revokeKey() {
-        if (!confirm('⚠️ Revoke this API key? Apps using it will stop working.')) return;
-        await db.collection('businesses').doc(currentUser.uid).update({
-            apiKey: null,
-            apiKeyRevokedAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
+        if (!confirm('⚠️ Revoke this API key?')) return;
+        await db.collection('businesses').doc(currentUser.uid).update({ apiKey: null });
         userData.apiKey = null;
         renderApiKeyBox();
         showToast('🔒 API key revoked');
     }
 
-    // ============================================
-    // 🔗 Payment Links
-    // ============================================
     async function createPaymentLink() {
         const amount = document.getElementById('linkAmount').value.trim();
         const desc = document.getElementById('linkDesc').value.trim();
-
-        if (!amount || Number(amount) < 50) {
-            showToast('Amount must be at least K50', true);
-            return;
-        }
+        if (!amount || Number(amount) < 50) { showToast('Minimum K50', true); return; }
 
         const btn = document.getElementById('createLinkBtn');
         btn.disabled = true;
@@ -582,82 +440,103 @@
             });
 
             document.getElementById('linkResult').innerHTML = `
-                <div class="link-preview">
-                    <strong>Share this link:</strong><br>
-                    <a href="${link}" target="_blank">${link}</a>
+                <div style="background:#f8fafc; padding:14px; border-radius:10px; font-family:monospace; font-size:13px; word-break:break-all; border:1px dashed #cbd5e1;">
+                    <strong>Share this link:</strong><br><a href="${link}" target="_blank">${link}</a>
                 </div>
                 <button class="btn-primary" style="margin-top:12px;" onclick="copyLink('${link}')">Copy Link</button>
                 <button class="btn-primary" style="margin-top:12px; background:#25D366;" onclick="shareWhatsApp('${link}','${amount}')">Share on WhatsApp</button>
             `;
-
             document.getElementById('linkAmount').value = '';
             document.getElementById('linkDesc').value = '';
             showToast('✅ Payment link created');
         } catch (err) {
-            showToast('Failed to create link', true);
+            showToast('Failed', true);
         } finally {
             btn.disabled = false;
             btn.textContent = 'Generate Link';
         }
     }
 
-    function copyLink(link) {
-        navigator.clipboard.writeText(link);
-        showToast('📋 Link copied');
-    }
-
+    function copyLink(link) { navigator.clipboard.writeText(link); showToast('📋 Copied'); }
     function shareWhatsApp(link, amount) {
         const text = encodeURIComponent(`Pay MWK ${amount} via PayKwacha: ${link}`);
         window.open(`https://wa.me/?text=${text}`, '_blank');
     }
 
-    // ============================================
-    // 💸 Withdrawals
-    // ============================================
-    function openWithdraw() {
-        document.getElementById('withdrawOverlay').classList.add('active');
-    }
-
-    function closeWithdraw() {
-        document.getElementById('withdrawOverlay').classList.remove('active');
-    }
+    function openWithdraw() { document.getElementById('withdrawOverlay').classList.add('active'); }
+    function closeWithdraw() { document.getElementById('withdrawOverlay').classList.remove('active'); }
 
     async function confirmWithdraw() {
         const amount = Number(document.getElementById('withdrawAmount').value);
         const method = document.getElementById('withdrawMethod').value;
 
-        if (!amount || amount < 100) {
-            showToast('Minimum withdrawal is K100', true);
-            return;
+        if (!amount || amount < 100) { showToast('Minimum K100', true); return; }
+        if (amount > (userData.balance || 0)) { showToast('Exceeds balance', true); return; }
+        if (!userData.settlementPhone) { showToast('Set withdrawal phone in Settings', true); return; }
+
+        const btn = event.target;
+        btn.disabled = true;
+        btn.textContent = 'Sending...';
+
+        try {
+            const res = await fetch('/api/withdraw', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userId: currentUser.uid,
+                    phoneNumber: userData.settlementPhone,
+                    amount: amount,
+                    provider: method
+                })
+            });
+            const data = await res.json();
+            if (data.success) {
+                showToast(`✅ Withdrawal of MWK ${amount} initiated!`);
+                closeWithdraw();
+                await loadUserData();
+            } else {
+                showToast(data.error || 'Withdrawal failed', true);
+            }
+        } catch (err) {
+            showToast('Network error: ' + err.message, true);
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Confirm Withdrawal';
         }
-
-        if (amount > (userData.balance || 0)) {
-            showToast('Amount exceeds your balance', true);
-            return;
-        }
-
-        if (!userData.settlementPhone) {
-            showToast('Set your withdrawal phone in Settings first', true);
-            return;
-        }
-
-        // Save withdrawal request
-        await db.collection('withdrawals').add({
-            userId: currentUser.uid,
-            amount,
-            method,
-            phone: userData.settlementPhone,
-            status: 'pending',
-            requestedAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-
-        showToast('✅ Withdrawal requested — processing...');
-        closeWithdraw();
     }
 
-    // ============================================
-    // ⚙️ Settings
-    // ============================================
+    async function connectPayChangu() {
+        const key = document.getElementById('paychanguKey').value.trim();
+        const btn = document.getElementById('connectBtn');
+        const result = document.getElementById('connectResult');
+
+        if (!key) { result.innerHTML = '<div style="color:#991b1b; font-size:13px;">Enter key</div>'; return; }
+
+        btn.disabled = true;
+        btn.textContent = 'Verifying...';
+        result.innerHTML = '';
+
+        try {
+            const res = await fetch('/api/merchant/connect-key', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: currentUser.uid, secretKey: key })
+            });
+            const data = await res.json();
+            if (data.success) {
+                result.innerHTML = '<div style="background:#ecfdf5; color:#065f46; padding:14px; border-radius:10px;">✅ <strong>Connected!</strong></div>';
+                document.getElementById('paychanguKey').value = '';
+            } else {
+                result.innerHTML = `<div style="background:#fef2f2; color:#991b1b; padding:14px; border-radius:10px;">❌ ${data.error}</div>`;
+            }
+        } catch (err) {
+            result.innerHTML = `<div style="color:#991b1b;">Network error: ${err.message}</div>`;
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Connect Account';
+        }
+    }
+
     async function saveSettings() {
         await db.collection('businesses').doc(currentUser.uid).update({
             businessName: document.getElementById('settingsBusiness').value.trim(),
@@ -666,9 +545,6 @@
         showToast('✅ Settings saved');
     }
 
-    // ============================================
-    // 📑 Tabs
-    // ============================================
     function switchTab(el, tab) {
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
         el.classList.add('active');
@@ -677,14 +553,11 @@
     }
 
     function switchTabById(tab) {
-        const idx = ['transactions', 'links', 'api', 'settings'].indexOf(tab);
+        const idx = ['transactions', 'links', 'api', 'connect', 'settings'].indexOf(tab);
         const btn = document.querySelectorAll('.tab')[idx];
         if (btn) btn.click();
     }
 
-    // ============================================
-    // 🎨 Helpers
-    // ============================================
     function escapeHtml(str) {
         return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
     }
