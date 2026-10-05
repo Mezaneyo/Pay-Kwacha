@@ -51,7 +51,7 @@ app.get('/api', (req, res) => {
     res.json({
         name: 'PayKwacha API',
         status: 'running',
-        provider: 'PayChangu Direct Charge',
+        provider: 'PayChangu Direct Charge + Payouts',
         configured: true,
         firebase: db ? 'connected' : 'not configured',
         feePercent: PLATFORM_FEE_PERCENT,
@@ -76,31 +76,43 @@ app.post('/api/payment', async (req, res) => {
         });
     }
 
-    // Load merchant's PayChangu key
-    let merchantKey;
+    // Load merchant's PayChangu key (fallback to platform key)
+    const PLATFORM_KEY = process.env.PAYCHANGU_SECRET_KEY;
+    let merchantKey = PLATFORM_KEY;
+    let usingMerchantKey = false;
+
     try {
         const merchantDoc = await db.collection('businesses').doc(merchantUserId).get();
-        if (!merchantDoc.exists) {
-            return res.status(404).json({ success: false, error: 'Merchant not found' });
-        }
-        merchantKey = merchantDoc.data().paychanguSecretKey;
-        if (!merchantKey) {
-            return res.status(400).json({
-                success: false,
-                error: 'Merchant has not connected their PayChangu account'
-            });
+        if (merchantDoc.exists) {
+            const merchantData = merchantDoc.data();
+            if (merchantData.paychanguSecretKey) {
+                merchantKey = merchantData.paychanguSecretKey;
+                usingMerchantKey = true;
+            }
         }
     } catch (err) {
-        return res.status(500).json({ success: false, error: 'Could not load merchant' });
+        console.log('Could not load merchant, using platform key');
     }
 
-    // Normalize phone
+    if (!merchantKey) {
+        return res.status(400).json({
+            success: false,
+            error: 'No PayChangu key available'
+        });
+    }
+
+    console.log(`Payment using ${usingMerchantKey ? 'MERCHANT' : 'PLATFORM'} key`);
+
+    // Normalize phone to 9-digit
     let cleanPhone = String(phoneNumber).replace(/\s/g, '').replace('+', '');
     if (cleanPhone.startsWith('265')) cleanPhone = cleanPhone.substring(3);
     if (cleanPhone.startsWith('0')) cleanPhone = cleanPhone.substring(1);
 
     if (cleanPhone.length !== 9) {
-        return res.status(400).json({ success: false, error: `Invalid phone (${cleanPhone.length} digits)` });
+        return res.status(400).json({
+            success: false,
+            error: `Invalid phone (${cleanPhone.length} digits)`
+        });
     }
 
     const amountNum = Number(amount);
@@ -148,7 +160,7 @@ app.post('/api/payment', async (req, res) => {
             expireAt: admin.firestore.Timestamp.fromDate(ttlDate)
         });
 
-        // Track platform fee
+        // Track fee
         await db.collection('fee_ledger').add({
             merchantUserId,
             chargeId,
@@ -194,10 +206,11 @@ app.get('/api/payment-status/:chargeId', async (req, res) => {
         const txnData = txnDoc.data();
 
         const merchantDoc = await db.collection('businesses').doc(txnData.userId).get();
-        const merchantKey = merchantDoc.data()?.paychanguSecretKey;
+        const merchantKey = merchantDoc.data()?.paychanguSecretKey
+            || process.env.PAYCHANGU_SECRET_KEY;
 
         if (!merchantKey) {
-            return res.status(400).json({ success: false, error: 'Merchant key missing' });
+            return res.status(400).json({ success: false, error: 'No PayChangu key' });
         }
 
         const response = await axios.get(
@@ -216,7 +229,6 @@ app.get('/api/payment-status/:chargeId', async (req, res) => {
                     verifiedAt: admin.firestore.FieldValue.serverTimestamp()
                 });
 
-                // Mark fee earned
                 const feeSnapshot = await db.collection('fee_ledger')
                     .where('chargeId', '==', chargeId)
                     .limit(1)
@@ -279,22 +291,30 @@ app.post('/api/withdraw', async (req, res) => {
             });
         }
 
-        // 2. Get merchant's PayChangu key
-        const merchantKey = business.paychanguSecretKey;
+        // 2. Get merchant's PayChangu key (fall back to platform key)
+        const PLATFORM_KEY = process.env.PAYCHANGU_SECRET_KEY;
+        const merchantKey = business.paychanguSecretKey || PLATFORM_KEY;
+        const usingMerchantKey = !!business.paychanguSecretKey;
+
         if (!merchantKey) {
             return res.status(400).json({
                 success: false,
-                error: 'Merchant has not connected their PayChangu account'
+                error: 'No PayChangu key available for withdrawal'
             });
         }
 
-        // 3. Normalize phone (9-digit format)
+        console.log(`=== Withdrawal using ${usingMerchantKey ? 'MERCHANT' : 'PLATFORM'} key ===`);
+
+        // 3. Normalize phone to 9-digit
         let cleanPhone = String(phoneNumber).replace(/\s/g, '').replace('+', '');
         if (cleanPhone.startsWith('265')) cleanPhone = cleanPhone.substring(3);
         if (cleanPhone.startsWith('0')) cleanPhone = cleanPhone.substring(1);
 
         if (cleanPhone.length !== 9) {
-            return res.status(400).json({ success: false, error: `Invalid phone (${cleanPhone.length} digits)` });
+            return res.status(400).json({
+                success: false,
+                error: `Invalid phone (${cleanPhone.length} digits)`
+            });
         }
 
         // 4. Unique charge ID
@@ -305,14 +325,19 @@ app.post('/api/withdraw', async (req, res) => {
             ? OPERATORS.TNM_MWI
             : OPERATORS.AIRTEL_MWI;
 
+        const payoutPayload = {
+            mobile_money_operator_ref_id: operatorRef,
+            mobile: cleanPhone,
+            amount: String(withdrawAmount),
+            charge_id: chargeId
+        };
+
+        console.log('=== Sending Payout ===');
+        console.log(JSON.stringify(payoutPayload, null, 2));
+
         const payoutResponse = await axios.post(
             `${PAYCHANGU_URL}/mobile-money/payouts/initialize`,
-            {
-                mobile_money_operator_ref_id: operatorRef,
-                mobile: cleanPhone,
-                amount: String(withdrawAmount),
-                charge_id: chargeId
-            },
+            payoutPayload,
             {
                 headers: {
                     'Authorization': `Bearer ${merchantKey}`,
@@ -322,6 +347,9 @@ app.post('/api/withdraw', async (req, res) => {
                 timeout: 30000
             }
         );
+
+        console.log('=== Payout Success ===');
+        console.log(JSON.stringify(payoutResponse.data, null, 2));
 
         // 6. Deduct from balance
         await db.collection('businesses').doc(userId).update({
@@ -348,10 +376,15 @@ app.post('/api/withdraw', async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Withdrawal error:', error.response?.data || error.message);
+        console.error('=== Withdrawal Error ===');
+        console.error('Status:', error.response?.status);
+        console.error('Data:', JSON.stringify(error.response?.data, null, 2));
+
+        const errData = error.response?.data;
         res.status(500).json({
             success: false,
-            error: error.response?.data?.message || error.response?.data?.error || error.message
+            error: errData?.message || errData?.error || error.message,
+            raw: errData
         });
     }
 });
@@ -405,12 +438,10 @@ app.post('/api/merchant/connect-key', async (req, res) => {
     }
 
     try {
-        // Validate key
         await axios.get(`${PAYCHANGU_URL}/mobile-money/operators`, {
             headers: { 'Authorization': `Bearer ${secretKey}` }
         });
 
-        // Save it
         await db.collection('businesses').doc(userId).update({
             paychanguSecretKey: secretKey,
             paychanguConnectedAt: admin.firestore.FieldValue.serverTimestamp()
