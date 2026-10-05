@@ -43,19 +43,16 @@ try {
 }
 
 // ============================================
-// 🔑 Look up merchant by API key
+// 🔑 Merchant lookup by API key
 // ============================================
 async function getMerchantByApiKey(apiKey) {
     if (!db || !apiKey) return null;
-
     try {
         const snapshot = await db.collection('businesses')
             .where('apiKey', '==', apiKey)
             .limit(1)
             .get();
-
         if (snapshot.empty) return null;
-
         const doc = snapshot.docs[0];
         return { id: doc.id, ...doc.data() };
     } catch (err) {
@@ -79,7 +76,7 @@ app.get('/api', (req, res) => {
 });
 
 // ============================================
-// 💸 Initiate Payment (API-key authenticated)
+// 💸 Initiate Payment
 // ============================================
 app.post('/api/payment', async (req, res) => {
     if (!db) {
@@ -91,12 +88,11 @@ app.post('/api/payment', async (req, res) => {
     if (!apiKey) {
         return res.status(401).json({
             success: false,
-            error: 'Missing API key. Pass "apiKey" in the request body.'
+            error: 'Missing API key'
         });
     }
 
     const merchant = await getMerchantByApiKey(apiKey);
-
     if (!merchant) {
         return res.status(401).json({
             success: false,
@@ -216,7 +212,7 @@ app.post('/api/payment', async (req, res) => {
 });
 
 // ============================================
-// 🔍 Verify Payment
+// 🔍 Verify Single Payment
 // ============================================
 app.get('/api/payment-status/:chargeId', async (req, res) => {
     if (!db) {
@@ -237,10 +233,6 @@ app.get('/api/payment-status/:chargeId', async (req, res) => {
         const merchantKey = merchantDoc.data()?.paychanguSecretKey
             || process.env.PAYCHANGU_SECRET_KEY;
 
-        if (!merchantKey) {
-            return res.status(400).json({ success: false, error: 'No PayChangu key' });
-        }
-
         const response = await axios.get(
             `${PAYCHANGU_URL}/mobile-money/payments/${chargeId}/verify`,
             {
@@ -250,25 +242,28 @@ app.get('/api/payment-status/:chargeId', async (req, res) => {
 
         const status = (response.data?.data?.status || response.data?.status || '').toLowerCase();
 
-        if (status === 'success' || status === 'successful') {
-            if (txnData.status !== 'SUCCESS') {
-                await txnDoc.ref.update({
-                    status: 'SUCCESS',
-                    verifiedAt: admin.firestore.FieldValue.serverTimestamp()
+        if ((status === 'success' || status === 'successful') && txnData.status !== 'SUCCESS') {
+            await txnDoc.ref.update({
+                status: 'SUCCESS',
+                verifiedAt: admin.firestore.FieldValue.serverTimestamp()
+            });
+
+            const feeSnapshot = await db.collection('fee_ledger')
+                .where('chargeId', '==', chargeId)
+                .limit(1)
+                .get();
+
+            if (!feeSnapshot.empty) {
+                await feeSnapshot.docs[0].ref.update({
+                    status: 'EARNED',
+                    earnedAt: admin.firestore.FieldValue.serverTimestamp()
                 });
-
-                const feeSnapshot = await db.collection('fee_ledger')
-                    .where('chargeId', '==', chargeId)
-                    .limit(1)
-                    .get();
-
-                if (!feeSnapshot.empty) {
-                    await feeSnapshot.docs[0].ref.update({
-                        status: 'EARNED',
-                        earnedAt: admin.firestore.FieldValue.serverTimestamp()
-                    });
-                }
             }
+        } else if ((status === 'failed' || status === 'cancelled') && txnData.status === 'PENDING') {
+            await txnDoc.ref.update({
+                status: 'FAILED',
+                verifiedAt: admin.firestore.FieldValue.serverTimestamp()
+            });
         }
 
         res.json({
@@ -284,6 +279,79 @@ app.get('/api/payment-status/:chargeId', async (req, res) => {
             chargeId,
             error: error.response?.data || error.message
         });
+    }
+});
+
+// ============================================
+// 🔄 Auto-Verify Pending Transactions
+// ============================================
+app.get('/api/verify-pending/:userId', async (req, res) => {
+    if (!db) {
+        return res.status(500).json({ success: false, error: 'Firebase not configured' });
+    }
+
+    const { userId } = req.params;
+
+    try {
+        const snapshot = await db.collection('transactions')
+            .where('userId', '==', userId)
+            .where('status', '==', 'PENDING')
+            .limit(20)
+            .get();
+
+        if (snapshot.empty) {
+            return res.json({ success: true, checked: 0, updated: 0 });
+        }
+
+        const merchantDoc = await db.collection('businesses').doc(userId).get();
+        const merchantKey = merchantDoc.data()?.paychanguSecretKey
+            || process.env.PAYCHANGU_SECRET_KEY;
+
+        let updated = 0;
+
+        for (const doc of snapshot.docs) {
+            const chargeId = doc.id;
+            try {
+                const response = await axios.get(
+                    `${PAYCHANGU_URL}/mobile-money/payments/${chargeId}/verify`,
+                    { headers: { 'Authorization': `Bearer ${merchantKey}` } }
+                );
+
+                const status = (response.data?.data?.status || response.data?.status || '').toLowerCase();
+
+                if (status === 'success' || status === 'successful') {
+                    await doc.ref.update({
+                        status: 'SUCCESS',
+                        verifiedAt: admin.firestore.FieldValue.serverTimestamp()
+                    });
+
+                    const feeSnapshot = await db.collection('fee_ledger')
+                        .where('chargeId', '==', chargeId)
+                        .limit(1)
+                        .get();
+
+                    if (!feeSnapshot.empty) {
+                        await feeSnapshot.docs[0].ref.update({
+                            status: 'EARNED',
+                            earnedAt: admin.firestore.FieldValue.serverTimestamp()
+                        });
+                    }
+                    updated++;
+                } else if (status === 'failed' || status === 'cancelled') {
+                    await doc.ref.update({
+                        status: 'FAILED',
+                        verifiedAt: admin.firestore.FieldValue.serverTimestamp()
+                    });
+                    updated++;
+                }
+            } catch (err) {
+                console.log(`Verify ${chargeId} failed:`, err.message);
+            }
+        }
+
+        res.json({ success: true, checked: snapshot.size, updated });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
     }
 });
 
@@ -389,34 +457,6 @@ app.post('/api/withdraw', async (req, res) => {
             error: errData?.message || errData?.error || error.message,
             raw: errData
         });
-    }
-});
-
-// ============================================
-// 📜 List Withdrawals
-// ============================================
-app.get('/api/withdrawals/:userId', async (req, res) => {
-    if (!db) {
-        return res.status(500).json({ success: false, error: 'Firebase not configured' });
-    }
-
-    try {
-        const snapshot = await db.collection('withdrawals')
-            .where('userId', '==', req.params.userId)
-            .limit(50)
-            .get();
-
-        const withdrawals = snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data(),
-            createdAt: doc.data().createdAt?.toDate?.() || null
-        }));
-
-        withdrawals.sort((a, b) => (b.createdAt?.getTime?.() || 0) - (a.createdAt?.getTime?.() || 0));
-
-        res.json({ success: true, withdrawals });
-    } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
     }
 });
 
