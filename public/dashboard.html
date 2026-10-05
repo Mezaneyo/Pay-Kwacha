@@ -1057,6 +1057,35 @@
     document.getElementById('authPassword').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') handleAuth();
     });
+    
+    // ============================================
+// 🔄 Auto-verify pending transactions
+// ============================================
+setInterval(async () => {
+    if (!currentUser) return;
+    try {
+        const res = await fetch(`/api/verify-pending/${currentUser.uid}`);
+        const data = await res.json();
+        if (data.updated > 0) {
+            console.log(`✅ Verified ${data.updated} pending transactions`);
+            // Refresh user data to show new balance
+            await loadUserData();
+        }
+    } catch (err) {
+        // Silent fail
+    }
+}, 60000); // Every 60 seconds
+
+// Run once when dashboard loads
+window.addEventListener('load', () => {
+    setTimeout(async () => {
+        if (currentUser) {
+            try {
+                await fetch(`/api/verify-pending/${currentUser.uid}`);
+            } catch (err) {}
+        }
+    }, 3000);
+});
 </script>
 
 </body>
