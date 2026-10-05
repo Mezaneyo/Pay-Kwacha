@@ -2,85 +2,507 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Dashboard — PayKwacha</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', -apple-system, sans-serif; background: #f8fafc; color: #0f172a; line-height: 1.5; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f8fafc;
+            color: #0f172a;
+            line-height: 1.5;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
         a { text-decoration: none; color: inherit; }
         button { font-family: inherit; cursor: pointer; border: none; background: none; }
-        .nav { background: white; border-bottom: 1px solid #f1f5f9; padding: 0 24px; position: sticky; top: 0; z-index: 100; }
-        .nav-inner { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; height: 68px; }
-        .brand { font-size: 20px; font-weight: 800; display: flex; align-items: center; gap: 10px; }
-        .brand-mark { width: 36px; height: 36px; background: linear-gradient(135deg, #6366f1, #f43f5e); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; }
+
+        /* ============ NAV ============ */
+        .nav {
+            background: white;
+            border-bottom: 1px solid #f1f5f9;
+            padding: 0 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .nav-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 60px;
+        }
+        .brand {
+            font-size: 18px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .brand-mark {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #6366f1, #f43f5e);
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 900;
+            font-size: 15px;
+        }
         .brand span { color: #6366f1; }
-        .nav-right { display: flex; gap: 12px; align-items: center; font-size: 14px; }
-        .user-email { color: #64748b; }
-        .btn-logout { padding: 8px 16px; background: #f1f5f9; border-radius: 100px; font-weight: 600; font-size: 13px; }
-        .container { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
-        .welcome { margin-bottom: 28px; }
-        .welcome h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 6px; }
-        .welcome p { color: #64748b; font-size: 15px; }
-        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 28px; }
-        .stat { background: white; padding: 22px; border-radius: 16px; border: 1px solid #f1f5f9; }
-        .stat-label { font-size: 12px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
-        .stat-value { font-size: 26px; font-weight: 800; color: #0f172a; letter-spacing: -0.02em; }
-        .stat-sub { font-size: 12px; color: #64748b; margin-top: 4px; }
-        .balance-card { background: linear-gradient(135deg, #0f172a, #1e1b4b); color: white; padding: 32px; border-radius: 20px; margin-bottom: 28px; position: relative; overflow: hidden; }
-        .balance-card::before { content: ''; position: absolute; top: -100px; right: -100px; width: 300px; height: 300px; background: radial-gradient(circle, rgba(99,102,241,0.4), transparent 70%); border-radius: 50%; }
+        .nav-right {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            font-size: 13px;
+        }
+        .user-email { color: #64748b; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .btn-logout {
+            padding: 7px 14px;
+            background: #f1f5f9;
+            border-radius: 100px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        /* ============ CONTAINER ============ */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px 16px 40px;
+        }
+
+        /* ============ WELCOME ============ */
+        .welcome { margin-bottom: 20px; }
+        .welcome h1 {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 4px;
+        }
+        .welcome p { color: #64748b; font-size: 14px; }
+
+        /* ============ BALANCE CARD ============ */
+        .balance-card {
+            background: linear-gradient(135deg, #0f172a, #1e1b4b);
+            color: white;
+            padding: 24px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .balance-card::before {
+            content: '';
+            position: absolute;
+            top: -80px;
+            right: -80px;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(99,102,241,0.35), transparent 70%);
+            border-radius: 50%;
+        }
         .balance-content { position: relative; z-index: 2; }
-        .balance-label { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
-        .balance-amount { font-size: 42px; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 6px; }
-        .balance-sub { font-size: 13px; color: rgba(255,255,255,0.6); }
-        .balance-actions { margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
-        .balance-btn { padding: 12px 24px; background: white; color: #0f172a; border-radius: 100px; font-weight: 700; font-size: 14px; }
-        .balance-btn.secondary { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); }
-        .tabs { display: flex; gap: 4px; border-bottom: 1px solid #f1f5f9; margin-bottom: 24px; overflow-x: auto; }
-        .tab { padding: 12px 20px; background: none; font-weight: 600; color: #64748b; border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; font-size: 14px; }
-        .tab.active { color: #6366f1; border-bottom-color: #6366f1; }
-        .card { background: white; border-radius: 16px; border: 1px solid #f1f5f9; padding: 24px; }
-        .card h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
-        .card p.desc { color: #64748b; font-size: 14px; margin-bottom: 16px; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
-        th { color: #64748b; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+        .balance-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: rgba(255,255,255,0.7);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 6px;
+        }
+        .balance-amount {
+            font-size: 34px;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            margin-bottom: 4px;
+            word-break: break-all;
+        }
+        .balance-sub { font-size: 12px; color: rgba(255,255,255,0.6); }
+        .balance-actions {
+            margin-top: 18px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .balance-btn {
+            padding: 12px 8px;
+            background: white;
+            color: #0f172a;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 13px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .balance-btn.secondary {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        /* ============ STATS GRID ============ */
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .stat {
+            background: white;
+            padding: 16px;
+            border-radius: 14px;
+            border: 1px solid #f1f5f9;
+        }
+        .stat-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 6px;
+        }
+        .stat-value {
+            font-size: 20px;
+            font-weight: 800;
+            color: #0f172a;
+            letter-spacing: -0.02em;
+            word-break: break-all;
+        }
+        .stat-sub { font-size: 11px; color: #64748b; margin-top: 2px; }
+
+        /* ============ TABS ============ */
+        .tabs-wrapper {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .tabs-wrapper::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 24px;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, #f8fafc);
+            pointer-events: none;
+        }
+        .tabs {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            padding: 4px 0;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .tabs::-webkit-scrollbar { display: none; }
+        .tab {
+            padding: 10px 16px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 100px;
+            font-weight: 600;
+            color: #64748b;
+            white-space: nowrap;
+            font-size: 13px;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        .tab.active {
+            background: #0f172a;
+            color: white;
+            border-color: #0f172a;
+        }
+
+        /* ============ CARD ============ */
+        .card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid #f1f5f9;
+            padding: 20px 16px;
+        }
+        .card h3 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+        .card p.desc { color: #64748b; font-size: 13px; margin-bottom: 14px; }
+
+        /* ============ TABLE ============ */
+        .table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin: 0 -16px;
+            padding: 0 16px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 480px;
+        }
+        th, td {
+            padding: 10px 8px;
+            text-align: left;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+        th {
+            color: #64748b;
+            font-weight: 600;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
         tr:last-child td { border-bottom: none; }
-        .badge { padding: 4px 10px; border-radius: 100px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+        .badge {
+            padding: 3px 8px;
+            border-radius: 100px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
         .badge.success { background: #ecfdf5; color: #065f46; }
         .badge.pending { background: #fef3c7; color: #92400e; }
         .badge.failed { background: #fef2f2; color: #991b1b; }
-        .empty { text-align: center; padding: 40px 20px; color: #94a3b8; font-size: 14px; }
-        .field { margin-bottom: 16px; }
-        .field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #334155; }
-        .field input, .field select { width: 100%; padding: 12px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 15px; background: #f8fafc; font-family: inherit; }
-        .field input:focus, .field select:focus { outline: none; border-color: #6366f1; background: white; box-shadow: 0 0 0 4px rgba(99,102,241,0.1); }
-        .btn-primary { padding: 12px 24px; background: #0f172a; color: white; border-radius: 10px; font-weight: 700; font-size: 14px; }
+        .empty {
+            text-align: center;
+            padding: 30px 16px;
+            color: #94a3b8;
+            font-size: 13px;
+        }
+
+        /* ============ FORM FIELDS ============ */
+        .field { margin-bottom: 14px; }
+        .field label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #334155;
+        }
+        .field input, .field select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 15px;
+            background: #f8fafc;
+            font-family: inherit;
+            color: #0f172a;
+        }
+        .field input:focus, .field select:focus {
+            outline: none;
+            border-color: #6366f1;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(99,102,241,0.1);
+        }
+
+        /* ============ BUTTONS ============ */
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: #0f172a;
+            color: white;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
         .btn-primary:hover { background: #020617; }
-        .key-box { background: #f8fafc; padding: 16px; border-radius: 12px; font-family: monospace; font-size: 13px; word-break: break-all; position: relative; border: 1px dashed #cbd5e1; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-        .key-actions { display: flex; gap: 6px; }
-        .key-btn { padding: 6px 12px; background: #0f172a; color: white; border-radius: 8px; font-size: 11px; font-weight: 600; }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .btn-secondary {
+            width: 100%;
+            padding: 14px;
+            background: white;
+            color: #0f172a;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            margin-top: 8px;
+            transition: all 0.2s;
+        }
+
+        /* ============ API KEY BOX ============ */
+        .key-box {
+            background: #f8fafc;
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px dashed #cbd5e1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .key-text {
+            font-family: 'Menlo', monospace;
+            font-size: 12px;
+            word-break: break-all;
+            color: #334155;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        .key-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .key-btn {
+            padding: 10px;
+            background: #0f172a;
+            color: white;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            text-align: center;
+        }
         .key-btn.danger { background: #dc2626; }
-        .auth-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.85); backdrop-filter: blur(8px); z-index: 9999; display: none; align-items: center; justify-content: center; padding: 20px; }
-        .auth-overlay.active { display: flex; }
-        .auth-card { background: white; border-radius: 24px; padding: 40px 36px; max-width: 420px; width: 100%; }
-        .auth-card .brand-mark { width: 52px; height: 52px; margin: 0 auto 16px; font-size: 24px; border-radius: 14px; }
-        .auth-card h2 { font-size: 24px; font-weight: 800; text-align: center; margin-bottom: 6px; }
-        .auth-card .sub { text-align: center; color: #64748b; font-size: 14px; margin-bottom: 28px; }
-        .auth-btn { width: 100%; padding: 15px; background: #0f172a; color: white; border-radius: 12px; font-weight: 700; font-size: 15px; margin-top: 8px; }
+
+        /* ============ MODAL ============ */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15,23,42,0.85);
+            backdrop-filter: blur(8px);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-card {
+            background: white;
+            border-radius: 24px;
+            padding: 32px 24px;
+            max-width: 420px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-card .brand-mark {
+            width: 52px;
+            height: 52px;
+            margin: 0 auto 16px;
+            font-size: 24px;
+            border-radius: 14px;
+        }
+        .modal-card h2 {
+            font-size: 22px;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 6px;
+        }
+        .modal-card .sub {
+            text-align: center;
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+        .auth-btn {
+            width: 100%;
+            padding: 15px;
+            background: #0f172a;
+            color: white;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 15px;
+            margin-top: 8px;
+        }
         .auth-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-        .auth-switch { text-align: center; margin-top: 20px; font-size: 14px; color: #64748b; }
-        .auth-switch a { color: #6366f1; font-weight: 600; cursor: pointer; }
-        .auth-error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; padding: 12px; border-radius: 10px; font-size: 13px; margin-top: 14px; display: none; text-align: center; }
+        .auth-switch {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #64748b;
+        }
+        .auth-switch a {
+            color: #6366f1;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .auth-error {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            margin-top: 14px;
+            display: none;
+            text-align: center;
+        }
         .auth-error.show { display: block; }
-        .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #0f172a; color: white; padding: 14px 24px; border-radius: 100px; font-size: 14px; font-weight: 600; box-shadow: 0 10px 40px rgba(0,0,0,0.3); z-index: 10000; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+
+        /* ============ TOAST ============ */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #0f172a;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            z-index: 10000;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            max-width: 90vw;
+            text-align: center;
+        }
         .toast.show { opacity: 1; }
         .toast.error { background: #dc2626; }
-        @media (max-width: 640px) {
-            .stats { grid-template-columns: 1fr 1fr; }
-            .user-email { display: none; }
-            .balance-amount { font-size: 32px; }
-            .key-box { flex-direction: column; align-items: stretch; }
+
+        /* ============ INFO BOX ============ */
+        .info-box {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #1e40af;
+            padding: 14px;
+            border-radius: 12px;
+            margin-bottom: 18px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        .info-box strong { color: #1e3a8a; }
+        .info-box a { color: #1e40af; font-weight: 700; }
+
+        /* ============ LINK RESULT ============ */
+        .link-preview {
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 12px;
+            word-break: break-all;
+            border: 1px dashed #cbd5e1;
+            margin-bottom: 10px;
+        }
+
+        /* ============ RESPONSIVE ============ */
+        @media (min-width: 640px) {
+            .container { padding: 28px 24px 60px; }
+            .balance-amount { font-size: 42px; }
+            .stats { grid-template-columns: repeat(3, 1fr); }
+            .balance-actions { grid-template-columns: auto auto; justify-content: flex-start; }
+            .balance-btn { padding: 12px 24px; }
+            .welcome h1 { font-size: 26px; }
+            .key-box { flex-direction: row; align-items: center; }
+            .key-actions { display: flex; }
+            .stat-value { font-size: 24px; }
+            .modal-card { padding: 40px 36px; }
         }
     </style>
 </head>
@@ -97,6 +519,7 @@
 </nav>
 
 <div class="container">
+
     <div class="welcome">
         <h1 id="welcomeTitle">Welcome back 👋</h1>
         <p>Manage your payments, links, and balance.</p>
@@ -105,8 +528,8 @@
     <div class="balance-card">
         <div class="balance-content">
             <div class="balance-label">Available Balance</div>
-            <div class="balance-amount" id="balanceAmount">MWK 0.00</div>
-            <div class="balance-sub">After 2% platform fee · Updated in real-time</div>
+            <div class="balance-amount" id="balanceAmount">MWK 0</div>
+            <div class="balance-sub">After 2% platform fee</div>
             <div class="balance-actions">
                 <button class="balance-btn" onclick="openWithdraw()">💸 Withdraw</button>
                 <button class="balance-btn secondary" onclick="switchTabById('links')">🔗 Create Link</button>
@@ -115,96 +538,153 @@
     </div>
 
     <div class="stats">
-        <div class="stat"><div class="stat-label">Total Received</div><div class="stat-value" id="totalAmount">MWK 0</div><div class="stat-sub" id="totalCount">0 transactions</div></div>
-        <div class="stat"><div class="stat-label">This Month</div><div class="stat-value" id="monthAmount">MWK 0</div><div class="stat-sub">Last 30 days</div></div>
-        <div class="stat"><div class="stat-label">Fees Paid</div><div class="stat-value" id="feesPaid">MWK 0</div><div class="stat-sub">2% per transaction</div></div>
+        <div class="stat">
+            <div class="stat-label">Total</div>
+            <div class="stat-value" id="totalAmount">MWK 0</div>
+            <div class="stat-sub" id="totalCount">0 txns</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">This Month</div>
+            <div class="stat-value" id="monthAmount">MWK 0</div>
+            <div class="stat-sub">Last 30 days</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">Fees</div>
+            <div class="stat-value" id="feesPaid">MWK 0</div>
+            <div class="stat-sub">2% per txn</div>
+        </div>
     </div>
 
-    <div class="tabs">
-        <button class="tab active" onclick="switchTab(this, 'transactions')">Transactions</button>
-        <button class="tab" onclick="switchTab(this, 'links')">Payment Links</button>
-        <button class="tab" onclick="switchTab(this, 'api')">API Keys</button>
-        <button class="tab" onclick="switchTab(this, 'connect')">Connect PayChangu</button>
-        <button class="tab" onclick="switchTab(this, 'settings')">Settings</button>
+    <div class="tabs-wrapper">
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab(this, 'transactions')">Transactions</button>
+            <button class="tab" onclick="switchTab(this, 'links')">Links</button>
+            <button class="tab" onclick="switchTab(this, 'api')">API</button>
+            <button class="tab" onclick="switchTab(this, 'connect')">Connect PayChangu</button>
+            <button class="tab" onclick="switchTab(this, 'settings')">Settings</button>
+        </div>
     </div>
 
+    <!-- TRANSACTIONS -->
     <div id="tab-transactions" class="card">
         <h3>Recent Transactions</h3>
-        <p class="desc">Stored for 3 months, then automatically deleted.</p>
-        <table>
-            <thead><tr><th>Date</th><th>Phone</th><th>Amount</th><th>Fee</th><th>Status</th></tr></thead>
-            <tbody id="txnTable"><tr><td colspan="5" class="empty">Loading...</td></tr></tbody>
-        </table>
+        <p class="desc">Stored for 3 months, then auto-deleted.</p>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr><th>Date</th><th>Phone</th><th>Amount</th><th>Fee</th><th>Status</th></tr>
+                </thead>
+                <tbody id="txnTable">
+                    <tr><td colspan="5" class="empty">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
+    <!-- LINKS -->
     <div id="tab-links" class="card" style="display:none;">
         <h3>Create Payment Link</h3>
-        <p class="desc">Share this link with customers to collect payments.</p>
-        <div class="field"><label>Amount (MWK)</label><input type="number" id="linkAmount" placeholder="1000" min="50" /></div>
-        <div class="field"><label>Description</label><input type="text" id="linkDesc" placeholder="e.g., Order #123" /></div>
+        <p class="desc">Share with customers to collect payments.</p>
+        <div class="field">
+            <label>Amount (MWK)</label>
+            <input type="number" id="linkAmount" placeholder="1000" min="50" />
+        </div>
+        <div class="field">
+            <label>Description</label>
+            <input type="text" id="linkDesc" placeholder="e.g., Order #123" />
+        </div>
         <button class="btn-primary" id="createLinkBtn" onclick="createPaymentLink()">Generate Link</button>
         <div id="linkResult" style="margin-top: 16px;"></div>
     </div>
 
+    <!-- API -->
     <div id="tab-api" class="card" style="display:none;">
         <h3>Your API Key</h3>
-        <p class="desc">Use this key to integrate PayKwacha into your app.</p>
+        <p class="desc">Use this key to integrate PayKwacha.</p>
         <div id="apiKeyBox"></div>
     </div>
 
+    <!-- CONNECT PAYCHANGU -->
     <div id="tab-connect" class="card" style="display:none;">
-        <h3>Connect Your PayChangu Account</h3>
-        <p class="desc">To accept payments, connect your own PayChangu account. Money settles directly to you.</p>
-        <div style="background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; padding: 16px; border-radius: 12px; margin-bottom: 20px; font-size: 14px; line-height: 1.6;">
-            <strong>📋 How to connect:</strong><br>
-            1. Sign up at <a href="https://paychangu.com" target="_blank" style="color: #1e40af; font-weight: 700;">paychangu.com</a><br>
+        <h3>Connect PayChangu</h3>
+        <p class="desc">Link your own PayChangu account so money settles directly to you.</p>
+
+        <div class="info-box">
+            <strong>📋 Steps:</strong><br>
+            1. Sign up at <a href="https://paychangu.com" target="_blank">paychangu.com</a><br>
             2. Complete verification<br>
             3. Go to <strong>Settings → API & Webhook</strong><br>
             4. Copy your <strong>Secret Key</strong> (starts with <code>sec-live-</code>)<br>
-            5. Paste it below
+            5. Paste below
         </div>
-        <div class="field"><label>PayChangu Secret Key</label><input type="password" id="paychanguKey" placeholder="sec-live-..." /></div>
+
+        <div class="field">
+            <label>PayChangu Secret Key</label>
+            <input type="password" id="paychanguKey" placeholder="sec-live-..." />
+        </div>
+
         <button class="btn-primary" id="connectBtn" onclick="connectPayChangu()">Connect Account</button>
-        <div id="connectResult" style="margin-top: 16px;"></div>
+        <div id="connectResult" style="margin-top: 14px;"></div>
     </div>
 
+    <!-- SETTINGS -->
     <div id="tab-settings" class="card" style="display:none;">
         <h3>Account Settings</h3>
-        <p class="desc">Configure where your money is withdrawn to.</p>
-        <div class="field"><label>Business Name</label><input type="text" id="settingsBusiness" placeholder="Mlimi Store" /></div>
-        <div class="field"><label>Withdrawal Phone (Airtel/TNM)</label><input type="tel" id="settingsPhone" placeholder="0995514049" /></div>
+        <p class="desc">Configure your withdrawal destination.</p>
+        <div class="field">
+            <label>Business Name</label>
+            <input type="text" id="settingsBusiness" placeholder="Mlimi Store" />
+        </div>
+        <div class="field">
+            <label>Withdrawal Phone</label>
+            <input type="tel" id="settingsPhone" placeholder="0995514049" />
+        </div>
         <button class="btn-primary" onclick="saveSettings()">Save Settings</button>
     </div>
+
 </div>
 
 <!-- WITHDRAW MODAL -->
-<div class="auth-overlay" id="withdrawOverlay">
-    <div class="auth-card">
+<div class="modal-overlay" id="withdrawOverlay">
+    <div class="modal-card">
         <h2>Withdraw Funds</h2>
         <p class="sub">Money will be sent to your mobile money number.</p>
-        <div class="field"><label>Amount (MWK)</label><input type="number" id="withdrawAmount" placeholder="0.00" /></div>
-        <div class="field"><label>Withdrawal Method</label>
+        <div class="field">
+            <label>Amount (MWK)</label>
+            <input type="number" id="withdrawAmount" placeholder="0" />
+        </div>
+        <div class="field">
+            <label>Method</label>
             <select id="withdrawMethod">
                 <option value="AIRTEL_MWI">Airtel Money</option>
                 <option value="TNM_MWI">TNM Mpamba</option>
             </select>
         </div>
-        <button class="auth-btn" onclick="confirmWithdraw()">Confirm Withdrawal</button>
+        <button class="auth-btn" id="withdrawBtn" onclick="confirmWithdraw(event)">Confirm Withdrawal</button>
         <div class="auth-switch"><a onclick="closeWithdraw()">Cancel</a></div>
     </div>
 </div>
 
 <!-- AUTH MODAL -->
-<div class="auth-overlay" id="authOverlay">
-    <div class="auth-card">
+<div class="modal-overlay" id="authOverlay">
+    <div class="modal-card">
         <div class="brand-mark">P</div>
         <h2 id="authTitle">Welcome back</h2>
-        <p class="sub" id="authSub">Sign in to your PayKwacha account</p>
-        <div class="field"><label>Email</label><input type="email" id="authEmail" placeholder="you@business.com" /></div>
-        <div class="field"><label>Password</label><input type="password" id="authPassword" placeholder="••••••••" /></div>
+        <p class="sub" id="authSub">Sign in to your account</p>
+        <div class="field">
+            <label>Email</label>
+            <input type="email" id="authEmail" placeholder="you@business.com" />
+        </div>
+        <div class="field">
+            <label>Password</label>
+            <input type="password" id="authPassword" placeholder="••••••••" />
+        </div>
         <button class="auth-btn" id="authBtn" onclick="handleAuth()">Sign In</button>
         <div class="auth-error" id="authError"></div>
-        <div class="auth-switch"><span id="switchText">New to PayKwacha?</span> <a id="switchLink" onclick="toggleAuthMode(event)">Create an account</a></div>
+        <div class="auth-switch">
+            <span id="switchText">New to PayKwacha?</span>
+            <a id="switchLink" onclick="toggleAuthMode(event)">Create account</a>
+        </div>
     </div>
 </div>
 
@@ -255,7 +735,7 @@
 
         err.classList.remove('show');
         if (!email || !password) { err.textContent = 'Fill all fields'; err.classList.add('show'); return; }
-        if (password.length < 6) { err.textContent = 'Password must be 6+ chars'; err.classList.add('show'); return; }
+        if (password.length < 6) { err.textContent = 'Min 6 characters'; err.classList.add('show'); return; }
 
         btn.disabled = true;
         btn.textContent = authMode === 'signin' ? 'Signing in...' : 'Creating...';
@@ -281,7 +761,7 @@
         } catch (error) {
             let msg = error.message;
             if (error.code === 'auth/user-not-found') msg = 'No account found.';
-            if (error.code === 'auth/wrong-password') msg = 'Incorrect password.';
+            if (error.code === 'auth/wrong-password') msg = 'Wrong password.';
             if (error.code === 'auth/email-already-in-use') msg = 'Email already registered.';
             err.textContent = msg;
             err.classList.add('show');
@@ -298,7 +778,7 @@
         document.getElementById('authSub').textContent = authMode === 'signin' ? 'Sign in to your account' : 'Get started in 2 minutes';
         document.getElementById('authBtn').textContent = authMode === 'signin' ? 'Sign In' : 'Create Account';
         document.getElementById('switchText').textContent = authMode === 'signin' ? 'New to PayKwacha?' : 'Already have an account?';
-        document.getElementById('switchLink').textContent = authMode === 'signin' ? 'Create an account' : 'Sign in';
+        document.getElementById('switchLink').textContent = authMode === 'signin' ? 'Create account' : 'Sign in';
     }
 
     function logout() { auth.signOut(); }
@@ -312,11 +792,8 @@
                 email: currentUser.email,
                 apiKey: generateApiKey(),
                 apiKeyCreatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-                balance: 0,
-                totalReceived: 0,
-                totalFees: 0,
-                businessName: '',
-                settlementPhone: '',
+                balance: 0, totalReceived: 0, totalFees: 0,
+                businessName: '', settlementPhone: '',
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                 status: 'active'
             };
@@ -345,9 +822,9 @@
     function renderTransactions(txns) {
         const tbody = document.getElementById('txnTable');
         if (txns.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" class="empty">No transactions yet.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" class="empty">No transactions yet</td></tr>';
             document.getElementById('totalAmount').textContent = 'MWK 0';
-            document.getElementById('totalCount').textContent = '0 transactions';
+            document.getElementById('totalCount').textContent = '0 txns';
             document.getElementById('monthAmount').textContent = 'MWK 0';
             document.getElementById('feesPaid').textContent = 'MWK 0';
             return;
@@ -361,18 +838,16 @@
             const fee = t.platformFee || (amt * 0.02);
             const created = t.createdAt?.toDate?.() || null;
             if (t.status === 'SUCCESS') {
-                total += amt;
-                totalFees += fee;
-                success++;
+                total += amt; totalFees += fee; success++;
                 if (created && created >= monthStart) monthTotal += amt;
             }
             const badgeClass = t.status === 'SUCCESS' ? 'success' : t.status === 'PENDING' ? 'pending' : 'failed';
-            const date = created ? created.toLocaleDateString() + ' ' + created.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '—';
-            return `<tr><td>${date}</td><td>${escapeHtml(t.phoneNumber || '—')}</td><td><strong>MWK ${amt.toLocaleString()}</strong></td><td style="color:#dc2626;">−MWK ${Math.round(fee).toLocaleString()}</td><td><span class="badge ${badgeClass}">${t.status}</span></td></tr>`;
+            const date = created ? created.toLocaleDateString([], {month:'short', day:'numeric'}) + ' ' + created.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '—';
+            return `<tr><td>${date}</td><td>${escapeHtml(t.phoneNumber || '—')}</td><td><strong>${amt.toLocaleString()}</strong></td><td style="color:#dc2626;">−${Math.round(fee).toLocaleString()}</td><td><span class="badge ${badgeClass}">${t.status}</span></td></tr>`;
         }).join('');
 
         document.getElementById('totalAmount').textContent = `MWK ${total.toLocaleString()}`;
-        document.getElementById('totalCount').textContent = `${txns.length} transactions`;
+        document.getElementById('totalCount').textContent = `${txns.length} txns`;
         document.getElementById('monthAmount').textContent = `MWK ${monthTotal.toLocaleString()}`;
         document.getElementById('feesPaid').textContent = `MWK ${Math.round(totalFees).toLocaleString()}`;
     }
@@ -386,9 +861,19 @@
     function renderApiKeyBox() {
         const box = document.getElementById('apiKeyBox');
         if (userData.apiKey) {
-            box.innerHTML = `<div class="key-box"><span>${escapeHtml(userData.apiKey)}</span><div class="key-actions"><button class="key-btn" onclick="copyApiKey()">Copy</button><button class="key-btn danger" onclick="revokeKey()">Revoke</button></div></div>`;
+            box.innerHTML = `
+                <div class="key-box">
+                    <div class="key-text">${escapeHtml(userData.apiKey)}</div>
+                    <div class="key-actions">
+                        <button class="key-btn" onclick="copyApiKey()">Copy</button>
+                        <button class="key-btn danger" onclick="revokeKey()">Revoke</button>
+                    </div>
+                </div>
+            `;
         } else {
-            box.innerHTML = `<div class="key-box" style="justify-content:center; padding: 32px;"><button class="btn-primary" onclick="generateNewKey()">Generate API Key</button></div>`;
+            box.innerHTML = `
+                <button class="btn-primary" onclick="generateNewKey()">Generate API Key</button>
+            `;
         }
     }
 
@@ -400,26 +885,26 @@
         });
         userData.apiKey = newKey;
         renderApiKeyBox();
-        showToast('✅ New API key generated');
+        showToast('✅ API key generated');
     }
 
     function copyApiKey() {
         navigator.clipboard.writeText(userData.apiKey);
-        showToast('📋 API key copied');
+        showToast('📋 Copied');
     }
 
     async function revokeKey() {
-        if (!confirm('⚠️ Revoke this API key?')) return;
+        if (!confirm('Revoke this API key?')) return;
         await db.collection('businesses').doc(currentUser.uid).update({ apiKey: null });
         userData.apiKey = null;
         renderApiKeyBox();
-        showToast('🔒 API key revoked');
+        showToast('🔒 Revoked');
     }
 
     async function createPaymentLink() {
         const amount = document.getElementById('linkAmount').value.trim();
         const desc = document.getElementById('linkDesc').value.trim();
-        if (!amount || Number(amount) < 50) { showToast('Minimum K50', true); return; }
+        if (!amount || Number(amount) < 50) { showToast('Min K50', true); return; }
 
         const btn = document.getElementById('createLinkBtn');
         btn.disabled = true;
@@ -440,15 +925,13 @@
             });
 
             document.getElementById('linkResult').innerHTML = `
-                <div style="background:#f8fafc; padding:14px; border-radius:10px; font-family:monospace; font-size:13px; word-break:break-all; border:1px dashed #cbd5e1;">
-                    <strong>Share this link:</strong><br><a href="${link}" target="_blank">${link}</a>
-                </div>
-                <button class="btn-primary" style="margin-top:12px;" onclick="copyLink('${link}')">Copy Link</button>
-                <button class="btn-primary" style="margin-top:12px; background:#25D366;" onclick="shareWhatsApp('${link}','${amount}')">Share on WhatsApp</button>
+                <div class="link-preview">${link}</div>
+                <button class="btn-primary" onclick="copyLink('${link}')">Copy Link</button>
+                <button class="btn-primary" style="margin-top:8px; background:#25D366;" onclick="shareWhatsApp('${link}','${amount}')">Share on WhatsApp</button>
             `;
             document.getElementById('linkAmount').value = '';
             document.getElementById('linkDesc').value = '';
-            showToast('✅ Payment link created');
+            showToast('✅ Link created');
         } catch (err) {
             showToast('Failed', true);
         } finally {
@@ -466,15 +949,15 @@
     function openWithdraw() { document.getElementById('withdrawOverlay').classList.add('active'); }
     function closeWithdraw() { document.getElementById('withdrawOverlay').classList.remove('active'); }
 
-    async function confirmWithdraw() {
+    async function confirmWithdraw(event) {
         const amount = Number(document.getElementById('withdrawAmount').value);
         const method = document.getElementById('withdrawMethod').value;
+        const btn = event.target;
 
-        if (!amount || amount < 100) { showToast('Minimum K100', true); return; }
+        if (!amount || amount < 100) { showToast('Min K100', true); return; }
         if (amount > (userData.balance || 0)) { showToast('Exceeds balance', true); return; }
         if (!userData.settlementPhone) { showToast('Set withdrawal phone in Settings', true); return; }
 
-        const btn = event.target;
         btn.disabled = true;
         btn.textContent = 'Sending...';
 
@@ -491,14 +974,14 @@
             });
             const data = await res.json();
             if (data.success) {
-                showToast(`✅ Withdrawal of MWK ${amount} initiated!`);
+                showToast(`✅ Withdrawal initiated!`);
                 closeWithdraw();
                 await loadUserData();
             } else {
                 showToast(data.error || 'Withdrawal failed', true);
             }
         } catch (err) {
-            showToast('Network error: ' + err.message, true);
+            showToast('Error: ' + err.message, true);
         } finally {
             btn.disabled = false;
             btn.textContent = 'Confirm Withdrawal';
@@ -524,13 +1007,13 @@
             });
             const data = await res.json();
             if (data.success) {
-                result.innerHTML = '<div style="background:#ecfdf5; color:#065f46; padding:14px; border-radius:10px;">✅ <strong>Connected!</strong></div>';
+                result.innerHTML = '<div style="background:#ecfdf5; color:#065f46; padding:14px; border-radius:10px; font-size:14px;">✅ <strong>Connected!</strong></div>';
                 document.getElementById('paychanguKey').value = '';
             } else {
-                result.innerHTML = `<div style="background:#fef2f2; color:#991b1b; padding:14px; border-radius:10px;">❌ ${data.error}</div>`;
+                result.innerHTML = `<div style="background:#fef2f2; color:#991b1b; padding:14px; border-radius:10px; font-size:14px;">❌ ${data.error}</div>`;
             }
         } catch (err) {
-            result.innerHTML = `<div style="color:#991b1b;">Network error: ${err.message}</div>`;
+            result.innerHTML = `<div style="color:#991b1b; font-size:13px;">Error: ${err.message}</div>`;
         } finally {
             btn.disabled = false;
             btn.textContent = 'Connect Account';
@@ -542,6 +1025,8 @@
             businessName: document.getElementById('settingsBusiness').value.trim(),
             settlementPhone: document.getElementById('settingsPhone').value.trim()
         });
+        userData.businessName = document.getElementById('settingsBusiness').value.trim();
+        userData.settlementPhone = document.getElementById('settingsPhone').value.trim();
         showToast('✅ Settings saved');
     }
 
