@@ -23,7 +23,6 @@
     { "source": "/betting/withdraw", "destination": "/public/betting/withdraw.html" },
     { "source": "/betting/my-bets", "destination": "/public/betting/my-bets.html" },
     { "source": "/betting/settings", "destination": "/public/betting/settings.html" },
-    { "source": "/betting/live", "destination": "/public/betting/live.html" },
-    { "source": "/betting/style.css", "destination": "/public/betting/style.css" }
+    { "source": "/betting/live", "destination": "/public/betting/live.html" }
   ]
 }
