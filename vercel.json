@@ -9,6 +9,7 @@
     { "source": "/privacy", "destination": "/privacy.html" },
     { "source": "/policies", "destination": "/policies.html" },
     { "source": "/contact", "destination": "/contact.html" },
-    { "source": "/betting", "destination": "/betting.html" }
+    { "source": "/betting", "destination": "/betting.html" },
+    { "source": "/api documentation", "destination": "/api-docs.html" }
   ]
 }
