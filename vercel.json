@@ -6,6 +6,14 @@
     { "source": "/offline.html", "destination": "/public/offline.html" },
     { "source": "/icon-192.png", "destination": "/public/icon-192.png" },
     { "source": "/icon-512.png", "destination": "/public/icon-512.png" },
+    { "source": "/dashboard", "destination": "/public/dashboard.html" },
+    { "source": "/pay/:linkId", "destination": "/public/pay.html" },
+    { "source": "/api-docs", "destination": "/public/api-docs.html" },
+    { "source": "/about", "destination": "/public/about.html" },
+    { "source": "/faq", "destination": "/public/faq.html" },
+    { "source": "/privacy", "destination": "/public/privacy.html" },
+    { "source": "/policies", "destination": "/public/policies.html" },
+    { "source": "/contact", "destination": "/public/contact.html" },
     { "source": "/betting", "destination": "/public/betting/index.html" },
     { "source": "/betting/", "destination": "/public/betting/index.html" },
     { "source": "/betting/login", "destination": "/public/betting/login.html" },
@@ -16,14 +24,6 @@
     { "source": "/betting/my-bets", "destination": "/public/betting/my-bets.html" },
     { "source": "/betting/settings", "destination": "/public/betting/settings.html" },
     { "source": "/betting/live", "destination": "/public/betting/live.html" },
-    { "source": "/dashboard", "destination": "/public/dashboard.html" },
-    { "source": "/pay/:linkId", "destination": "/public/pay.html" },
-    { "source": "/test", "destination": "/public/test.html" },
-    { "source": "/about", "destination": "/public/about.html" },
-    { "source": "/faq", "destination": "/public/faq.html" },
-    { "source": "/privacy", "destination": "/public/privacy.html" },
-    { "source": "/policies", "destination": "/public/policies.html" },
-    { "source": "/contact", "destination": "/public/contact.html" },
-    { "source": "/api-docs", "destination": "/public/api-docs.html" }
+    { "source": "/betting/style.css", "destination": "/public/betting/style.css" }
   ]
 }
