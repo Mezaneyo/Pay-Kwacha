@@ -1,0 +1,47 @@
+{
+  "name": "PayKwacha — Payments & Betting",
+  "short_name": "PayKwacha",
+  "description": "Accept mobile money payments in Malawi and bet on sports. Powered by Airtel Money, TNM Mpamba, and PayChangu.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f172a",
+  "theme_color": "#6366f1",
+  "lang": "en",
+  "categories": ["finance", "business", "sports"],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "Open your merchant dashboard",
+      "url": "/dashboard"
+    },
+    {
+      "name": "Betting",
+      "short_name": "Betting",
+      "description": "Place a bet",
+      "url": "/betting"
+    },
+    {
+      "name": "Deposit",
+      "short_name": "Deposit",
+      "description": "Deposit funds",
+      "url": "/betting/deposit"
+    }
+  ]
+}

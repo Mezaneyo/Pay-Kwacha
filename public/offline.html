@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Offline — PayKwacha</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a, #1e1b4b);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+        }
+        .container { max-width: 400px; }
+        .icon { font-size: 72px; margin-bottom: 20px; }
+        h1 { font-size: 26px; font-weight: 800; margin-bottom: 12px; }
+        p { color: rgba(255,255,255,0.7); font-size: 15px; margin-bottom: 24px; line-height: 1.6; }
+        .btn {
+            display: inline-block;
+            padding: 14px 32px;
+            background: linear-gradient(135deg, #6366f1, #f43f5e);
+            color: white;
+            border-radius: 100px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 15px;
+            box-shadow: 0 10px 30px rgba(99,102,241,0.4);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="icon">📡</div>
+    <h1>You're Offline</h1>
+    <p>Check your internet connection and try again.<br>Some features may still work offline.</p>
+    <a href="/" class="btn">Retry →</a>
+</div>
+
+</body>
+</html>
