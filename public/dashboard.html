@@ -5,29 +5,73 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Dashboard — PayKwacha</title>
     <link rel="manifest" href="/manifest.json" />
-    <meta name="theme-color" content="#0052cc" />
+    <meta name="theme-color" content="#6366f1" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <link rel="apple-touch-icon" href="/icon-192.png" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Inter', -apple-system, sans-serif; background: #f8fafc; color: #0f172a; line-height: 1.5; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f8fafc;
+            color: #0f172a;
+            line-height: 1.5;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
         a { text-decoration: none; color: inherit; }
         button { font-family: inherit; cursor: pointer; border: none; background: none; }
 
-        /* NAV */
-        .nav { background: white; border-bottom: 1px solid #f1f5f9; padding: 0 24px; position: sticky; top: 0; z-index: 100; }
-        .nav-inner { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; height: 68px; }
-        .brand { font-size: 20px; font-weight: 800; display: flex; align-items: center; gap: 10px; }
-        .brand img { width: 36px; height: 36px; border-radius: 10px; object-fit: cover; }
-        .brand span { color: #0052cc; }
-        
-        .nav-right { display: flex; gap: 12px; align-items: center; font-size: 14px; }
-        .user-email { color: #64748b; }
-        .btn-logout { padding: 8px 16px; background: #f1f5f9; border-radius: 100px; font-weight: 600; font-size: 13px; }
+        /* ============ NAV ============ */
+        .nav {
+            background: white;
+            border-bottom: 1px solid #f1f5f9;
+            padding: 0 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .nav-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 60px;
+        }
+        .brand {
+            font-size: 18px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .brand img {
+            width: 32px;
+            height: 32px;
+            border-radius: 9px;
+            object-fit: cover;
+        }
+        .brand span { color: #6366f1; }
+        .nav-right {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            font-size: 13px;
+        }
+        .user-email { color: #64748b; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .btn-logout {
+            padding: 7px 14px;
+            background: #f1f5f9;
+            border-radius: 100px;
+            font-weight: 600;
+            font-size: 12px;
+        }
         .menu-toggle { display: none; font-size: 24px; color: #0f172a; }
 
-        /* MOBILE MENU OVERLAY */
+        /* ============ MOBILE MENU ============ */
         .mobile-menu-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.5); z-index: 999; display: none; }
         .mobile-menu-overlay.active { display: block; }
         .mobile-menu-panel { position: absolute; top: 0; right: 0; width: 250px; height: 100%; background: white; padding: 24px; box-shadow: -10px 0 30px rgba(0,0,0,0.1); }
@@ -35,97 +79,376 @@
         .mobile-menu-links { list-style: none; display: flex; flex-direction: column; gap: 16px; }
         .mobile-menu-links a { font-weight: 600; font-size: 15px; color: #334155; }
 
-        /* CONTAINER & WELCOME */
-        .container { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
-        .welcome { margin-bottom: 28px; }
-        .welcome h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 6px; }
-        .welcome p { color: #64748b; font-size: 15px; }
+        /* ============ CONTAINER ============ */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px 16px 40px;
+        }
 
-        /* STATS */
-        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 28px; }
-        .stat { background: white; padding: 22px; border-radius: 16px; border: 1px solid #f1f5f9; }
-        .stat-label { font-size: 12px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
-        .stat-value { font-size: 26px; font-weight: 800; color: #0f172a; letter-spacing: -0.02em; }
-        .stat-sub { font-size: 12px; color: #64748b; margin-top: 4px; }
+        /* ============ WELCOME ============ */
+        .welcome { margin-bottom: 20px; }
+        .welcome h1 {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 4px;
+        }
+        .welcome p { color: #64748b; font-size: 14px; }
 
-        /* BALANCE CARD */
-        .balance-card { background: linear-gradient(135deg, #0f172a, #1e1b4b); color: white; padding: 28px; border-radius: 20px; margin-bottom: 28px; }
-        .balance-card h3 { font-size: 15px; font-weight: 600; color: rgba(255,255,255,0.7); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
-        .settlement-phone { font-size: 28px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 12px; font-family: monospace; }
-        .settlement-note { font-size: 13px; color: rgba(255,255,255,0.6); line-height: 1.6; }
-        .settlement-note strong { color: white; }
+        /* ============ BALANCE CARD ============ */
+        .balance-card {
+            background: linear-gradient(135deg, #0f172a, #1e1b4b);
+            color: white;
+            padding: 24px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .balance-card::before {
+            content: '';
+            position: absolute;
+            top: -80px;
+            right: -80px;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(99,102,241,0.35), transparent 70%);
+            border-radius: 50%;
+        }
+        .balance-content { position: relative; z-index: 2; }
+        .balance-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: rgba(255,255,255,0.7);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 6px;
+        }
+        .balance-amount {
+            font-size: 34px;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            margin-bottom: 4px;
+            word-break: break-all;
+        }
+        .balance-sub { font-size: 12px; color: rgba(255,255,255,0.6); }
+        .balance-actions {
+            margin-top: 18px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .balance-btn {
+            padding: 12px 8px;
+            background: white;
+            color: #0f172a;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 13px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .balance-btn.secondary {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
 
-        /* TABS */
-        .tabs { display: flex; gap: 4px; border-bottom: 1px solid #f1f5f9; margin-bottom: 24px; overflow-x: auto; }
-        .tab { padding: 12px 20px; background: none; font-weight: 600; color: #64748b; border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; font-size: 14px; }
-        .tab.active { color: #0052cc; border-bottom-color: #0052cc; }
+        /* ============ STATS GRID ============ */
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .stat {
+            background: white;
+            padding: 16px;
+            border-radius: 14px;
+            border: 1px solid #f1f5f9;
+        }
+        .stat-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 6px;
+        }
+        .stat-value {
+            font-size: 20px;
+            font-weight: 800;
+            color: #0f172a;
+            letter-spacing: -0.02em;
+            word-break: break-all;
+        }
+        .stat-sub { font-size: 11px; color: #64748b; margin-top: 2px; }
 
-        /* CARD & TABLES */
-        .card { background: white; border-radius: 16px; border: 1px solid #f1f5f9; padding: 24px; }
-        .card h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
-        .card p.desc { color: #64748b; font-size: 14px; margin-bottom: 16px; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
-        th { color: #64748b; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+        /* ============ TABS ============ */
+        .tabs-wrapper {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .tabs {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            padding: 4px 0;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .tabs::-webkit-scrollbar { display: none; }
+        .tab {
+            padding: 10px 16px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 100px;
+            font-weight: 600;
+            color: #64748b;
+            white-space: nowrap;
+            font-size: 13px;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        .tab.active {
+            background: #0f172a;
+            color: white;
+            border-color: #0f172a;
+        }
+
+        /* ============ CARD ============ */
+        .card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid #f1f5f9;
+            padding: 20px 16px;
+        }
+        .card h3 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+        .card p.desc { color: #64748b; font-size: 13px; margin-bottom: 14px; }
+
+        /* ============ TABLE ============ */
+        .table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin: 0 -16px;
+            padding: 0 16px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 480px;
+        }
+        th, td {
+            padding: 10px 8px;
+            text-align: left;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+        th {
+            color: #64748b;
+            font-weight: 600;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
         tr:last-child td { border-bottom: none; }
-        .badge { padding: 4px 10px; border-radius: 100px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; }
+        .badge {
+            padding: 3px 8px;
+            border-radius: 100px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
         .badge.success { background: #ecfdf5; color: #065f46; }
         .badge.pending { background: #fef3c7; color: #92400e; }
         .badge.failed { background: #fef2f2; color: #991b1b; }
-        .empty { text-align: center; padding: 40px 20px; color: #94a3b8; font-size: 14px; }
+        .empty {
+            text-align: center;
+            padding: 30px 16px;
+            color: #94a3b8;
+            font-size: 13px;
+        }
 
-        /* FORMS */
-        .field { margin-bottom: 16px; }
-        .field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #334155; }
-        .field input { width: 100%; padding: 12px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 15px; background: #f8fafc; font-family: inherit; }
-        .field input:focus { outline: none; border-color: #0052cc; background: white; box-shadow: 0 0 0 4px rgba(0,82,204,0.1); }
-        .btn-primary { padding: 12px 24px; background: #0f172a; color: white; border-radius: 10px; font-weight: 700; font-size: 14px; }
-        .btn-primary:hover { background: #020617; }
+        /* ============ FORMS ============ */
+        .field { margin-bottom: 14px; }
+        .field label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #334155;
+        }
+        .field input, .field select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 15px;
+            background: #f8fafc;
+            font-family: inherit;
+            color: #0f172a;
+        }
+        .field input:focus, .field select:focus {
+            outline: none;
+            border-color: #6366f1;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(99,102,241,0.1);
+        }
 
-        /* API KEY BOX */
-        .key-box { background: #f8fafc; padding: 16px; border-radius: 12px; font-family: monospace; font-size: 13px; word-break: break-all; position: relative; border: 1px dashed #cbd5e1; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-        .key-actions { display: flex; gap: 6px; }
-        .key-btn { padding: 6px 12px; background: #0f172a; color: white; border-radius: 8px; font-size: 11px; font-weight: 600; }
-        .key-btn.danger { background: #dc2626; }
+        /* ============ BUTTONS ============ */
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: #0f172a;
+            color: white;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* AUTH MODAL & OTP */
-        .auth-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.85); backdrop-filter: blur(8px); z-index: 9999; display: none; align-items: center; justify-content: center; padding: 20px; }
-        .auth-overlay.active { display: flex; }
-        .auth-card { background: white; border-radius: 24px; padding: 40px 36px; max-width: 420px; width: 100%; text-align: center; }
-        .auth-card img { width: 60px; height: 60px; margin: 0 auto 16px; border-radius: 14px; }
-        .auth-card h2 { font-size: 24px; font-weight: 800; margin-bottom: 6px; }
-        .auth-card .sub { color: #64748b; font-size: 14px; margin-bottom: 28px; }
-        .auth-btn { width: 100%; padding: 15px; background: #0052cc; color: white; border-radius: 12px; font-weight: 700; font-size: 15px; margin-top: 8px; }
-        .auth-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-        .auth-switch { margin-top: 20px; font-size: 14px; color: #64748b; }
-        .auth-switch a { color: #0052cc; font-weight: 600; cursor: pointer; }
-        .auth-error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; padding: 12px; border-radius: 10px; font-size: 13px; margin-top: 14px; display: none; }
+        /* ============ API KEY BOX ============ */
+        .key-box {
+            background: #f8fafc;
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px dashed #cbd5e1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .key-text {
+            font-family: 'Menlo', monospace;
+            font-size: 12px;
+            word-break: break-all;
+            color: #334155;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        .key-actions { display: flex; gap: 8px; }
+        .key-btn {
+            flex: 1;
+            padding: 10px;
+            background: #0f172a;
+            color: white;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        /* ============ MODALS ============ */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15,23,42,0.85);
+            backdrop-filter: blur(8px);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-card {
+            background: white;
+            border-radius: 24px;
+            padding: 32px 24px;
+            max-width: 420px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            text-align: center;
+        }
+        .modal-card img {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 16px;
+            border-radius: 14px;
+        }
+        .modal-card h2 {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+        .modal-card .sub {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+        .auth-btn {
+            width: 100%;
+            padding: 15px;
+            background: #0f172a;
+            color: white;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 15px;
+            margin-top: 8px;
+        }
+        .auth-switch {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #64748b;
+        }
+        .auth-switch a { color: #6366f1; font-weight: 600; cursor: pointer; }
+        .auth-error {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            margin-top: 14px;
+            display: none;
+        }
         .auth-error.show { display: block; }
         
-        .otp-input { text-align: center; font-size: 24px; letter-spacing: 8px; font-weight: 700; }
+        .otp-input {
+            text-align: center;
+            font-size: 24px;
+            letter-spacing: 8px;
+            font-weight: 700;
+        }
 
         @media (max-width: 640px) {
-            .stats { grid-template-columns: 1fr 1fr; }
             .user-email { display: none; }
-            .settlement-phone { font-size: 22px; }
-            .key-box { flex-direction: column; align-items: stretch; }
             .nav-right .btn-logout { display: none; }
             .menu-toggle { display: block; }
-            .nav { padding: 0 16px; }
-            .auth-card { padding: 32px 24px; }
+            .key-box { flex-direction: column; }
+        }
+
+        @media (min-width: 640px) {
+            .container { padding: 28px 24px 60px; }
+            .balance-amount { font-size: 42px; }
+            .stats { grid-template-columns: repeat(3, 1fr); }
+            .balance-actions { grid-template-columns: auto auto; justify-content: flex-start; }
+            .balance-btn { padding: 12px 24px; }
+            .welcome h1 { font-size: 26px; }
+            .key-box { flex-direction: row; align-items: center; }
+            .key-actions { display: flex; }
+            .stat-value { font-size: 24px; }
+            .modal-card { padding: 40px 36px; }
         }
     </style>
 </head>
 <body>
 
-<!-- NAVIGATION -->
+<!-- NAV -->
 <nav class="nav">
     <div class="nav-inner">
         <div class="brand">
             <img src="/logo.png" alt="PayKwacha" onerror="this.src='/icon-192.png'">
             Pay<span>Kwacha</span>
         </div>
-        
         <div class="nav-right">
             <span class="user-email" id="userEmail"></span>
             <button class="btn-logout" onclick="logout()">Logout</button>
@@ -134,7 +457,7 @@
     </div>
 </nav>
 
-<!-- MOBILE MENU OVERLAY -->
+<!-- MOBILE MENU -->
 <div class="mobile-menu-overlay" id="mobileMenu" onclick="toggleMobileMenu()">
     <div class="mobile-menu-panel" onclick="event.stopPropagation()">
         <button class="mobile-menu-close" onclick="toggleMobileMenu()">✕</button>
@@ -155,123 +478,117 @@
 <div class="container">
     <div class="welcome">
         <h1 id="welcomeTitle">Welcome back 👋</h1>
-        <p>Here's what's happening with your account.</p>
+        <p>Manage your payments, links, and balance.</p>
+    </div>
+
+    <!-- BALANCE -->
+    <div class="balance-card">
+        <div class="balance-content">
+            <div class="balance-label">Available Balance</div>
+            <div class="balance-amount" id="balanceAmount">MWK 0</div>
+            <div class="balance-sub">After 2% platform fee</div>
+            <div class="balance-actions">
+                <a href="/betting/withdraw" class="balance-btn">💸 Withdraw</a>
+                <button class="balance-btn secondary" onclick="switchTabById('links')">🔗 Create Link</button>
+            </div>
+        </div>
     </div>
 
     <!-- STATS -->
     <div class="stats">
         <div class="stat">
-            <div class="stat-label">Total Received</div>
+            <div class="stat-label">Total</div>
             <div class="stat-value" id="totalAmount">MWK 0</div>
-            <div class="stat-sub" id="totalCount">0 transactions</div>
+            <div class="stat-sub" id="totalCount">0 txns</div>
         </div>
         <div class="stat">
             <div class="stat-label">This Month</div>
             <div class="stat-value" id="monthAmount">MWK 0</div>
-            <div class="stat-sub">Settled to your phone</div>
+            <div class="stat-sub">Last 30 days</div>
         </div>
         <div class="stat">
-            <div class="stat-label">Success Rate</div>
-            <div class="stat-value" id="successRate">—</div>
-            <div class="stat-sub">All time</div>
-        </div>
-    </div>
-
-    <!-- BALANCE CARD -->
-    <div class="balance-card">
-        <h3>💸 Money settles to</h3>
-        <div class="settlement-phone" id="settlementPhone">⚠️ Not configured</div>
-        <div class="settlement-note">
-            All payments are automatically settled to this mobile money number.<br/>
-            <strong>No manual withdrawal needed</strong> — money arrives on T+1 (next business day).
+            <div class="stat-label">Fees</div>
+            <div class="stat-value" id="feesPaid">MWK 0</div>
+            <div class="stat-sub">2% per txn</div>
         </div>
     </div>
 
     <!-- TABS -->
-    <div class="tabs">
-        <button class="tab active" onclick="switchTab(this, 'transactions')">Transactions</button>
-        <button class="tab" onclick="switchTab(this, 'links')">Payment Links</button>
-        <button class="tab" onclick="switchTab(this, 'api')">API Keys</button>
-        <button class="tab" onclick="switchTab(this, 'connect')">Connect PayChangu</button>
-        <button class="tab" onclick="switchTab(this, 'settings')">Settings</button>
+    <div class="tabs-wrapper">
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab(this, 'transactions')">Transactions</button>
+            <button class="tab" onclick="switchTab(this, 'links')">Links</button>
+            <button class="tab" onclick="switchTab(this, 'api')">API</button>
+            <button class="tab" onclick="switchTab(this, 'connect')">Connect PayChangu</button>
+            <button class="tab" onclick="switchTab(this, 'settings')">Settings</button>
+        </div>
     </div>
 
-    <!-- TRANSACTIONS TAB -->
+    <!-- TAB CONTENT -->
     <div id="tab-transactions" class="card">
         <h3>Recent Transactions</h3>
-        <p class="desc">Live updates as payments arrive.</p>
-        <table>
-            <thead>
-                <tr><th>Date</th><th>Phone</th><th>Amount</th><th>Provider</th><th>Status</th></tr>
-            </thead>
-            <tbody id="txnTable">
-                <tr><td colspan="5" class="empty">Loading...</td></tr>
-            </tbody>
-        </table>
+        <p class="desc">Stored for 3 months, then auto-deleted.</p>
+        <div class="table-wrapper">
+            <table>
+                <thead><tr><th>Date</th><th>Phone</th><th>Amount</th><th>Fee</th><th>Status</th></tr></thead>
+                <tbody id="txnTable"><tr><td colspan="5" class="empty">Loading...</td></tr></tbody>
+            </table>
+        </div>
     </div>
 
-    <!-- LINKS TAB -->
     <div id="tab-links" class="card" style="display:none;">
         <h3>Create Payment Link</h3>
-        <p class="desc">Share this link with customers to collect payments — no code required.</p>
+        <p class="desc">Share with customers to collect payments.</p>
         <div class="field"><label>Amount (MWK)</label><input type="number" id="linkAmount" placeholder="1000" min="50" /></div>
         <div class="field"><label>Description</label><input type="text" id="linkDesc" placeholder="e.g., Order #123" /></div>
         <button class="btn-primary" id="createLinkBtn" onclick="createPaymentLink()">Generate Link</button>
         <div id="linkResult" style="margin-top: 16px;"></div>
     </div>
 
-    <!-- API TAB -->
     <div id="tab-api" class="card" style="display:none;">
         <h3>Your API Key</h3>
-        <p class="desc">Use this key to authenticate requests to <code>/api/payment</code>. Keep it secret.</p>
+        <p class="desc">Use this key to integrate PayKwacha.</p>
         <div id="apiKeyBox"></div>
     </div>
 
-    <!-- CONNECT TAB -->
     <div id="tab-connect" class="card" style="display:none;">
-        <h3>Connect Your PayChangu Account</h3>
-        <p class="desc">To accept payments, connect your own PayChangu account. Money will settle directly to you.</p>
-        <div style="background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; padding: 16px; border-radius: 12px; margin-bottom: 20px; font-size: 14px; line-height: 1.6;">
-            <strong>📋 How to connect:</strong><br>
+        <h3>Connect PayChangu</h3>
+        <p class="desc">Link your own PayChangu account so money settles directly to you.</p>
+        <div style="background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; padding: 16px; border-radius: 12px; margin-bottom: 20px; font-size: 13px; line-height: 1.6;">
+            <strong>📋 Steps:</strong><br>
             1. Sign up at <a href="https://paychangu.com" target="_blank" style="color: #1e40af; font-weight: 700;">paychangu.com</a><br>
-            2. Complete verification<br>
-            3. Go to <strong>Settings → API & Webhook</strong><br>
-            4. Copy your <strong>Secret Key</strong> (starts with <code>sec-live-</code>)<br>
-            5. Paste it below
+            2. Go to <strong>Settings → API & Webhook</strong><br>
+            3. Copy your <strong>Secret Key</strong> (starts with <code>sec-live-</code>)<br>
+            4. Paste it below
         </div>
         <div class="field"><label>PayChangu Secret Key</label><input type="password" id="paychanguKey" placeholder="sec-live-..." /></div>
         <button class="btn-primary" id="connectBtn" onclick="connectPayChangu()">Connect Account</button>
-        <div id="connectResult" style="margin-top: 16px;"></div>
+        <div id="connectResult" style="margin-top: 14px;"></div>
     </div>
 
-    <!-- SETTINGS TAB -->
     <div id="tab-settings" class="card" style="display:none;">
         <h3>Account Settings</h3>
-        <p class="desc">Configure where your money is withdrawn to.</p>
-        <div class="field"><label>Business Name</label><input type="text" id="settingsBusiness" placeholder="e.g., Mlimi Store" /></div>
-        <div class="field"><label>Settlement Phone Number</label><input type="tel" id="settingsPhone" placeholder="e.g., 0995514049" /><small style="color:#94a3b8; font-size:12px;">Payments will be settled to this Airtel/TNM number</small></div>
+        <p class="desc">Configure your withdrawal destination.</p>
+        <div class="field"><label>Business Name</label><input type="text" id="settingsBusiness" placeholder="Mlimi Store" /></div>
+        <div class="field"><label>Withdrawal Phone</label><input type="tel" id="settingsPhone" placeholder="0995514049" /></div>
         <button class="btn-primary" onclick="saveSettings()">Save Settings</button>
     </div>
 </div>
 
-<!-- ============================================ -->
-<!-- AUTH & OTP MODALS                            -->
-<!-- ============================================ -->
-
-<!-- 1. Main Auth Modal -->
-<div class="auth-overlay" id="authOverlay">
-    <div class="auth-card">
+<!-- AUTH MODAL -->
+<div class="modal-overlay" id="authOverlay">
+    <div class="modal-card">
         <img src="/logo.png" alt="Logo" onerror="this.src='/icon-192.png'">
         <h2 id="authTitle">Welcome back</h2>
-        <p class="sub" id="authSub">Sign in to your PayKwacha account</p>
+        <p class="sub" id="authSub">Sign in to your account</p>
 
         <div class="field" style="text-align:left;">
             <label>Email</label>
-            <input type="email" id="authEmail" placeholder="you@business.com" autocomplete="email" />
+            <input type="email" id="authEmail" placeholder="you@business.com" />
         </div>
         <div class="field" style="text-align:left;">
             <label>Password</label>
-            <input type="password" id="authPassword" placeholder="••••••••" autocomplete="current-password" />
+            <input type="password" id="authPassword" placeholder="••••••••" />
         </div>
 
         <button class="auth-btn" id="authBtn" onclick="handleAuth()">Sign In</button>
@@ -279,18 +596,18 @@
 
         <div class="auth-switch">
             <span id="switchText">New to PayKwacha?</span>
-            <a id="switchLink" onclick="toggleAuthMode(event)">Create an account</a>
+            <a id="switchLink" onclick="toggleAuthMode(event)">Create account</a>
         </div>
     </div>
 </div>
 
-<!-- 2. OTP Verification Modal -->
-<div class="auth-overlay" id="otpOverlay">
-    <div class="auth-card">
+<!-- OTP MODAL -->
+<div class="modal-overlay" id="otpOverlay">
+    <div class="modal-card">
         <h2>Verify Your Email</h2>
         <p class="sub">We sent a 6-digit code to <br><strong id="otpEmailDisplay"></strong></p>
 
-        <div class="field">
+        <div class="field" style="text-align:left;">
             <input type="text" id="otpInput" class="otp-input" placeholder="------" maxlength="6" inputmode="numeric" />
         </div>
 
@@ -298,21 +615,16 @@
         <div class="auth-error" id="otpError"></div>
         
         <div style="margin-top:20px; font-size:13px; color:#64748b;">
-            Didn't get the code? <a href="#" onclick="resendOTP(event)" style="color:#0052cc; font-weight:600;">Resend</a>
+            Didn't get the code? <a href="#" onclick="resendOTP(event)" style="color:#6366f1; font-weight:600;">Resend</a>
         </div>
     </div>
 </div>
 
-
-<!-- FIREBASE SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
 <script>
-    // ============================================
-    // 🔥 Firebase Init
-    // ============================================
     const firebaseConfig = {
         apiKey: "AIzaSyBY_Ea_o2x6QJupbc4M2K_ES7G0D8XuvEc",
         authDomain: "primebet-a6742.firebaseapp.com",
@@ -330,13 +642,9 @@
     let userData = {};
     let unsubscribeTxns = null;
     
-    // OTP state
+    // OTP State
     let generatedOTP = null;
-    let pendingSignup = null;
 
-    // ============================================
-    // 🔐 Auth State
-    // ============================================
     auth.onAuthStateChanged(async (user) => {
         if (user) {
             currentUser = user;
@@ -349,14 +657,10 @@
         } else {
             currentUser = null;
             document.getElementById('authOverlay').classList.add('active');
-            document.getElementById('txnTable').innerHTML = '<tr><td colspan="5" class="empty">Sign in to view transactions</td></tr>';
             if (unsubscribeTxns) unsubscribeTxns();
         }
     });
 
-    // ============================================
-    // 🔐 Handle Sign In / Sign Up
-    // ============================================
     async function handleAuth() {
         const email = document.getElementById('authEmail').value.trim();
         const password = document.getElementById('authPassword').value;
@@ -364,23 +668,23 @@
         const err = document.getElementById('authError');
 
         err.classList.remove('show');
-        if (!email || !password) { err.textContent = 'Please fill in all fields'; err.classList.add('show'); return; }
-        if (password.length < 6) { err.textContent = 'Password must be at least 6 characters'; err.classList.add('show'); return; }
+        if (!email || !password) { err.textContent = 'Fill all fields'; err.classList.add('show'); return; }
+        if (password.length < 6) { err.textContent = 'Password must be 6+ chars'; err.classList.add('show'); return; }
 
         btn.disabled = true;
-        btn.textContent = authMode === 'signin' ? 'Signing in...' : 'Creating account...';
+        btn.textContent = authMode === 'signin' ? 'Signing in...' : 'Creating...';
 
         try {
             if (authMode === 'signin') {
                 await auth.signInWithEmailAndPassword(email, password);
             } else {
-                // --- SIGN UP FLOW ---
+                // 1. Create User
                 const cred = await auth.createUserWithEmailAndPassword(email, password);
                 
-                // Create the business record in Firestore immediately
+                // 2. Create Firestore record
                 await db.collection('businesses').doc(cred.user.uid).set({
                     email: email,
-                    apiKey: generateApiKey(),
+                    apiKey: `PK_${Date.now()}_${Math.random().toString(36).substring(2, 10).toUpperCase()}`,
                     apiKeyCreatedAt: firebase.firestore.FieldValue.serverTimestamp(),
                     balance: 0, totalReceived: 0, totalFees: 0,
                     businessName: '', settlementPhone: '',
@@ -388,28 +692,26 @@
                     status: 'active'
                 });
 
-                // Generate a random 6-digit OTP
+                // 3. Trigger OTP Flow
                 generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
-                pendingSignup = { email: email };
                 
-                // Show OTP Modal (Simulating Email/SMS delivery)
                 document.getElementById('authOverlay').classList.remove('active');
                 document.getElementById('otpOverlay').classList.add('active');
                 document.getElementById('otpEmailDisplay').textContent = email;
                 document.getElementById('otpInput').value = '';
                 document.getElementById('otpError').classList.remove('show');
-                
-                // In a real app, you would trigger a SendGrid/Email API call here.
-                // For now, we use an alert so you can test the flow.
+                document.getElementById('otpBtn').textContent = 'Verify Code';
+
+                // SHOW THE POPUP FOR TESTING
                 setTimeout(() => {
-                    alert(`[TESTING] Your verification code is: ${generatedOTP}`);
+                    alert(`[TESTING ONLY] Your PayKwacha OTP is: ${generatedOTP}`);
                 }, 500);
             }
         } catch (error) {
             let msg = error.message;
-            if (error.code === 'auth/user-not-found') msg = 'No account found with this email.';
-            if (error.code === 'auth/wrong-password') msg = 'Incorrect password.';
-            if (error.code === 'auth/email-already-in-use') msg = 'This email is already registered. Sign in instead.';
+            if (error.code === 'auth/user-not-found') msg = 'No account found.';
+            if (error.code === 'auth/wrong-password') msg = 'Wrong password.';
+            if (error.code === 'auth/email-already-in-use') msg = 'Email already registered.';
             err.textContent = msg;
             err.classList.add('show');
             btn.disabled = false;
@@ -417,9 +719,6 @@
         }
     }
 
-    // ============================================
-    // 🔢 OTP Verification
-    // ============================================
     function verifyOTP() {
         const input = document.getElementById('otpInput').value.trim();
         const err = document.getElementById('otpError');
@@ -428,11 +727,9 @@
         err.classList.remove('show');
 
         if (input === generatedOTP) {
-            // Success!
             btn.textContent = '✅ Verified!';
             setTimeout(() => {
                 document.getElementById('otpOverlay').classList.remove('active');
-                // The user is already logged in via Firebase auth, so they will see the dashboard.
             }, 1000);
         } else {
             err.textContent = 'Invalid code. Please try again.';
@@ -443,48 +740,38 @@
     function resendOTP(e) {
         e.preventDefault();
         generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
-        alert(`[TESTING] Your new verification code is: ${generatedOTP}`);
+        alert(`[TESTING ONLY] Your new PayKwacha OTP is: ${generatedOTP}`);
     }
 
-    // ============================================
-    // 🔀 Toggle Auth Mode
-    // ============================================
     function toggleAuthMode(e) {
         e.preventDefault();
         authMode = authMode === 'signin' ? 'signup' : 'signin';
-        document.getElementById('authTitle').textContent = authMode === 'signin' ? 'Welcome back' : 'Create your account';
-        document.getElementById('authSub').textContent = authMode === 'signin' ? 'Sign in to your PayKwacha account' : 'Get started in under 2 minutes';
+        document.getElementById('authTitle').textContent = authMode === 'signin' ? 'Welcome back' : 'Create account';
+        document.getElementById('authSub').textContent = authMode === 'signin' ? 'Sign in to your account' : 'Get started in 2 minutes';
         document.getElementById('authBtn').textContent = authMode === 'signin' ? 'Sign In' : 'Create Account';
         document.getElementById('switchText').textContent = authMode === 'signin' ? 'New to PayKwacha?' : 'Already have an account?';
-        document.getElementById('switchLink').textContent = authMode === 'signin' ? 'Create an account' : 'Sign in';
+        document.getElementById('switchLink').textContent = authMode === 'signin' ? 'Create account' : 'Sign in';
         document.getElementById('authError').classList.remove('show');
     }
 
     function logout() { auth.signOut(); }
 
-    // ============================================
-    // 📊 Load User Data
-    // ============================================
     async function loadUserData() {
         const doc = await db.collection('businesses').doc(currentUser.uid).get();
         if (doc.exists) {
             userData = doc.data();
-            document.getElementById('settlementPhone').textContent = userData.settlementPhone || '⚠️ Set your settlement number in Settings';
+            document.getElementById('balanceAmount').textContent = `MWK ${(userData.balance || 0).toLocaleString()}`;
             document.getElementById('settingsBusiness').value = userData.businessName || '';
             document.getElementById('settingsPhone').value = userData.settlementPhone || '';
             renderApiKeyBox();
         }
     }
 
-    // ============================================
-    // 📡 Transactions (Real-time)
-    // ============================================
     function listenToTransactions() {
         if (unsubscribeTxns) unsubscribeTxns();
-
         unsubscribeTxns = db.collection('transactions')
             .where('userId', '==', currentUser.uid)
-            .limit(50)
+            .limit(100)
             .onSnapshot((snapshot) => {
                 const txns = [];
                 snapshot.forEach(doc => txns.push({ id: doc.id, ...doc.data() }));
@@ -497,39 +784,35 @@
         const tbody = document.getElementById('txnTable');
         if (txns.length === 0) {
             tbody.innerHTML = '<tr><td colspan="5" class="empty">No transactions yet.</td></tr>';
+            document.getElementById('totalAmount').textContent = 'MWK 0';
+            document.getElementById('totalCount').textContent = '0 txns';
+            document.getElementById('monthAmount').textContent = 'MWK 0';
+            document.getElementById('feesPaid').textContent = 'MWK 0';
             return;
         }
-
-        let total = 0, successCount = 0;
+        let total = 0, successCount = 0, monthTotal = 0, totalFees = 0;
+        const now = new Date();
+        const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
 
         tbody.innerHTML = txns.map(t => {
             const amt = t.amount || 0;
-            if (t.status === 'SUCCESS') { total += amt; successCount++; }
-            
+            const fee = t.platformFee || (amt * 0.02);
+            const created = t.createdAt?.toDate?.() || null;
+            if (t.status === 'SUCCESS') {
+                total += amt;
+                totalFees += fee;
+                successCount++;
+                if (created && created >= monthStart) monthTotal += amt;
+            }
             const badgeClass = t.status === 'SUCCESS' ? 'success' : t.status === 'PENDING' ? 'pending' : 'failed';
-            const date = t.createdAt?.toDate?.().toLocaleString([], {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'}) || '—';
-            
-            return `
-                <tr>
-                    <td>${date}</td>
-                    <td>${t.phoneNumber || '—'}</td>
-                    <td>MWK ${amt.toLocaleString()}</td>
-                    <td>${t.provider === 'AIRTEL_MWI' ? 'Airtel' : 'TNM'}</td>
-                    <td><span class="badge ${badgeClass}">${t.status}</span></td>
-                </tr>
-            `;
+            const date = created ? created.toLocaleDateString([], {month:'short', day:'numeric'}) + ' ' + created.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '—';
+            return `<tr><td>${date}</td><td>${t.phoneNumber || '—'}</td><td><strong>${amt.toLocaleString()}</strong></td><td style="color:#dc2626;">−${Math.round(fee).toLocaleString()}</td><td><span class="badge ${badgeClass}">${t.status}</span></td></tr>`;
         }).join('');
 
         document.getElementById('totalAmount').textContent = `MWK ${total.toLocaleString()}`;
-        document.getElementById('totalCount').textContent = `${txns.length} transactions`;
-        document.getElementById('successRate').textContent = txns.length ? `${Math.round((successCount / txns.length) * 100)}%` : '—';
-    }
-
-    // ============================================
-    // 🔑 API Key Management
-    // ============================================
-    function generateApiKey() {
-        return `PK_${Date.now()}_${Math.random().toString(36).substring(2, 10).toUpperCase()}`;
+        document.getElementById('totalCount').textContent = `${txns.length} txns`;
+        document.getElementById('monthAmount').textContent = `MWK ${monthTotal.toLocaleString()}`;
+        document.getElementById('feesPaid').textContent = `MWK ${Math.round(totalFees).toLocaleString()}`;
     }
 
     function renderApiKeyBox() {
@@ -537,27 +820,15 @@
         if (userData.apiKey) {
             box.innerHTML = `
                 <div class="key-box">
-                    <span>${userData.apiKey}</span>
+                    <div class="key-text">${userData.apiKey}</div>
                     <div class="key-actions">
                         <button class="key-btn" onclick="navigator.clipboard.writeText('${userData.apiKey}'); alert('Copied!')">Copy</button>
                     </div>
                 </div>
             `;
-        } else {
-            box.innerHTML = `<button class="btn-primary" onclick="generateNewKey()">Generate API Key</button>`;
         }
     }
 
-    async function generateNewKey() {
-        const newKey = generateApiKey();
-        await db.collection('businesses').doc(currentUser.uid).update({ apiKey: newKey });
-        userData.apiKey = newKey;
-        renderApiKeyBox();
-    }
-
-    // ============================================
-    // 🔗 Payment Links
-    // ============================================
     async function createPaymentLink() {
         const amount = document.getElementById('linkAmount').value.trim();
         const desc = document.getElementById('linkDesc').value.trim();
@@ -583,7 +854,7 @@
 
             document.getElementById('linkResult').innerHTML = `
                 <div style="background:#f8fafc; padding:14px; border-radius:10px; border:1px dashed #cbd5e1; word-break:break-all; margin-bottom:10px;">
-                    <a href="${link}" target="_blank" style="color:#0052cc; font-weight:600;">${link}</a>
+                    <a href="${link}" target="_blank" style="color:#6366f1; font-weight:600;">${link}</a>
                 </div>
                 <button class="btn-primary" onclick="navigator.clipboard.writeText('${link}'); alert('Link copied!')">Copy Link</button>
             `;
@@ -597,9 +868,6 @@
         }
     }
 
-    // ============================================
-    // 🔗 Connect PayChangu
-    // ============================================
     async function connectPayChangu() {
         const key = document.getElementById('paychanguKey').value.trim();
         const btn = document.getElementById('connectBtn');
@@ -632,9 +900,6 @@
         }
     }
 
-    // ============================================
-    // ⚙️ Settings & UI
-    // ============================================
     async function saveSettings() {
         await db.collection('businesses').doc(currentUser.uid).update({
             businessName: document.getElementById('settingsBusiness').value.trim(),
@@ -661,7 +926,6 @@
         document.getElementById('mobileMenu').classList.toggle('active');
     }
 
-    // Listen for Enter key in auth
     document.getElementById('authPassword').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') handleAuth();
     });
