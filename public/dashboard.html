@@ -372,7 +372,7 @@
     }
 
     // ============================================
-    // 💸 REAL DEPOSIT LOGIC
+    // 💸 DEPOSIT LOGIC
     // ============================================
     function openDepositModal() {
         document.getElementById('depositPhone').value = userData.settlementPhone || '';
@@ -397,7 +397,6 @@
         resultDiv.innerHTML = '<span style="color:#6366f1;">⏳ Sending prompt...</span>';
 
         try {
-            // Call the payment API
             const res = await fetch('/api/payment', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -417,16 +416,14 @@
             }
 
             resultDiv.innerHTML = '<span style="color:#6366f1;">📲 Check your phone for the PIN prompt...</span>';
-            
-            // Start polling for payment status
-            pollDepositStatus(data.chargeId, amount, resultDiv);
+            pollDepositStatus(data.chargeId, resultDiv);
 
         } catch (err) {
             resultDiv.innerHTML = `<span style="color:red;">Network error: ${err.message}</span>`;
         }
     }
 
-    async function pollDepositStatus(chargeId, amount, resultDiv) {
+    async function pollDepositStatus(chargeId, resultDiv) {
         let polls = 0;
         const timer = setInterval(async () => {
             polls++;
@@ -445,12 +442,11 @@
                     clearInterval(timer);
                     resultDiv.innerHTML = '<span style="color:green;">✅ Deposit successful!</span>';
                     
-                    // Update local balance
-                    await db.collection('businesses').doc(currentUser.uid).update({
-                        balance: firebase.firestore.FieldValue.increment(amount)
-                    });
-                    
-                    setTimeout(() => { closeDepositModal(); loadUserData(); }, 2000);
+                    // Wait for the backend webhook to update the database, then reload
+                    setTimeout(() => { 
+                        closeDepositModal(); 
+                        loadUserData(); 
+                    }, 2000);
                     
                 } else if (status === 'failed' || status === 'cancelled') {
                     clearInterval(timer);
@@ -506,7 +502,7 @@
     }
 
     // ============================================
-    // 🔐 AUTH STATE & OTHER FUNCTIONS
+    // 🔐 AUTH & OTHER FUNCTIONS
     // ============================================
     auth.onAuthStateChanged(async (user) => {
         if (user) {
