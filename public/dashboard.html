@@ -25,53 +25,17 @@
         button { font-family: inherit; cursor: pointer; border: none; background: none; }
 
         /* ============ NAV ============ */
-        .nav {
-            background: white;
-            border-bottom: 1px solid #f1f5f9;
-            padding: 0 16px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        .nav-inner {
-            max-width: 1100px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 60px;
-        }
-        .brand {
-            font-size: 18px;
-            font-weight: 800;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .brand img {
-            width: 32px;
-            height: 32px;
-            border-radius: 9px;
-            object-fit: cover;
-        }
+        .nav { background: white; border-bottom: 1px solid #f1f5f9; padding: 0 16px; position: sticky; top: 0; z-index: 100; }
+        .nav-inner { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; height: 60px; }
+        .brand { font-size: 18px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+        .brand img { width: 32px; height: 32px; border-radius: 9px; object-fit: cover; }
         .brand span { color: #6366f1; }
-        .nav-right {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            font-size: 13px;
-        }
+        .nav-right { display: flex; gap: 8px; align-items: center; font-size: 13px; }
         .user-email { color: #64748b; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .btn-logout {
-            padding: 7px 14px;
-            background: #f1f5f9;
-            border-radius: 100px;
-            font-weight: 600;
-            font-size: 12px;
-        }
+        .btn-logout { padding: 7px 14px; background: #f1f5f9; border-radius: 100px; font-weight: 600; font-size: 12px; }
         .menu-toggle { display: none; font-size: 24px; color: #0f172a; }
 
-        /* ============ MOBILE MENU (Now acts as full navigation) ============ */
+        /* ============ MOBILE MENU ============ */
         .mobile-menu-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.5); z-index: 999; display: none; }
         .mobile-menu-overlay.active { display: block; }
         .mobile-menu-panel { position: absolute; top: 0; right: 0; width: 280px; height: 100%; background: white; padding: 24px; box-shadow: -10px 0 30px rgba(0,0,0,0.1); }
@@ -82,73 +46,25 @@
         .mobile-menu-divider { border-top: 1px solid #f1f5f9; padding-top: 16px; margin-top: 8px; }
 
         /* ============ CONTAINER ============ */
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 20px 16px 40px;
-        }
-
+        .container { max-width: 1100px; margin: 0 auto; padding: 20px 16px 40px; }
         .welcome { margin-bottom: 20px; }
         .welcome h1 { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 4px; }
         .welcome p { color: #64748b; font-size: 14px; }
 
         /* ============ BALANCE CARD ============ */
-        .balance-card {
-            background: linear-gradient(135deg, #0f172a, #1e1b4b);
-            color: white;
-            padding: 24px;
-            border-radius: 20px;
-            margin-bottom: 20px;
-            position: relative;
-            overflow: hidden;
-        }
-        .balance-card::before {
-            content: '';
-            position: absolute;
-            top: -80px;
-            right: -80px;
-            width: 200px;
-            height: 200px;
-            background: radial-gradient(circle, rgba(99,102,241,0.35), transparent 70%);
-            border-radius: 50%;
-        }
+        .balance-card { background: linear-gradient(135deg, #0f172a, #1e1b4b); color: white; padding: 24px; border-radius: 20px; margin-bottom: 20px; position: relative; overflow: hidden; }
+        .balance-card::before { content: ''; position: absolute; top: -80px; right: -80px; width: 200px; height: 200px; background: radial-gradient(circle, rgba(99,102,241,0.35), transparent 70%); border-radius: 50%; }
         .balance-content { position: relative; z-index: 2; }
         .balance-label { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; }
         .balance-amount { font-size: 34px; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 4px; word-break: break-all; }
         .balance-sub { font-size: 12px; color: rgba(255,255,255,0.6); }
         
-        .balance-actions {
-            margin-top: 18px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-        .balance-btn {
-            padding: 12px 8px;
-            background: white;
-            color: #0f172a;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 13px;
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-        .balance-btn.secondary {
-            background: rgba(255,255,255,0.15);
-            color: white;
-            border: 1px solid rgba(255,255,255,0.3);
-        }
+        .balance-actions { margin-top: 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .balance-btn { padding: 12px 8px; background: white; color: #0f172a; border-radius: 12px; font-weight: 700; font-size: 13px; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .balance-btn.secondary { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); }
 
         /* ============ STATS GRID ============ */
-        .stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
+        .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         .stat { background: white; padding: 16px; border-radius: 14px; border: 1px solid #f1f5f9; }
         .stat-label { font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
         .stat-value { font-size: 20px; font-weight: 800; color: #0f172a; letter-spacing: -0.02em; word-break: break-all; }
@@ -222,7 +138,6 @@
             .stat-value { font-size: 24px; }
             .modal-card { padding: 40px 36px; }
             
-            /* On desktop, we show all pages stacked or use the menu */
             .page-view { display: block; margin-top: 24px; }
             .page-view.hidden-desktop { display: none; }
         }
@@ -245,19 +160,17 @@
     </div>
 </nav>
 
-<!-- TOGGLE MENU (Mobile & Desktop Navigation) -->
+<!-- TOGGLE MENU -->
 <div class="mobile-menu-overlay" id="mobileMenu" onclick="toggleMobileMenu()">
     <div class="mobile-menu-panel" onclick="event.stopPropagation()">
         <button class="mobile-menu-close" onclick="toggleMobileMenu()">✕</button>
         <ul class="mobile-menu-links">
             <li style="font-size:12px; color:#94a3b8; text-transform:uppercase; font-weight:700; margin-bottom:8px;">Dashboard Pages</li>
-            
             <li><a href="#" onclick="navigateTo('transactions'); toggleMobileMenu()">📊 Transactions</a></li>
             <li><a href="#" onclick="navigateTo('links'); toggleMobileMenu()">🔗 Payment Links</a></li>
             <li><a href="#" onclick="navigateTo('api'); toggleMobileMenu()">🔑 API Keys</a></li>
             <li><a href="#" onclick="navigateTo('connect'); toggleMobileMenu()">⚙️ Connect PayChangu</a></li>
             <li><a href="#" onclick="navigateTo('settings'); toggleMobileMenu()">👤 Account Settings</a></li>
-            
             <li class="mobile-menu-divider">
                 <a href="#" onclick="logout()" style="color:#dc2626;">🚪 Logout</a>
             </li>
@@ -278,8 +191,8 @@
             <div class="balance-amount" id="balanceAmount">MWK 0</div>
             <div class="balance-sub">After 2% platform fee</div>
             <div class="balance-actions">
-                <a href="/betting/deposit" class="balance-btn">💸 Deposit</a>
-                <a href="/betting/withdraw" class="balance-btn secondary">🏦 Withdraw</a>
+                <button class="balance-btn" onclick="openDepositModal()">💸 Deposit</button>
+                <button class="balance-btn secondary" onclick="openWithdrawModal()">🏦 Withdraw</button>
             </div>
         </div>
     </div>
@@ -368,6 +281,47 @@
     </div>
 </div>
 
+<!-- DEPOSIT MODAL -->
+<div class="modal-overlay" id="depositModal">
+    <div class="modal-card" style="text-align: left;">
+        <button onclick="closeDepositModal()" style="float:right; font-size:20px; color:#64748b;">✕</button>
+        <h2 style="text-align:center;">Deposit Funds</h2>
+        <p class="sub" style="text-align:center;">Add money to your PayKwacha balance</p>
+        
+        <div class="field"><label>Amount (MWK)</label><input type="number" id="depositAmount" placeholder="1000" min="50" /></div>
+        <div class="field">
+            <label>Payment Method</label>
+            <select id="depositProvider">
+                <option value="AIRTEL_MWI">Airtel Money</option>
+                <option value="TNM_MWI">TNM Mpamba</option>
+            </select>
+        </div>
+        <div class="field"><label>Phone Number</label><input type="tel" id="depositPhone" placeholder="0995514049" /></div>
+        <button class="btn-primary" onclick="processDeposit()">Deposit Now</button>
+    </div>
+</div>
+
+<!-- WITHDRAW MODAL -->
+<div class="modal-overlay" id="withdrawModal">
+    <div class="modal-card" style="text-align: left;">
+        <button onclick="closeWithdrawModal()" style="float:right; font-size:20px; color:#64748b;">✕</button>
+        <h2 style="text-align:center;">Withdraw Funds</h2>
+        <p class="sub" style="text-align:center;">Send money to your mobile wallet</p>
+        
+        <div class="field"><label>Amount (MWK)</label><input type="number" id="withdrawAmount" placeholder="1000" min="100" /></div>
+        <div class="field">
+            <label>Payment Method</label>
+            <select id="withdrawProvider">
+                <option value="AIRTEL_MWI">Airtel Money</option>
+                <option value="TNM_MWI">TNM Mpamba</option>
+            </select>
+        </div>
+        <div class="field"><label>Phone Number</label><input type="tel" id="withdrawPhone" placeholder="0995514049" /></div>
+        <button class="btn-primary" onclick="processWithdraw()">Withdraw Now</button>
+        <div id="withdrawResult" style="margin-top:12px; font-size:13px; text-align:center;"></div>
+    </div>
+</div>
+
 <!-- AUTH MODAL -->
 <div class="modal-overlay" id="authOverlay">
     <div class="modal-card">
@@ -375,14 +329,8 @@
         <h2 id="authTitle">Welcome back</h2>
         <p class="sub" id="authSub">Sign in to your account</p>
 
-        <div class="field" style="text-align:left;">
-            <label>Email</label>
-            <input type="email" id="authEmail" placeholder="you@business.com" />
-        </div>
-        <div class="field" style="text-align:left;">
-            <label>Password</label>
-            <input type="password" id="authPassword" placeholder="••••••••" />
-        </div>
+        <div class="field" style="text-align:left;"><label>Email</label><input type="email" id="authEmail" placeholder="you@business.com" /></div>
+        <div class="field" style="text-align:left;"><label>Password</label><input type="password" id="authPassword" placeholder="••••••••" /></div>
 
         <button class="auth-btn" id="authBtn" onclick="handleAuth()">Sign In</button>
         <div class="auth-error" id="authError"></div>
@@ -399,17 +347,10 @@
     <div class="modal-card">
         <h2>Verify Your Email</h2>
         <p class="sub">We sent a 6-digit code to <br><strong id="otpEmailDisplay"></strong></p>
-
-        <div class="field" style="text-align:left;">
-            <input type="text" id="otpInput" class="otp-input" placeholder="------" maxlength="6" inputmode="numeric" />
-        </div>
-
+        <div class="field" style="text-align:left;"><input type="text" id="otpInput" class="otp-input" placeholder="------" maxlength="6" inputmode="numeric" /></div>
         <button class="auth-btn" id="otpBtn" onclick="verifyOTP()">Verify Code</button>
         <div class="auth-error" id="otpError"></div>
-        
-        <div style="margin-top:20px; font-size:13px; color:#64748b;">
-            Didn't get the code? <a href="#" onclick="resendOTP(event)" style="color:#6366f1; font-weight:600;">Resend</a>
-        </div>
+        <div style="margin-top:20px; font-size:13px; color:#64748b;">Didn't get the code? <a href="#" onclick="resendOTP(event)" style="color:#6366f1; font-weight:600;">Resend</a></div>
     </div>
 </div>
 
@@ -437,29 +378,83 @@
     let generatedOTP = null;
 
     // ============================================
-    // 🔀 PAGE NAVIGATION (One page at a time)
+    // 🔀 PAGE NAVIGATION
     // ============================================
     function navigateTo(pageId) {
-        // Hide all pages
         document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
-        // Show selected page
         document.getElementById('page-' + pageId).classList.add('active');
         
-        // On desktop, we want all pages visible, so we remove the 'hidden-desktop' class from all after navigating
-        if (window.innerWidth >= 640) {
-            document.querySelectorAll('.page-view').forEach(p => p.classList.remove('hidden-desktop'));
-        } else {
+        if (window.innerWidth < 640) {
             document.querySelectorAll('.page-view').forEach(p => {
                 if (p.id !== 'page-' + pageId) p.classList.add('hidden-desktop');
             });
         }
     }
 
-    // Initialize mobile view to show only transactions
     if (window.innerWidth < 640) {
         document.querySelectorAll('.page-view').forEach(p => {
             if (p.id !== 'page-transactions') p.classList.add('hidden-desktop');
         });
+    }
+
+    // ============================================
+    // 💸 MODAL HANDLERS
+    // ============================================
+    function openDepositModal() {
+        document.getElementById('depositPhone').value = userData.settlementPhone || '';
+        document.getElementById('depositModal').classList.add('active');
+    }
+    function closeDepositModal() {
+        document.getElementById('depositModal').classList.remove('active');
+    }
+
+    function openWithdrawModal() {
+        document.getElementById('withdrawPhone').value = userData.settlementPhone || '';
+        document.getElementById('withdrawModal').classList.add('active');
+    }
+    function closeWithdrawModal() {
+        document.getElementById('withdrawModal').classList.remove('active');
+    }
+
+    async function processWithdraw() {
+        const amount = Number(document.getElementById('withdrawAmount').value);
+        const phone = document.getElementById('withdrawPhone').value.trim();
+        const provider = document.getElementById('withdrawProvider').value;
+        const resultDiv = document.getElementById('withdrawResult');
+
+        if (!amount || amount < 100) { resultDiv.innerHTML = '<span style="color:red;">Min K100</span>'; return; }
+        if (amount > (userData.balance || 0)) { resultDiv.innerHTML = '<span style="color:red;">Insufficient balance</span>'; return; }
+
+        resultDiv.innerHTML = '<span style="color:#6366f1;">Processing withdrawal...</span>';
+
+        try {
+            const res = await fetch('/api/withdraw', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: currentUser.uid, phoneNumber: phone, amount, provider })
+            });
+            const data = await res.json();
+            if (data.success) {
+                resultDiv.innerHTML = '<span style="color:green;">✅ Withdrawal initiated!</span>';
+                setTimeout(() => { closeWithdrawModal(); loadUserData(); }, 2000);
+            } else {
+                resultDiv.innerHTML = `<span style="color:red;">❌ ${data.error}</span>`;
+            }
+        } catch (err) {
+            resultDiv.innerHTML = `<span style="color:red;">Error: ${err.message}</span>`;
+        }
+    }
+
+    async function processDeposit() {
+        const amount = document.getElementById('depositAmount').value;
+        const phone = document.getElementById('depositPhone').value;
+        const provider = document.getElementById('depositProvider').value;
+
+        if (!amount || !phone) { alert('Fill in all fields'); return; }
+
+        // Redirect to the pay.html link with parameters, or handle via API
+        alert('Deposit flow goes here. (Usually calls /api/payment)');
+        closeDepositModal();
     }
 
     // ============================================
